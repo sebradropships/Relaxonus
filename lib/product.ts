@@ -200,6 +200,36 @@ export const TRUTH_CARDS = [
   },
 ];
 
+/**
+ * Reviews section copy.
+ *
+ * The zero-state must never imply customers exist. It earns trust with things
+ * that are verifiably true today instead.
+ */
+export const REVIEWS_COPY = {
+  heading: "What buyers say",
+  zeroHeading: "Reviews",
+  zeroTitle: "No reviews yet — we only just opened.",
+  zeroBody:
+    "We could have filled this space with borrowed praise. Instead, here is what we can actually stand behind, and you can hold us to every line of it.",
+  zeroPoints: [
+    {
+      label: "The spec is the pitch",
+      body: "Six grooved rollers, 35 × 18cm, PP frame. Every number on this page comes off the manufacturer's sheet.",
+    },
+    {
+      label: "Nothing to fail",
+      body: "No motor, no battery, no firmware. There is very little here that can stop working.",
+    },
+    {
+      label: "Priced without the theatre",
+      body: "$30 for one, $50 for two. No inflated list price crossed out to manufacture a discount.",
+    },
+  ],
+  zeroNote:
+    "When reviews do appear here, they will be from verified buyers of this product and shown unedited — the good ones and the bad ones.",
+} as const;
+
 export interface Step {
   num: string;
   title: string;
@@ -341,6 +371,7 @@ export const SEO = {
 export const NAV_LINKS = [
   { label: "Shop", href: "#shop" },
   { label: "How it works", href: "#how" },
+  { label: "Reviews", href: "#reviews" },
   { label: "FAQ", href: "#faq" },
 ];
 

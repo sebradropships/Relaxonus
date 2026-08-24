@@ -4,6 +4,7 @@ import { FinalCta } from "@/components/FinalCta";
 import { Lifestyle } from "@/components/Lifestyle";
 import { ProductHero } from "@/components/ProductHero";
 import { ProductTruth } from "@/components/ProductTruth";
+import { Reviews } from "@/components/Reviews";
 import { Shop } from "@/components/Shop";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
@@ -30,6 +31,7 @@ export default function Page() {
         <Lifestyle />
         <Steps />
         <Shop />
+        <Reviews />
         <Why />
         <Faq />
         <FinalCta />
