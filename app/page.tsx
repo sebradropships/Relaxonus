@@ -1,3 +1,4 @@
+import { Demo } from "@/components/Demo";
 import { Faq } from "@/components/Faq";
 import { Features } from "@/components/Features";
 import { FinalCta } from "@/components/FinalCta";
@@ -27,6 +28,7 @@ export default function Page() {
       <main>
         <ProductHero />
         <Features />
+        <Demo />
         <ProductTruth />
         <Lifestyle />
         <Steps />

@@ -1,0 +1,44 @@
+.wrap {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(24px, 4vw, 56px);
+  align-items: center;
+}
+
+.copy {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.caption {
+  font-family: var(--mono);
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--ink-42);
+}
+
+.player {
+  position: relative;
+  border-radius: 24px;
+  overflow: hidden;
+  background: var(--sand);
+  border: 1px solid var(--line-07);
+  aspect-ratio: 1 / 1;
+}
+
+.video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+@media (max-width: 780px) {
+  .wrap {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  /* Lead with the motion on small screens — it is the whole point. */
+  .player { order: -1; }
+}

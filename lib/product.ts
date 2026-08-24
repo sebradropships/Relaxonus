@@ -100,12 +100,14 @@ export const VARIANTS: Record<VariantKey, Variant> = {
     tint: PINK_TINT,
     price: "$30.00",
     meta: "One massager, soft pink frame",
+    // Own photography, not the supplier's stock set.
     frames: [
-      { url: IMAGES.pinkHero, alt: "The pink Relaxonus massager, its open U frame resting against a wall" },
-      { url: IMAGES.pinkWall, alt: "The pink massager upright, showing both long looped handles" },
-      { url: IMAGES.rollers, alt: ALT_ROLLERS },
-      { url: IMAGES.dimensions, alt: ALT_SIZE },
-      { url: IMAGES.pair, alt: ALT_PAIR },
+      { url: "/products/pink/01-hero.webp", alt: "The pink Relaxonus massager standing against a pale wall, both looped handles visible" },
+      { url: "/products/pink/02-in-use.webp", alt: "The pink massager held behind the neck, a column of rollers either side of the spine" },
+      { url: "/products/pink/03-rollers.webp", alt: "Close-up of the six grooved rollers in the pink frame" },
+      { url: "/products/pink/04-lifestyle.webp", alt: "The pink massager on a marble stand beside a rolled towel and a soap dispenser" },
+      { url: "/products/pink/05-in-use-side.webp", alt: "The massager drawn across the back of the neck, seen from behind" },
+      { url: "/products/pink/06-handles.webp", alt: "Detail of the two looped handles you squeeze to set the pressure" },
     ],
   },
   set: {
@@ -127,6 +129,26 @@ export const VARIANTS: Record<VariantKey, Variant> = {
 };
 
 export const VARIANT_ORDER: VariantKey[] = ["blue", "pink", "set"];
+
+/**
+ * Supplier demonstration footage, re-encoded for the web.
+ *
+ * The source was 14.9MB at 5.09 Mbps with an audio track of unknown
+ * provenance. This copy is silent, and two captioned segments were cut:
+ * "6 eco-friendly TPR soft rollers" (an unsubstantiated material and
+ * environmental claim) and "Lateral pressure relaxes the ligaments"
+ * (an anatomical claim this product cannot make).
+ */
+export const DEMO_VIDEO = {
+  src: "/video/relaxonus-demo.web.mp4",
+  poster: "/video/relaxonus-demo-poster.jpg",
+  width: 720,
+  height: 720,
+  durationSeconds: 18,
+  heading: "It only does one thing",
+  body: "Hook it behind your neck, draw the handles together, and roll. The harder you squeeze, the more pressure you get — that is the whole mechanism, and it is the reason there is nothing to charge.",
+  caption: "Supplier demonstration footage. Shown in blue; the pink is the same tool.",
+} as const;
 
 export const SET_BADGE = "SAVE $10";
 
