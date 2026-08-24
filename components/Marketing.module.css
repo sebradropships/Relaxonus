@@ -1,0 +1,324 @@
+/* Shared styles for the marketing sections below the buy box. */
+
+/* -------------------------------- Features -------------------------------- */
+
+.featureGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(215px, 1fr));
+  gap: 14px;
+}
+
+.feature {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+.featureTitle { font-size: 15px; font-weight: 700; }
+.featureBody { font-size: 13.5px; line-height: 1.45; color: var(--ink-55); }
+
+/* ------------------------------ Product truth ----------------------------- */
+/* Occupies the slot a reviews carousel would, until real reviews exist. */
+
+.truthHead {
+  max-width: 620px;
+  margin-bottom: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.truthSub { font-size: 15.5px; line-height: 1.5; color: var(--ink-60); }
+
+.truthGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 14px;
+}
+
+.truthCard {
+  background: var(--paper);
+  border: 1px solid var(--line-07);
+  border-radius: 18px;
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+.truthTitle { font-size: 15px; font-weight: 700; }
+.truthBody { font-size: 13.5px; line-height: 1.5; color: var(--ink-60); }
+
+/* -------------------------------- Lifestyle ------------------------------- */
+
+.lifestyle {
+  position: relative;
+  border-radius: 24px;
+  overflow: hidden;
+  background: var(--sand);
+  min-height: 380px;
+  display: flex;
+  align-items: flex-end;
+}
+
+.lifestyleImage {
+  object-fit: cover;
+  object-position: 70% center;
+}
+
+/* Keeps the copy legible over the photograph at every width. */
+.lifestyle::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    100deg,
+    rgba(247, 246, 243, .97) 0%,
+    rgba(247, 246, 243, .92) 38%,
+    rgba(247, 246, 243, .35) 66%,
+    rgba(247, 246, 243, 0) 100%
+  );
+}
+
+.lifestyleCopy {
+  position: relative;
+  z-index: 1;
+  padding: clamp(24px, 4vw, 44px);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-width: 560px;
+}
+
+/* ---------------------------------- Steps --------------------------------- */
+
+.stepGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.stepMedia {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: 18px;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+}
+.stepImage { object-fit: cover; }
+
+.tintBlue { background: var(--blue-tint); }
+.tintPink { background: var(--pink-tint); }
+.tintSand { background: var(--sand); }
+.tintSet  { background: var(--set-tint); }
+
+.stepNum {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .12em;
+  color: var(--ink-38);
+}
+.stepTitle { font-size: 18px; font-weight: 700; }
+.stepBody { font-size: 14px; line-height: 1.5; color: var(--ink-58); }
+
+/* ---------------------------------- Shop ---------------------------------- */
+
+.offerGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+  gap: 16px;
+}
+
+.offer {
+  position: relative;
+  border: 1px solid var(--line-09);
+  border-radius: 20px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.offerFeatured {
+  border: 1.5px solid var(--ink);
+  box-shadow: 0 10px 30px rgba(23, 24, 26, .08);
+}
+
+.offerBadge {
+  position: absolute;
+  top: -11px;
+  left: 18px;
+  padding: 5px 9px;
+  border-radius: 7px;
+  letter-spacing: .12em;
+}
+
+.offerMedia {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 14px;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+}
+
+.offerImage { object-fit: cover; }
+
+.offerEyebrow {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .14em;
+  color: var(--ink-50);
+}
+.eyebrowBlue { color: var(--blue); }
+.eyebrowPink { color: var(--pink); }
+
+.offerTitle { font-size: 19px; font-weight: 700; letter-spacing: -.01em; }
+.offerBody { font-size: 14px; line-height: 1.45; color: var(--ink-55); }
+.offerPrice { margin-top: auto; font-size: 20px; font-weight: 800; }
+
+/* ----------------------------------- Why ---------------------------------- */
+
+.why {
+  background: var(--white);
+  border: 1px solid var(--line-08);
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+.whyHead,
+.whyRow {
+  display: grid;
+  grid-template-columns: 1fr 1.3fr 1.3fr;
+  align-items: center;
+  gap: 14px;
+  padding: 15px 20px;
+}
+
+.whyHead {
+  border-bottom: 1px solid var(--line-07);
+}
+.whyHead span {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .13em;
+  color: var(--ink-38);
+}
+
+.whyRow {
+  padding-top: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--line-06);
+}
+.whyRow:last-child { border-bottom: none; }
+
+.whyLabel { font-size: 14px; font-weight: 700; }
+.whyOurs { font-size: 14px; font-weight: 500; }
+.whyTheirs { font-size: 14px; font-weight: 400; color: var(--ink-50); }
+
+@media (max-width: 560px) {
+  .whyHead { display: none; }
+  .whyRow {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+  .whyOurs::before {
+    content: "Relaxonus — ";
+    font-weight: 700;
+  }
+  .whyTheirs::before {
+    content: "Powered — ";
+    font-weight: 700;
+  }
+}
+
+/* ----------------------------------- FAQ ---------------------------------- */
+
+.faqSection { padding-bottom: 56px; }
+
+.faqList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.faqItem {
+  background: var(--white);
+  border: 1px solid var(--line-08);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.faqHeading { font-size: inherit; font-weight: inherit; }
+
+.faqQuestion {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 17px 18px;
+  background: none;
+  border: none;
+  font-size: 15px;
+  font-weight: 600;
+  text-align: left;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.faqSign {
+  flex: none;
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--ink-38);
+  transition: transform .22s ease;
+}
+.faqSignOpen { transform: rotate(45deg); }
+
+/* Before hydration the open answer falls back to a generous cap so it is
+   readable without JavaScript; once mounted, JS writes the measured height
+   and `data-ready` switches the animation on. */
+.faqAnswer {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+}
+.faqAnswerOpen { max-height: 60rem; opacity: 1; }
+
+.faqList[data-ready="true"] .faqAnswer {
+  transition: max-height .28s ease, opacity .22s ease;
+}
+.faqAnswer p {
+  padding: 0 18px 18px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--ink-60);
+}
+
+/* -------------------------------- Final CTA ------------------------------- */
+
+.finalCta {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.finalCtaInner {
+  padding-top: 76px;
+  padding-bottom: 76px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  text-align: center;
+}
+
+@media (max-width: 640px) {
+  .lifestyle { min-height: 340px; }
+  .finalCtaInner { padding-top: 56px; padding-bottom: 56px; }
+}
