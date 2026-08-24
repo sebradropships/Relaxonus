@@ -148,7 +148,6 @@ export const DEMO_VIDEO = {
   durationSeconds: 18,
   heading: "It only does one thing",
   body: "Hook it behind your neck, draw the handles together, and roll. The harder you squeeze, the more pressure you get — that is the whole mechanism, and it is the reason there is nothing to charge.",
-  caption: "Supplier demonstration footage. Shown in blue; the pink is the same tool.",
 } as const;
 
 export const SET_BADGE = "SAVE $10";

@@ -48,7 +48,6 @@ export function Demo() {
         <div className={styles.copy}>
           <h2 className="h2">{DEMO_VIDEO.heading}</h2>
           <p className="lede">{DEMO_VIDEO.body}</p>
-          <p className={styles.caption}>{DEMO_VIDEO.caption}</p>
         </div>
 
         <div className={styles.player}>
