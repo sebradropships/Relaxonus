@@ -47,6 +47,12 @@ export interface Variant {
   /** CSS background for swatches and the sticky bar thumbnail. */
   tint: string;
   price: string;
+  /**
+   * Genuine reference price, shown struck through. Only set where a real one
+   * exists — for the 2-pack that is the cost of two singles bought separately.
+   * Never a former price the product was not actually offered at.
+   */
+  compareAt?: string;
   /** Short line under the variant name. */
   meta: string;
   /** Gallery frames, leading with this option's own photograph. */
@@ -81,7 +87,7 @@ export const VARIANTS: Record<VariantKey, Variant> = {
     optionValue: "Blue",
     variantId: "gid://shopify/ProductVariant/53761385136491",
     tint: BLUE_TINT,
-    price: "$30.00",
+    price: "$29.99",
     meta: "One massager, soft blue frame",
     // Own photography, not the supplier's stock set.
     frames: [
@@ -98,7 +104,7 @@ export const VARIANTS: Record<VariantKey, Variant> = {
     optionValue: "Pink",
     variantId: "gid://shopify/ProductVariant/53761385169259",
     tint: PINK_TINT,
-    price: "$30.00",
+    price: "$29.99",
     meta: "One massager, soft pink frame",
     // Own photography, not the supplier's stock set.
     frames: [
@@ -116,7 +122,9 @@ export const VARIANTS: Record<VariantKey, Variant> = {
     optionValue: "A set",
     variantId: "gid://shopify/ProductVariant/53761385103723",
     tint: SET_TINT,
-    price: "$50.00",
+    price: "$47.99",
+    /** Real reference price: what two singles cost separately (2 × $29.99). */
+    compareAt: "$59.98",
     meta: "Two massagers, one of each color",
     // Leads with the only genuine two-colour shot, then one of each unit.
     frames: [
@@ -150,7 +158,7 @@ export const DEMO_VIDEO = {
   body: "Hook it behind your neck, draw the handles together, and roll. The harder you squeeze, the more pressure you get — that is the whole mechanism, and it is the reason there is nothing to charge.",
 } as const;
 
-export const SET_BADGE = "SAVE $10";
+export const SET_BADGE = "SAVE $11.99";
 
 export const ANNOUNCEMENT = "No batteries • Six rollers • Ships within the USA";
 
@@ -163,7 +171,11 @@ export const BENEFITS = [
 ];
 
 /** Only claims the store can substantiate today. */
-export const TRUST_POINTS = ["Ships within the USA", "No batteries, no charging", "Two colors, same $30"];
+export const TRUST_POINTS = [
+  "Ships within the USA",
+  "No batteries, no charging",
+  "Apple Pay & Google Pay",
+];
 
 export interface Feature {
   title: string;
