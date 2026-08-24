@@ -9,32 +9,18 @@
  * currently have, so it is not requested.
  */
 
+/**
+ * Exactly what the storefront renders: a badge count and a checkout link.
+ *
+ * `lines(first: 100)` was costing a connection charge against Shopify's leaky
+ * bucket on every add and every rehydrate, for data no component reads.
+ * `id` stays — it is what gets written to the cart cookie.
+ */
 export const CART_FIELDS = /* GraphQL */ `
   fragment CartFields on Cart {
     id
     checkoutUrl
     totalQuantity
-    cost {
-      subtotalAmount { amount currencyCode }
-      totalAmount { amount currencyCode }
-    }
-    lines(first: 100) {
-      nodes {
-        id
-        quantity
-        cost { totalAmount { amount currencyCode } }
-        merchandise {
-          ... on ProductVariant {
-            id
-            title
-            availableForSale
-            selectedOptions { name value }
-            price { amount currencyCode }
-            product { title handle }
-          }
-        }
-      }
-    }
   }
 `;
 

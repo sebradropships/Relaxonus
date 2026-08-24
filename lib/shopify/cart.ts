@@ -2,31 +2,15 @@ import "server-only";
 
 import { cookies } from "next/headers";
 
-import { KEY_BY_OPTION_VALUE, CART_COOKIE, CART_COOKIE_MAX_AGE, COUNTRY, LANGUAGE } from "@/lib/shopify/config";
+import { CART_COOKIE, CART_COOKIE_MAX_AGE, COUNTRY, LANGUAGE } from "@/lib/shopify/config";
 import { storefrontLive } from "@/lib/shopify/client";
 import { CART_CREATE, CART_LINES_ADD, CART_QUERY } from "@/lib/shopify/queries";
-import type { CartLineView, CartSummary, Money } from "@/lib/shopify/types";
+import type { CartSummary } from "@/lib/shopify/types";
 
 interface RawCart {
   id: string;
   checkoutUrl: string;
   totalQuantity: number;
-  cost: { subtotalAmount: Money; totalAmount: Money };
-  lines: {
-    nodes: {
-      id: string;
-      quantity: number;
-      cost: { totalAmount: Money };
-      merchandise: {
-        id: string;
-        title: string;
-        availableForSale: boolean;
-        selectedOptions: { name: string; value: string }[];
-        price: Money;
-        product: { title: string; handle: string };
-      };
-    }[];
-  };
 }
 
 interface UserError {
@@ -69,36 +53,15 @@ async function clearCartId(): Promise<void> {
 /* --------------------------------- mapping -------------------------------- */
 
 function toSummary(cart: RawCart): CartSummary {
-  const lines: CartLineView[] = cart.lines.nodes.map((node) => {
-    const colour = node.merchandise.selectedOptions.find(
-      (option) => option.name.trim().toLowerCase() === "color",
-    );
-
-    return {
-      id: node.id,
-      quantity: node.quantity,
-      title: node.merchandise.product.title,
-      variantTitle: node.merchandise.title,
-      merchandiseId: node.merchandise.id,
-      key: colour ? (KEY_BY_OPTION_VALUE[colour.value.trim().toLowerCase()] ?? null) : null,
-      unitPrice: node.merchandise.price,
-      lineTotal: node.cost.totalAmount,
-      availableForSale: node.merchandise.availableForSale,
-    };
-  });
-
-  return {
-    totalQuantity: cart.totalQuantity,
-    subtotal: cart.cost.subtotalAmount,
-    total: cart.cost.totalAmount,
-    checkoutUrl: cart.checkoutUrl,
-    lines,
-  };
+  return { totalQuantity: cart.totalQuantity, checkoutUrl: cart.checkoutUrl };
 }
 
 function firstError(errors: UserError[] | undefined): string | null {
   if (!errors || errors.length === 0) return null;
-  return errors[0].message || "Shopify rejected the cart operation.";
+  // Shopify's userError text is merchant-facing. Log it; show the shopper
+  // something they can act on. Still truthy, so callers branch unchanged.
+  console.error("[cart] Shopify userError:", errors[0]);
+  return "That option could not be added just now. Please try again.";
 }
 
 /* --------------------------------- reads ---------------------------------- */
@@ -161,10 +124,20 @@ export async function addLine(merchandiseId: string, quantity = 1): Promise<AddR
         return { ok: true, cart: toSummary(cart) };
       }
 
-      // Stale cart id: start over instead of failing the click.
+      // Shopify still returned the cart, so the id is fine and the problem is
+      // with this line. Dropping the cookie here would strand real contents in
+      // a cart the shopper can no longer reach.
+      if (cart) {
+        return { ok: false, cart: null, error: error ?? "Could not add to cart. Please try again." };
+      }
+
+      // cart === null means the id is expired, completed or tampered with.
+      // That is the only case worth starting over for.
       await clearCartId();
     } catch {
-      await clearCartId();
+      // A network blip is not evidence the cart id is bad. Fail this click
+      // rather than silently starting a second cart and orphaning the first.
+      return { ok: false, cart: null, error: "Could not reach the store. Please try again." };
     }
   }
 
@@ -183,7 +156,7 @@ export async function addLine(merchandiseId: string, quantity = 1): Promise<AddR
     const cart = data.cartCreate.cart;
 
     if (error || !cart) {
-      return { ok: false, cart: null, error: error ?? "Could not create a cart." };
+      return { ok: false, cart: null, error: error ?? "We could not start a cart. Please try again." };
     }
 
     await writeCartId(cart.id);

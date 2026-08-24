@@ -249,6 +249,13 @@
   letter-spacing: .09em;
 }
 
+.stickyError {
+  padding-left: 16px;
+  padding-right: 16px;
+  padding-bottom: 11px;
+}
+.stickyError:empty { display: none; }
+
 @media (max-width: 640px) {
   .hero { gap: 32px; }
 }

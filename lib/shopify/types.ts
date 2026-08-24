@@ -6,19 +6,6 @@ export interface Money {
   currencyCode: string;
 }
 
-export interface CartLineView {
-  id: string;
-  quantity: number;
-  title: string;
-  variantTitle: string;
-  merchandiseId: string;
-  /** Resolved back to an app key where the variant is one of ours. */
-  key: VariantKey | null;
-  unitPrice: Money;
-  lineTotal: Money;
-  availableForSale: boolean;
-}
-
 /**
  * What the client is allowed to know about the cart.
  *
@@ -27,10 +14,7 @@ export interface CartLineView {
  */
 export interface CartSummary {
   totalQuantity: number;
-  subtotal: Money;
-  total: Money;
   checkoutUrl: string;
-  lines: CartLineView[];
 }
 
 /** Live pricing for one option, merged over the curated copy at render time. */

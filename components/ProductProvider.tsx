@@ -7,6 +7,7 @@ import {
   useEffect,
   useMemo,
   useRef,
+  useOptimistic,
   useState,
   useTransition,
   type ReactNode,
@@ -73,13 +74,26 @@ export function ProductProvider({
 
   const heroRef = useRef<HTMLElement | null>(null);
   const addedTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const inFlight = useRef(false);
+
+  /* The badge moves on click, not on response. React discards the overlay when
+     the transition that dispatched it ends — on success the real summary has
+     already landed inside that same transition, so there is no flicker back to
+     the old count; on failure the count simply reverts. */
+  const [cartCount, addOptimisticUnits] = useOptimistic(
+    summary?.totalQuantity ?? 0,
+    (current: number, units: number) => current + units,
+  );
 
   /* A returning shopper still holds their cart cookie; pick the cart back up. */
   useEffect(() => {
     let cancelled = false;
     getCartAction()
       .then((cart) => {
-        if (!cancelled && cart) setSummary(cart);
+        // May only fill an empty slot. This response was issued before any add,
+        // so if an add has already written a summary, ours is the older value
+        // and must not replace it.
+        if (!cancelled && cart) setSummary((prev) => prev ?? cart);
       })
       .catch(() => {});
     return () => {
@@ -98,6 +112,11 @@ export function ProductProvider({
     // Every option leads with its own photograph, so always show frame 0.
     setImage(0);
     setError(null);
+    // ADDED ✓ belongs to the option that was added, not to this one. Without
+    // this, switching option within ADDED_MS leaves the CTA confirming a
+    // product the shopper is no longer looking at.
+    if (addedTimer.current) clearTimeout(addedTimer.current);
+    setAdded(false);
   }, []);
 
   const selectImage = useCallback((index: number) => setImage(index), []);
@@ -116,30 +135,50 @@ export function ProductProvider({
   );
 
   const addToCart = useCallback(() => {
+    // Synchronous guard. `pending` only becomes true once React commits, so a
+    // second click dispatched in the same tick can otherwise get through — and
+    // with no cart cookie yet, both clicks take the cartCreate branch and one
+    // of the two carts is orphaned.
+    if (inFlight.current) return;
+    inFlight.current = true;
+
     const selected = VARIANTS[variant];
     setError(null);
 
     startTransition(async () => {
-      const result = await addToCartAction(variant);
+      addOptimisticUnits(1);
 
-      if (!result.ok || !result.cart) {
-        const message = result.error ?? "Could not add to cart.";
-        setError(message);
-        setAnnouncement(message);
-        return;
+      try {
+        const result = await addToCartAction(variant);
+
+        if (!result.ok || !result.cart) {
+          // CartError renders this inside role="alert", which announces itself.
+          // Writing the same string to the page-level status region as well
+          // makes screen readers say it twice, once assertively and once politely.
+          setError(result.error ?? "Could not add to cart.");
+          return;
+        }
+
+        setSummary(result.cart);
+        setAdded(true);
+        setAnnouncement(
+          `${selected.name} added to cart. ${result.cart.totalQuantity} ` +
+            `${result.cart.totalQuantity === 1 ? "item" : "items"} in cart.`,
+        );
+
+        if (addedTimer.current) clearTimeout(addedTimer.current);
+        addedTimer.current = setTimeout(() => setAdded(false), ADDED_MS);
+      } catch {
+        // The action itself never throws, but its transport can — offline, a
+        // 502 mid-deploy, a stale action id after a redeploy. There is no error
+        // boundary in this app, so an unhandled rejection here would blank the
+        // entire storefront.
+        setError("Could not reach the store. Please try again.");
+      } finally {
+        inFlight.current = false;
       }
-
-      setSummary(result.cart);
-      setAdded(true);
-      setAnnouncement(
-        `${selected.name} added to cart. ${result.cart.totalQuantity} ` +
-          `${result.cart.totalQuantity === 1 ? "item" : "items"} in cart.`,
-      );
-
-      if (addedTimer.current) clearTimeout(addedTimer.current);
-      addedTimer.current = setTimeout(() => setAdded(false), ADDED_MS);
     });
-  }, [variant]);
+  }, [variant, addOptimisticUnits]);
 
   const chooseAndScrollUp = useCallback(
     (next: VariantKey) => {
@@ -154,7 +193,7 @@ export function ProductProvider({
       variant,
       image,
       heroRef,
-      cart: summary?.totalQuantity ?? 0,
+      cart: cartCount,
       checkoutUrl: summary?.checkoutUrl ?? null,
       added,
       pending,
@@ -169,6 +208,7 @@ export function ProductProvider({
     [
       variant,
       image,
+      cartCount,
       summary,
       added,
       pending,

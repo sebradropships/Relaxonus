@@ -35,6 +35,13 @@ interface RequestOptions {
   /** Seconds to cache. Omit for uncacheable requests (anything cart-related). */
   revalidate?: number;
   tags?: string[];
+  /**
+   * Abort budget in ms. Only the shopper-facing cart path sets this: putting a
+   * ceiling on the cached catalogue read would let one slow build silently bake
+   * the committed fallback prices into a page served for the whole revalidate
+   * window.
+   */
+  timeoutMs?: number;
 }
 
 async function request<T>(query: string, options: RequestOptions = {}): Promise<T> {
@@ -51,6 +58,9 @@ async function request<T>(query: string, options: RequestOptions = {}): Promise<
       "X-Shopify-Storefront-Access-Token": TOKEN,
     },
     body: JSON.stringify({ query, variables: options.variables ?? {} }),
+    ...(options.timeoutMs === undefined
+      ? {}
+      : { signal: AbortSignal.timeout(options.timeoutMs) }),
     // GraphQL goes over POST, which Next never caches implicitly. Caching is
     // therefore always explicit: a revalidate window, or nothing at all.
     ...(options.revalidate === undefined
@@ -84,10 +94,16 @@ export function storefrontCached<T>(
   return request<T>(query, { variables, revalidate, tags });
 }
 
-/** Uncached. Every cart read and mutation goes through here. */
+/**
+ * Uncached. Every cart read and mutation goes through here.
+ *
+ * The timeout is what stops a connection Shopify accepts but never answers
+ * from leaving the CTA `aria-busy` forever. An abort lands in the existing
+ * catch in cart.ts and surfaces the usual retry message.
+ */
 export function storefrontLive<T>(
   query: string,
   variables: Record<string, unknown> = {},
 ): Promise<T> {
-  return request<T>(query, { variables });
+  return request<T>(query, { variables, timeoutMs: 6_000 });
 }

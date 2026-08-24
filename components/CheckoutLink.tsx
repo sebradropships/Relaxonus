@@ -22,10 +22,20 @@ export function CheckoutLink() {
   );
 }
 
-/** Inline message shown when Shopify refuses an add. */
-export function CartError() {
+/**
+ * Inline message shown when Shopify refuses an add.
+ *
+ * The hero copy owns the id and the alert role. A second copy (the sticky bar)
+ * must pass `decorative` — two live regions carrying the same string make
+ * screen readers announce the failure twice.
+ */
+export function CartError({ decorative = false }: { decorative?: boolean }) {
   const { error } = useProduct();
   if (!error) return null;
+
+  if (decorative) {
+    return <p className={styles.cartError}>{error}</p>;
+  }
 
   return (
     <p id="cart-error" className={styles.cartError} role="alert">

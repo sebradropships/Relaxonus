@@ -26,7 +26,12 @@ function CartIcon() {
 export function SiteHeader() {
   const { cart, checkoutUrl } = useProduct();
 
-  const hasCart = cart > 0 && Boolean(checkoutUrl);
+  // Two separate questions: are there items (drives the badge), and do we have
+  // a real checkout URL yet (drives the href). Only the second may gate the
+  // link — gating the badge on it hides the count for the whole round trip,
+  // which is exactly the window the optimistic count exists to cover.
+  const hasItems = cart > 0;
+  const canCheckout = hasItems && Boolean(checkoutUrl);
 
   return (
     <header className={styles.header}>
@@ -45,7 +50,7 @@ export function SiteHeader() {
           {/* With a cart, this goes to checkout. Without one, it returns to the
               buy box — it never silently adds a product, which is what a cart
               icon doing double duty as an add button would do. */}
-          {hasCart ? (
+          {canCheckout ? (
             <a
               className={styles.cartButton}
               href={checkoutUrl as string}
@@ -55,8 +60,17 @@ export function SiteHeader() {
               <span className={styles.badge}>{cart}</span>
             </a>
           ) : (
-            <a className={styles.cartButton} href="#top" aria-label="Your cart is empty. Go to the product options.">
+            <a
+              className={styles.cartButton}
+              href="#top"
+              aria-label={
+                hasItems
+                  ? `Adding to cart, ${cart} ${cart === 1 ? "item" : "items"}`
+                  : "Your cart is empty. Go to the product options."
+              }
+            >
               <CartIcon />
+              {hasItems ? <span className={styles.badge}>{cart}</span> : null}
             </a>
           )}
         </nav>

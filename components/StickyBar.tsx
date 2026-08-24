@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 
 import { AddToCartButton } from "@/components/AddToCartButton";
+import { CartError } from "@/components/CheckoutLink";
 import { useProduct } from "@/components/ProductProvider";
 import { PRODUCT_NAME, STICKY_OFFSET, VARIANTS } from "@/lib/product";
 
@@ -58,6 +59,13 @@ export function StickyBar() {
         </span>
 
         <AddToCartButton className={`btn btn-primary ${styles.stickyCta}`} />
+      </div>
+
+      {/* Visual only: the hero's alert already announced this. Without it a
+          failed add from down the page looks like a silent no-op, because the
+          hero's error message is by definition scrolled off screen. */}
+      <div className={`shell ${styles.stickyError}`}>
+        <CartError decorative />
       </div>
     </div>
   );
