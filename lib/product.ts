@@ -49,7 +49,7 @@ export interface Variant {
   price: string;
   /** Short line under the variant name. */
   meta: string;
-  /** Five gallery frames, leading with this option's own photograph. */
+  /** Gallery frames, leading with this option's own photograph. */
   frames: Frame[];
 }
 
@@ -63,7 +63,6 @@ export const PINK_TINT = "#F7DEE7";
 
 export const ADDED_MS = 1600;
 export const STICKY_OFFSET = 40;
-export const SET_FRAME = 4;
 
 export const CTA_LABEL = "ADD TO CART";
 export const CTA_ADDED = "ADDED ✓";
@@ -84,12 +83,13 @@ export const VARIANTS: Record<VariantKey, Variant> = {
     tint: BLUE_TINT,
     price: "$30.00",
     meta: "One massager, soft blue frame",
+    // Own photography, not the supplier's stock set.
     frames: [
-      { url: IMAGES.blueHero, alt: "The blue Relaxonus massager, its open U frame resting against a wall" },
-      { url: IMAGES.inUse, alt: ALT_IN_USE },
-      { url: IMAGES.rollers, alt: ALT_ROLLERS },
-      { url: IMAGES.dimensions, alt: ALT_SIZE },
-      { url: IMAGES.pair, alt: ALT_PAIR },
+      { url: "/products/blue/01-hero.webp", alt: "The blue Relaxonus massager standing against a pale wall, both looped handles visible" },
+      { url: "/products/blue/02-in-use.webp", alt: ALT_IN_USE },
+      { url: "/products/blue/03-rollers.webp", alt: ALT_ROLLERS },
+      { url: "/products/blue/04-lifestyle.webp", alt: "The blue massager resting against folded white towels" },
+      { url: "/products/blue/05-handles.webp", alt: "Detail of the two looped handles you squeeze to set the pressure" },
     ],
   },
   pink: {
@@ -118,12 +118,13 @@ export const VARIANTS: Record<VariantKey, Variant> = {
     tint: SET_TINT,
     price: "$50.00",
     meta: "Two massagers, one of each color",
+    // Leads with the only genuine two-colour shot, then one of each unit.
     frames: [
       { url: IMAGES.pair, alt: ALT_PAIR },
-      { url: IMAGES.inUse, alt: ALT_IN_USE },
-      { url: IMAGES.rollersAngle, alt: ALT_ROLLERS },
-      { url: IMAGES.dimensions, alt: ALT_SIZE },
-      { url: IMAGES.pair, alt: ALT_PAIR },
+      { url: "/products/blue/01-hero.webp", alt: "The blue unit from the set, standing against a pale wall" },
+      { url: "/products/pink/01-hero.webp", alt: "The pink unit from the set, standing against a pale wall" },
+      { url: "/products/blue/02-in-use.webp", alt: ALT_IN_USE },
+      { url: "/products/blue/03-rollers.webp", alt: ALT_ROLLERS },
     ],
   },
 };
@@ -266,21 +267,21 @@ export const STEPS: Step[] = [
     title: "Hook it behind you",
     body: "Rest the open U at the back of your neck so a column of rollers sits on each side.",
     tint: "blue",
-    image: { url: IMAGES.blueHero, alt: "The open U frame of the massager seen head-on" },
+    image: { url: "/products/blue/02-in-use.webp", alt: ALT_IN_USE },
   },
   {
     num: "02",
     title: "Squeeze and roll",
     body: "Draw the handles together and roll slowly. More squeeze, more pressure — start light.",
     tint: "sand",
-    image: { url: IMAGES.inUse, alt: ALT_IN_USE },
+    image: { url: "/products/blue/03-rollers.webp", alt: ALT_ROLLERS },
   },
   {
     num: "03",
     title: "Then move it along",
     body: "The same grip works on shoulders, upper back, arms, calves and thighs.",
     tint: "pink",
-    image: { url: IMAGES.pinkHero, alt: "The pink massager, showing the same frame and rollers" },
+    image: { url: "/products/pink/02-in-use.webp", alt: "The pink massager drawn across the back of the neck" },
   },
 ];
 
@@ -375,7 +376,10 @@ export const LIFESTYLE = {
   heading: "Five o'clock, shoulders down",
   body: "Hook it behind your neck at the desk, on the sofa, wherever you land — there's nothing to switch on first.",
   cta: "SEE HOW IT WORKS",
-  image: { url: IMAGES.inUse, alt: ALT_IN_USE },
+  image: {
+    url: "/products/pink/05-in-use-side.webp",
+    alt: "The massager held behind the neck, seen from behind",
+  },
 };
 
 export const FINAL_CTA = {

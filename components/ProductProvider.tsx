@@ -12,12 +12,12 @@ import {
   type RefObject,
 } from "react";
 
-import { ADDED_MS, SET_FRAME, VARIANTS, type VariantKey } from "@/lib/product";
+import { ADDED_MS, VARIANTS, type VariantKey } from "@/lib/product";
 
 interface ProductState {
   /** Currently selected purchase option. */
   variant: VariantKey;
-  /** Index of the visible gallery frame, 0–4. */
+  /** Index of the visible gallery frame within the variant's frame list. */
   image: number;
   /** Number of massagers in the cart. */
   cart: number;
@@ -60,8 +60,8 @@ export function ProductProvider({ children }: { children: ReactNode }) {
 
   const selectVariant = useCallback((next: VariantKey) => {
     setVariant(next);
-    // The set has a dedicated hero frame; single colours reset to the first.
-    setImage(next === "set" ? SET_FRAME : 0);
+    // Every option now leads with its own photograph, so always show frame 0.
+    setImage(0);
   }, []);
 
   const selectImage = useCallback((index: number) => setImage(index), []);
