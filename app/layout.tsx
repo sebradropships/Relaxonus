@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Manrope } from "next/font/google";
 
-import { ProductProvider } from "@/components/ProductProvider";
 import { SEO } from "@/lib/product";
 
 import "./globals.css";
@@ -30,9 +29,7 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={manrope.variable}>
-      <body>
-        <ProductProvider>{children}</ProductProvider>
-      </body>
+      <body>{children}</body>
     </html>
   );
 }

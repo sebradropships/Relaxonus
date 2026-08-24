@@ -11,7 +11,7 @@ import styles from "./Product.module.css";
 const ARROW_KEYS = ["ArrowRight", "ArrowDown", "ArrowLeft", "ArrowUp"];
 
 export function VariantPicker() {
-  const { variant, selectVariant } = useProduct();
+  const { variant, selectVariant, priceFor, availableFor } = useProduct();
   const buttons = useRef<Array<HTMLButtonElement | null>>([]);
 
   /* Radiogroups are expected to move selection with the arrow keys. */
@@ -85,10 +85,12 @@ export function VariantPicker() {
                 ) : (
                   <span className={styles.variantName}>{option.name}</span>
                 )}
-                <span className={styles.variantMeta}>{option.meta}</span>
+                <span className={styles.variantMeta}>
+                  {availableFor(key) ? option.meta : "Sold out"}
+                </span>
               </span>
 
-              <span className={`${styles.variantPrice} price`}>{option.price}</span>
+              <span className={`${styles.variantPrice} price`}>{priceFor(key)}</span>
             </button>
           );
         })}

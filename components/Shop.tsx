@@ -1,7 +1,7 @@
 import Image from "next/image";
 
 import { ChooseVariantButton } from "@/components/ChooseVariantButton";
-import { OFFERS, SHOP_HEADING, VARIANTS } from "@/lib/product";
+import { OFFERS, SHOP_HEADING, VARIANTS, type VariantKey } from "@/lib/product";
 
 import styles from "./Marketing.module.css";
 
@@ -17,7 +17,7 @@ const EYEBROW_TONE = {
   set: "",
 } as const;
 
-export function Shop() {
+export function Shop({ prices }: { prices: Record<VariantKey, string> }) {
   return (
     <section className="band" id="shop">
       <div className="shell section">
@@ -52,7 +52,7 @@ export function Shop() {
                 </span>
                 <h3 className={styles.offerTitle}>{offer.title}</h3>
                 <p className={styles.offerBody}>{offer.body}</p>
-                <span className={`${styles.offerPrice} price`}>{option.price}</span>
+                <span className={`${styles.offerPrice} price`}>{prices[offer.variant]}</span>
 
                 <ChooseVariantButton
                   variant={offer.variant}

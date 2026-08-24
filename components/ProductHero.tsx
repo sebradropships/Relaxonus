@@ -1,6 +1,7 @@
 "use client";
 
 import { AddToCartButton } from "@/components/AddToCartButton";
+import { CartError, CheckoutLink } from "@/components/CheckoutLink";
 import { Gallery } from "@/components/Gallery";
 import { VariantPicker } from "@/components/VariantPicker";
 import { useProduct } from "@/components/ProductProvider";
@@ -44,6 +45,8 @@ export function ProductHero() {
 
         <div className={styles.ctaBlock}>
           <AddToCartButton className="btn btn-primary btn-block" />
+          <CartError />
+          <CheckoutLink />
           <div className={styles.trust}>
             {TRUST_POINTS.map((point) => (
               <span key={point}>✓ {point}</span>

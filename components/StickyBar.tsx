@@ -14,7 +14,7 @@ import styles from "./Product.module.css";
  * the current option and its call to action stay reachable at the bottom.
  */
 export function StickyBar() {
-  const { heroRef, variant } = useProduct();
+  const { heroRef, variant, priceFor } = useProduct();
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -54,7 +54,7 @@ export function StickyBar() {
           <span className={styles.stickyTitle}>
             {option.name} • {PRODUCT_NAME}
           </span>
-          <span className={`${styles.stickyPrice} price`}>{option.price}</span>
+          <span className={`${styles.stickyPrice} price`}>{priceFor(variant)}</span>
         </span>
 
         <AddToCartButton className={`btn btn-primary ${styles.stickyCta}`} />
