@@ -42,20 +42,25 @@ export function Marquee({
   );
 
   return (
-    <div className={tilt ? "overflow-hidden" : undefined}>
+    /*
+      Two nested clips, and both are load-bearing.
+
+      The tilted band is deliberately ~6% wider than the viewport so its
+      rotated corners still cover the full width, and with motion off the
+      track below becomes a real `overflow-x: auto` scroller. That is an
+      overwide, independently scrollable box sitting inside a rotated parent —
+      the exact shape WebKit fails to clip with `overflow: hidden` alone,
+      handing the page genuine sideways travel. Chromium clips it either way,
+      which is why no Chromium-based check ever reproduced it.
+
+      `contain: paint` is the guarantee `overflow: hidden` is not: it is a
+      hard promise that nothing paints outside this box, and it survives the
+      rotate, the scale and the composited descendant.
+    */
+    <div className="overflow-hidden [contain:paint]">
       <div
-        className={`${ground} ${ink} border-y-[3px] border-sp-black overflow-hidden isolate`}
-        style={{
-          // Forces its own compositing layer. Without it, WebKit (Safari and
-          // any iOS browser — they all share the engine) can let the
-          // continuously-animated, translated ticker child inside leak past
-          // this element's own overflow:hidden clip — Chromium clips it
-          // correctly either way, which is why this never showed up in any
-          // Chromium-based check. `transform` composes with the standalone
-          // `rotate`/`scale` properties rather than replacing them.
-          transform: "translateZ(0)",
-          ...(tilt ? { rotate: "-2deg", scale: "1.06" } : null),
-        }}
+        className={`${ground} ${ink} border-y-[3px] border-sp-black overflow-hidden isolate [contain:paint]`}
+        style={tilt ? { rotate: "-2deg", scale: "1.06" } : undefined}
       >
         <div
           className="sp-ticker-track flex py-4"

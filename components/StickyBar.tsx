@@ -36,12 +36,12 @@ export function StickyBar() {
   const compareAt = compareAtFor(variant);
 
   return (
-    <div className="sp-bar fixed inset-x-0 bottom-0 z-50 border-t-[3px] border-sp-bubblegum bg-sp-black min-[900px]:hidden">
+    <div className="sp-bar fixed inset-x-0 bottom-0 z-50 border-t-[3px] border-sp-bubblegum bg-sp-black pb-[max(0.5rem,env(safe-area-inset-bottom))] min-[900px]:hidden">
       <div className="px-4 pb-2 pt-2">
         <CartError decorative />
       </div>
 
-      <div className="flex items-center gap-3 px-4 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
+      <div className="flex items-center gap-3 px-4">
         <span
           className="relative size-11 shrink-0 border-2 border-sp-paper"
           style={{ background: option.panel }}
@@ -56,7 +56,7 @@ export function StickyBar() {
             {quantity > 1 && `${quantity} × `}
             {TIERS[variant].title}
           </span>
-          <span className="flex items-baseline gap-2">
+          <span className="flex flex-wrap items-baseline gap-x-2">
             {compareAt && (
               <>
                 <span className="sr-only">{STRIKE_SR_PREFIX}</span>
@@ -65,11 +65,6 @@ export function StickyBar() {
             )}
             <span className="sp-display sp-num text-xl text-sp-paper">{priceFor(variant)}</span>
           </span>
-          {compareAt && (
-            <span aria-hidden="true" className="sp-disclosure block text-xs text-sp-mist">
-              {BASIS_TAG}
-            </span>
-          )}
         </span>
 
         {/* Persistent secondary CTA once there is something to check out — the
@@ -97,6 +92,18 @@ export function StickyBar() {
           <AddToCartButton compact className="!w-auto" />
         </div>
       </div>
+
+      {/* Full-width row of its own, below the CTA row rather than inside the
+          middle column. Squeezed between a 44px thumbnail, a 44px cart button
+          and the ADD button, that column collapses to ~60px on a 390px screen,
+          which broke this line across four lines — one word each. It is the
+          substantiation the strikethrough rests on, so it stays visible and
+          untruncated; it just gets the whole width to say it in. */}
+      {compareAt && (
+        <p aria-hidden="true" className="sp-disclosure mt-1 px-4 text-xs text-sp-mist">
+          {BASIS_TAG} — {compareAt}
+        </p>
+      )}
     </div>
   );
 }

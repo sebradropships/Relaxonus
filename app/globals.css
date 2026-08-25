@@ -53,15 +53,25 @@
   border-color: currentColor;
 }
 
+/*
+  Horizontal containment, on BOTH elements and in this exact order.
+
+  `overflow-x: hidden` makes the element a scroll container that merely hides
+  its scrollbar — WebKit will still let a touch pan it, which is how the page
+  acquired real sideways travel on iOS despite this being set. `overflow-x:
+  clip` does not create a scroll container at all, so there is nothing to pan.
+  The `hidden` line stays first as the fallback for engines without `clip`.
+
+  `clip` also leaves `overflow-y` alone: declaring `overflow-x: hidden` forces
+  the other axis to compute to `auto`, which is what puts the sticky header and
+  announcement bar inside a nested scrollport. `clip` keeps `overflow-y:
+  visible`, so both keep resolving against the real viewport.
+*/
 html {
   scroll-behavior: smooth;
   background: var(--color-sp-black);
-  /* Mobile Safari can scroll the document element itself rather than
-     <body> — `body`'s own overflow-x:hidden below does not stop that.
-     Both need it, or an intentionally-overwide descendant (the marquee's
-     ticker track, clipped via its own overflow-hidden ancestor) can still
-     hand the outer visual viewport real horizontal scroll room. */
   overflow-x: hidden;
+  overflow-x: clip;
 }
 
 body {
@@ -71,6 +81,7 @@ body {
   -webkit-font-smoothing: antialiased;
   text-wrap: pretty;
   overflow-x: hidden;
+  overflow-x: clip;
 }
 
 h1, h2, h3, .sp-display {
