@@ -215,6 +215,23 @@ h1, h2, h3, .sp-display {
   to   { transform: scale(1); }
 }
 
+@keyframes sp-drawer-in-y {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+@keyframes sp-drawer-in-x {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
+}
+
+/* One-shot feedback on a cart-count change, not a loop — same class of
+   transition as sp-tick-disc, so it stays active even with motion off. */
+@keyframes sp-count-pop {
+  0%   { transform: scale(1); }
+  35%  { transform: scale(1.35); }
+  100% { transform: scale(1); }
+}
+
 .sp-announce-stripes {
   background-image: repeating-linear-gradient(
     45deg,
@@ -236,6 +253,13 @@ h1, h2, h3, .sp-display {
 
 .sp-bar { animation: sp-bar-rise 240ms ease-out; }
 .sp-tick-disc { animation: sp-tier-lock 220ms cubic-bezier(0.34, 1.56, 0.64, 1); }
+
+.sp-cart-drawer { animation: sp-drawer-in-y 240ms ease-out; }
+@media (min-width: 640px) {
+  .sp-cart-drawer { animation: sp-drawer-in-x 240ms ease-out; }
+}
+
+.sp-count-pop { animation: sp-count-pop 320ms cubic-bezier(0.34, 1.56, 0.64, 1); }
 
 /* ----------------------------- Motion switch ------------------------------ */
 /*

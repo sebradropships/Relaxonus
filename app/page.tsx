@@ -1,11 +1,11 @@
 import { Announce } from "@/components/Announce";
+import { CartDrawer } from "@/components/CartDrawer";
 import { Compare } from "@/components/Compare";
 import { Demo } from "@/components/Demo";
 import { Faq } from "@/components/Faq";
 import { Features } from "@/components/Features";
 import { FinalCta } from "@/components/FinalCta";
 import { Hero } from "@/components/Hero";
-import { Lifestyle } from "@/components/Lifestyle";
 import { Marquee } from "@/components/Marquee";
 import { ProductProvider } from "@/components/ProductProvider";
 import { Receipts } from "@/components/Receipts";
@@ -40,7 +40,6 @@ export default async function Page() {
         <Steps />
         <Demo />
         <TruthBlock />
-        <Lifestyle />
         <Compare />
         <Receipts />
         <Shop />
@@ -53,6 +52,7 @@ export default async function Page() {
 
       <SiteFooter />
       <StickyBar />
+      <CartDrawer />
     </ProductProvider>
   );
 }

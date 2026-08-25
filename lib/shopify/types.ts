@@ -6,6 +6,23 @@ export interface Money {
   currencyCode: string;
 }
 
+export interface CartLineImage {
+  url: string;
+  altText: string | null;
+}
+
+/** One line in the cart drawer. Carries only what the drawer renders. */
+export interface CartLine {
+  id: string;
+  quantity: number;
+  title: string;
+  /** The selected Color option value, or the variant title as a fallback. */
+  variantLabel: string;
+  image: CartLineImage | null;
+  unitPrice: Money;
+  lineTotal: Money;
+}
+
 /**
  * What the client is allowed to know about the cart.
  *
@@ -15,6 +32,9 @@ export interface Money {
 export interface CartSummary {
   totalQuantity: number;
   checkoutUrl: string;
+  subtotal: Money;
+  total: Money;
+  lines: CartLine[];
 }
 
 /** Live pricing for one option, merged over the curated copy at render time. */

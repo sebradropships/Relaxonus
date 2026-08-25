@@ -13,7 +13,7 @@ import { BASIS_TAG, STICKY_OFFSET, STRIKE_SR_PREFIX, TIERS, VARIANTS } from "@/l
  * visible, never truncated.
  */
 export function StickyBar() {
-  const { heroRef, variant, priceFor, compareAtFor, quantity } = useProduct();
+  const { heroRef, variant, priceFor, compareAtFor, quantity, cart, openCart } = useProduct();
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -71,6 +71,27 @@ export function StickyBar() {
             </span>
           )}
         </span>
+
+        {/* Persistent secondary CTA once there is something to check out — the
+            sticky bar otherwise carries only ADD, and a mobile shopper who has
+            already added something should never have to scroll to review it. */}
+        {cart > 0 && (
+          <button
+            type="button"
+            onClick={openCart}
+            aria-label={`Open cart, ${cart} ${cart === 1 ? "item" : "items"}`}
+            className="sp-tap sp-squeeze relative grid size-11 shrink-0 place-items-center border-2 border-sp-mist text-lg text-sp-paper"
+          >
+            <span aria-hidden="true">🛒</span>
+            <span
+              key={cart}
+              aria-hidden="true"
+              className="sp-count-pop sp-mono sp-num absolute -right-1.5 -top-1.5 grid min-w-[18px] place-items-center rounded-full border-2 border-sp-black bg-sp-bubblegum px-1 text-[10px] leading-[16px] text-sp-ink"
+            >
+              {cart}
+            </span>
+          </button>
+        )}
 
         <div className="w-auto shrink-0">
           <AddToCartButton compact className="!w-auto" />

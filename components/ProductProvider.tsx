@@ -14,10 +14,15 @@ import {
   type RefObject,
 } from "react";
 
-import { addToCartAction, getCartAction } from "@/app/actions/cart";
+import {
+  addToCartAction,
+  getCartAction,
+  removeLineAction,
+  updateLineQuantityAction,
+} from "@/app/actions/cart";
 import { ADDED_MS, DEFAULT_TIER, MAX_QUANTITY, VARIANTS, type VariantKey } from "@/lib/product";
 import { formatMoney } from "@/lib/money";
-import type { CartSummary, ProductCommerce } from "@/lib/shopify/types";
+import type { CartLine, CartSummary, Money, ProductCommerce } from "@/lib/shopify/types";
 
 interface ProductState {
   /** Selected tier. The tier IS the Shopify variant — one control, one state. */
@@ -33,6 +38,18 @@ interface ProductState {
   added: boolean;
   pending: boolean;
   error: string | null;
+
+  /** Cart drawer. */
+  cartOpen: boolean;
+  openCart: () => void;
+  closeCart: () => void;
+  lines: CartLine[];
+  subtotal: Money | null;
+  /** Line id -> true while that line's own update/remove request is in flight. */
+  lineBusy: Record<string, boolean>;
+  lineError: string | null;
+  setLineQuantity: (lineId: string, quantity: number) => void;
+  removeCartLine: (lineId: string) => void;
 
   /** Live Shopify price where available, otherwise the committed price. */
   priceFor: (key: VariantKey) => string;
@@ -69,9 +86,16 @@ export function ProductProvider({
   const [announcement, setAnnouncement] = useState("");
   const [pending, startTransition] = useTransition();
 
+  const [cartOpen, setCartOpen] = useState(false);
+  const [lineBusy, setLineBusy] = useState<Record<string, boolean>>({});
+  const [lineError, setLineError] = useState<string | null>(null);
+  const [, startLineTransition] = useTransition();
+
   const heroRef = useRef<HTMLElement | null>(null);
   const addedTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const inFlight = useRef(false);
+  /** Synchronous guard per line — `lineBusy` only flips after React commits. */
+  const lineInFlight = useRef<Set<string>>(new Set());
 
   /* The badge moves on click, not on response. */
   const [cartCount, addOptimisticUnits] = useOptimistic(
@@ -108,6 +132,60 @@ export function ProductProvider({
   }, []);
 
   const selectImage = useCallback((index: number) => setImage(index), []);
+
+  const openCart = useCallback(() => setCartOpen(true), []);
+  const closeCart = useCallback(() => setCartOpen(false), []);
+
+  const setLineQuantity = useCallback((lineId: string, quantity: number) => {
+    if (lineInFlight.current.has(lineId)) return;
+    lineInFlight.current.add(lineId);
+    setLineBusy((busy) => ({ ...busy, [lineId]: true }));
+    setLineError(null);
+
+    startLineTransition(async () => {
+      try {
+        const result = await updateLineQuantityAction(lineId, quantity);
+        // Resync to whatever Shopify actually accepted, even on failure — a
+        // stale quantity the request never landed is worse than showing the
+        // real one alongside the error.
+        if (result.cart) setSummary(result.cart);
+        if (!result.ok) setLineError(result.error ?? "Could not update your cart.");
+      } catch {
+        setLineError("Could not reach the store. Please try again.");
+      } finally {
+        lineInFlight.current.delete(lineId);
+        setLineBusy((busy) => {
+          const next = { ...busy };
+          delete next[lineId];
+          return next;
+        });
+      }
+    });
+  }, []);
+
+  const removeCartLine = useCallback((lineId: string) => {
+    if (lineInFlight.current.has(lineId)) return;
+    lineInFlight.current.add(lineId);
+    setLineBusy((busy) => ({ ...busy, [lineId]: true }));
+    setLineError(null);
+
+    startLineTransition(async () => {
+      try {
+        const result = await removeLineAction(lineId);
+        if (result.cart) setSummary(result.cart);
+        if (!result.ok) setLineError(result.error ?? "Could not remove that item.");
+      } catch {
+        setLineError("Could not reach the store. Please try again.");
+      } finally {
+        lineInFlight.current.delete(lineId);
+        setLineBusy((busy) => {
+          const next = { ...busy };
+          delete next[lineId];
+          return next;
+        });
+      }
+    });
+  }, []);
 
   /* Clamped here as well as on the server, so the UI can never present a
      value the action would silently rewrite. */
@@ -164,6 +242,7 @@ export function ProductProvider({
 
         setSummary(result.cart);
         setAdded(true);
+        openCart();
         setAnnouncement(
           `${sending} × ${selected.name} added to cart. ${result.cart.totalQuantity} ` +
             `${result.cart.totalQuantity === 1 ? "item" : "items"} in cart.`,
@@ -179,7 +258,7 @@ export function ProductProvider({
         inFlight.current = false;
       }
     });
-  }, [variant, quantity, addOptimisticUnits]);
+  }, [variant, quantity, addOptimisticUnits, openCart]);
 
   const value = useMemo<ProductState>(
     () => ({
@@ -193,6 +272,15 @@ export function ProductProvider({
       added,
       pending,
       error,
+      cartOpen,
+      openCart,
+      closeCart,
+      lines: summary?.lines ?? [],
+      subtotal: summary?.subtotal ?? null,
+      lineBusy,
+      lineError,
+      setLineQuantity,
+      removeCartLine,
       priceFor,
       compareAtFor,
       availableFor,
@@ -202,6 +290,7 @@ export function ProductProvider({
     }),
     [
       variant, image, quantity, setQuantity, cartCount, summary, added, pending, error,
+      cartOpen, openCart, closeCart, lineBusy, lineError, setLineQuantity, removeCartLine,
       priceFor, compareAtFor, availableFor, selectVariant, selectImage, addToCart,
     ],
   );

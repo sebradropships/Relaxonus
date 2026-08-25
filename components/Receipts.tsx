@@ -1,14 +1,26 @@
-import { RECEIPTS } from "@/lib/product";
+import { RECEIPTS, REVIEWS } from "@/lib/product";
+
+function Stars({ rating }: { rating: number }) {
+  return (
+    <span aria-hidden="true" className="text-sp-chlorine">
+      {"★".repeat(rating)}
+      {"☆".repeat(5 - rating)}
+    </span>
+  );
+}
 
 /**
  * Occupies the slot a reviews carousel would.
  *
- * The store has zero orders, so there is nothing honest to put in a review
- * component — and leaving one in the tree invites fake content back into it.
- * The absence is disclosed once, at body size, under a heading about what the
- * visitor CAN verify. It is not a display-size apology.
+ * REVIEWS is `[]` today — the store has zero orders, so there is nothing
+ * honest to show, and the absence is disclosed once rather than papered over
+ * with a display-size apology. The moment a real review exists in REVIEWS
+ * (lib/product.ts), this same section renders it — verified-purchase badge,
+ * date, variant and all — with no code change needed. Never seed REVIEWS
+ * with anything invented; see the permanently-absent list in lib/product.ts.
  */
 export function Receipts() {
+  const hasReviews = REVIEWS.length > 0;
   return (
     <section id="receipts" className="border-y-[3px] border-sp-black bg-sp-blush py-24">
       <div className="sp-shell">
@@ -48,7 +60,27 @@ export function Receipts() {
           ))}
         </div>
 
-        <p className="mt-10 text-center text-lg text-sp-black">{RECEIPTS.closing}</p>
+        {hasReviews ? (
+          <div className="mt-12">
+            <h3 className="text-[length:var(--text-display-s)] text-sp-black">
+              REAL PEOPLE. REAL EXPERIENCES.
+            </h3>
+            <ul className="mt-6 grid gap-5 md:grid-cols-3">
+              {REVIEWS.map((review) => (
+                <li key={review.id} className="border-[3px] border-sp-black bg-sp-black p-6 sp-hard-ink">
+                  <Stars rating={review.rating} />
+                  <p className="mt-3 text-[15px] leading-snug text-sp-paper">{review.text}</p>
+                  <p className="sp-mono mt-4 text-[12px] text-sp-mist">
+                    {review.customerName}
+                    {review.verifiedPurchase && " · VERIFIED PURCHASE"}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : (
+          <p className="mt-10 text-center text-lg text-sp-black">{RECEIPTS.closing}</p>
+        )}
       </div>
     </section>
   );

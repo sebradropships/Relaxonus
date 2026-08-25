@@ -10,17 +10,41 @@
  */
 
 /**
- * Exactly what the storefront renders: a badge count and a checkout link.
+ * What the storefront renders: a badge count, a checkout link, cart totals,
+ * and the line items the cart drawer displays.
  *
- * `lines(first: 100)` was costing a connection charge against Shopify's leaky
- * bucket on every add and every rehydrate, for data no component reads.
- * `id` stays — it is what gets written to the cart cookie.
+ * `id` stays — it is what gets written to the cart cookie. `lines(first: 50)`
+ * is a real connection charge against Shopify's leaky bucket, but the drawer
+ * now genuinely reads every field requested here.
  */
 export const CART_FIELDS = /* GraphQL */ `
   fragment CartFields on Cart {
     id
     checkoutUrl
     totalQuantity
+    cost {
+      subtotalAmount { amount currencyCode }
+      totalAmount { amount currencyCode }
+    }
+    lines(first: 50) {
+      nodes {
+        id
+        quantity
+        cost {
+          totalAmount { amount currencyCode }
+          amountPerQuantity { amount currencyCode }
+        }
+        merchandise {
+          ... on ProductVariant {
+            id
+            title
+            selectedOptions { name value }
+            image { url altText }
+            product { title }
+          }
+        }
+      }
+    }
   }
 `;
 

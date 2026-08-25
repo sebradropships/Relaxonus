@@ -16,7 +16,7 @@ function RollerMark() {
 }
 
 export function SiteHeader() {
-  const { cart, checkoutUrl, priceFor, variant } = useProduct();
+  const { cart, checkoutUrl, priceFor, variant, openCart } = useProduct();
   const canCheckout = cart > 0 && Boolean(checkoutUrl);
 
   return (
@@ -52,13 +52,28 @@ export function SiteHeader() {
         <div className="flex items-center gap-2">
           <MotionToggle className="hidden md:inline-flex" />
 
-          {/* Mirrors the live tier — never hardcodes a price the buy box contradicts. */}
-          <a
-            href={canCheckout ? (checkoutUrl as string) : "#top"}
-            className="sp-tap inline-flex items-center sp-display sp-squeeze whitespace-nowrap border-[3px] border-sp-black bg-sp-bubblegum px-3 text-[13px] text-sp-ink sm:px-4 sm:text-sm"
-          >
-            {canCheckout ? `CHECK OUT · ${cart}` : `ADD — ${priceFor(variant)}`}
-          </a>
+          {/* Mirrors the live tier — never hardcodes a price the buy box contradicts.
+              Opens the cart drawer rather than jumping straight to Shopify, so the
+              shopper always sees what is actually in the cart before checking out. */}
+          {canCheckout ? (
+            <button
+              type="button"
+              onClick={openCart}
+              className="sp-tap inline-flex items-center sp-display sp-squeeze whitespace-nowrap border-[3px] border-sp-black bg-sp-bubblegum px-3 text-[13px] text-sp-ink sm:px-4 sm:text-sm"
+            >
+              CHECK OUT ·{" "}
+              <span key={cart} className="sp-count-pop ml-1 inline-block">
+                {cart}
+              </span>
+            </button>
+          ) : (
+            <a
+              href="#top"
+              className="sp-tap inline-flex items-center sp-display sp-squeeze whitespace-nowrap border-[3px] border-sp-black bg-sp-bubblegum px-3 text-[13px] text-sp-ink sm:px-4 sm:text-sm"
+            >
+              ADD — {priceFor(variant)}
+            </a>
+          )}
         </div>
       </div>
     </header>

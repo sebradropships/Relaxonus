@@ -74,17 +74,24 @@ export function CartError({ decorative = false }: { decorative?: boolean }) {
   );
 }
 
-/** Only rendered once there is a cart — an empty checkout is a dead end. */
+/**
+ * Only rendered once there is a cart — an empty checkout is a dead end.
+ *
+ * Opens the cart drawer rather than navigating straight to Shopify: the
+ * shopper reviews what is actually in the cart — quantities, variants,
+ * subtotal — before being handed off to a real checkout.
+ */
 export function CheckoutLink({ className = "" }: { className?: string }) {
-  const { checkoutUrl, cart } = useProduct();
+  const { checkoutUrl, cart, openCart } = useProduct();
   if (!checkoutUrl || cart === 0) return null;
 
   return (
-    <a
-      href={checkoutUrl}
+    <button
+      type="button"
+      onClick={openCart}
       className={`sp-display sp-squeeze block w-full border-[3px] border-sp-chlorine bg-sp-carbon px-6 py-4 text-center text-base text-sp-chlorine transition-colors hover:bg-sp-chlorine hover:text-sp-ink ${className}`}
     >
       CHECK OUT · {cart} {cart === 1 ? "ITEM" : "ITEMS"}
-    </a>
+    </button>
   );
 }

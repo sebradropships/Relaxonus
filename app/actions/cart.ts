@@ -1,7 +1,14 @@
 "use server";
 
 import { MAX_QUANTITY, TIER_ORDER, type VariantKey } from "@/lib/product";
-import { addLine, getCart, type AddResult } from "@/lib/shopify/cart";
+import {
+  addLine,
+  getCart,
+  removeLine,
+  updateLineQuantity,
+  type AddResult,
+  type LineResult,
+} from "@/lib/shopify/cart";
 import { getProductCommerce, merchandiseIdFor } from "@/lib/shopify/product";
 import type { CartSummary } from "@/lib/shopify/types";
 
@@ -40,4 +47,33 @@ export async function addToCartAction(key: unknown, quantity: unknown = 1): Prom
 /** Rehydrates the cart badge on load, so a returning shopper keeps their cart. */
 export async function getCartAction(): Promise<CartSummary | null> {
   return getCart();
+}
+
+/**
+ * Sets one cart line to an exact quantity, clamped to the same 1–MAX_QUANTITY
+ * range the buy-box stepper enforces. A requested quantity below 1 means
+ * "remove this line" — Shopify's own line-update mutation does not accept 0.
+ */
+export async function updateLineQuantityAction(
+  lineId: unknown,
+  quantity: unknown,
+): Promise<LineResult> {
+  if (typeof lineId !== "string" || lineId.length === 0) {
+    return { ok: false, cart: null, error: "Unknown cart line." };
+  }
+
+  const requested = Math.floor(Number(quantity));
+  if (!Number.isFinite(requested) || requested < 1) {
+    return removeLine(lineId);
+  }
+
+  return updateLineQuantity(lineId, Math.min(requested, MAX_QUANTITY));
+}
+
+export async function removeLineAction(lineId: unknown): Promise<LineResult> {
+  if (typeof lineId !== "string" || lineId.length === 0) {
+    return { ok: false, cart: null, error: "Unknown cart line." };
+  }
+
+  return removeLine(lineId);
 }

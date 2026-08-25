@@ -274,15 +274,6 @@ export const TRUTH_BODY =
 export const TRUTH_PAYOFF =
   "NOTHING IN IT CAN GO FLAT, EXPIRE, ASK TO BE PAIRED OR ASK FOR AN UPDATE.";
 
-/* -------------------------------- Lifestyle ------------------------------- */
-
-export const LIFESTYLE = {
-  image: { url: "/products/pink/05-in-use-side.webp", alt: ALT_IN_USE },
-  eyebrow: "3PM. STILL AT THE DESK.",
-  heading: "HOOK IT ON. SQUEEZE. CARRY ON TYPING.",
-  line: "One hand each side. No plug, no pause button, no fifteen-minute setup.",
-};
-
 /* -------------------------------- Comparison ------------------------------ */
 
 export type Mark = "yes" | "no" | "varies";
@@ -359,6 +350,26 @@ export const COMPARE_FOOTNOTE =
   "We are describing battery-powered massagers as a category, by what “battery-powered” means — not any specific brand or model. Feature sets vary a lot, which is why three rows say VARIES; check the spec of anything you are comparing. And yes, we gave ourselves two crosses. Your own two hands beat us on price and they always will.";
 
 /* --------------------------------- Receipts -------------------------------- */
+
+/**
+ * Shape for a genuine customer review. Hard rule: never populate this with
+ * invented names, quotes, ratings or dates — see the permanently-absent list
+ * at the top of this file. `REVIEWS` stays `[]` until a real one exists;
+ * Receipts renders the honest empty state for as long as it is empty.
+ */
+export interface Review {
+  id: string;
+  customerName: string;
+  rating: 1 | 2 | 3 | 4 | 5;
+  text: string;
+  /** ISO date string. */
+  date: string;
+  verifiedPurchase: boolean;
+  variant: VariantKey;
+  image?: Frame;
+}
+
+export const REVIEWS: Review[] = [];
 
 export const RECEIPTS = {
   eyebrow: "RECEIPTS",
