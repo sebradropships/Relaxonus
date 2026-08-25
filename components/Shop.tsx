@@ -34,7 +34,7 @@ export function Shop() {
               >
                 {card.badge && (
                   <span
-                    className="sp-sticker sp-display absolute -top-4 left-5 z-10 border-[3px] border-sp-black bg-sp-bubblegum px-3 py-1.5 text-[11px] text-sp-ink"
+                    className="sp-sticker sp-display absolute -top-4 left-4 z-10 max-w-[calc(100%-2rem)] border-[3px] border-sp-black bg-sp-bubblegum px-3 py-1.5 text-xs text-sp-ink"
                     style={{ animationDelay: "260ms" }}
                   >
                     {card.badge}

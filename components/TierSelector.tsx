@@ -75,21 +75,23 @@ export function TierSelector() {
             >
               {tier.badge && (
                 <span
-                  className="sp-sticker sp-display absolute -top-3 left-4 border-[3px] border-sp-black bg-sp-bubblegum px-2 py-1 text-[11px] text-sp-ink"
+                  className="sp-sticker sp-display absolute -top-3 left-3 max-w-[calc(100%-1.5rem)] border-[3px] border-sp-black bg-sp-bubblegum px-2 py-1 text-xs text-sp-ink"
                   style={{ animationDelay: "420ms" }}
                 >
                   {tier.badge}
                 </span>
               )}
 
-              <span className="flex items-center gap-4">
+              {/* Below 480px the price drops to its own row. Squeezed into a
+                  third column at 320px it forced the copy to two words a line. */}
+              <span className="grid grid-cols-[44px_1fr] items-center gap-x-4 gap-y-3 min-[480px]:grid-cols-[44px_1fr_auto]">
                 <span
                   aria-hidden="true"
-                  className="size-11 shrink-0 border-[3px] border-sp-black"
+                  className="size-11 shrink-0 self-start border-[3px] border-sp-black min-[480px]:self-center"
                   style={{ background: tier.swatch }}
                 />
 
-                <span className="min-w-0 flex-1">
+                <span className="min-w-0">
                   <span className="sp-display block text-lg leading-tight text-sp-paper">
                     {tier.title}
                   </span>
@@ -101,7 +103,7 @@ export function TierSelector() {
                   </span>
                 </span>
 
-                <span className="flex shrink-0 flex-col items-end">
+                <span className="col-start-2 flex flex-wrap items-baseline gap-x-2 min-[480px]:col-start-3 min-[480px]:row-start-1 min-[480px]:flex-col min-[480px]:items-end">
                   {compareAt && (
                     <>
                       <span className="sr-only">{STRIKE_SR_PREFIX}</span>

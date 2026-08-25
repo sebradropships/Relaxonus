@@ -48,7 +48,7 @@ export function MotionToggle({ className = "" }: { className?: string }) {
     <button
       type="button"
       onClick={toggle}
-      className={`sp-mono sp-squeeze border-2 border-sp-mist px-3 py-2 text-[11px] text-sp-mist transition-colors hover:border-sp-chlorine hover:text-sp-chlorine ${className}`}
+      className={`sp-tap items-center justify-center sp-mono sp-squeeze whitespace-nowrap border-2 border-sp-mist px-3 text-xs text-sp-mist transition-colors hover:border-sp-chlorine hover:text-sp-chlorine ${className}`}
       aria-label={motion === "off" ? "Turn page animation on" : "Turn page animation off"}
     >
       MOTION {motion === "off" ? "OFF" : "ON"}

@@ -4,7 +4,7 @@ import { FOOTER } from "@/lib/product";
 function ApplePayMark() {
   return (
     <span
-      className="sp-display grid h-6 min-w-[52px] place-items-center border-2 border-sp-mist px-2 text-[10px] text-sp-mist"
+      className="sp-display grid h-8 min-w-[64px] place-items-center border-2 border-sp-mist px-3 text-[11px] text-sp-mist"
       role="img"
       aria-label="Apple Pay accepted"
     >
@@ -16,7 +16,7 @@ function ApplePayMark() {
 function GooglePayMark() {
   return (
     <span
-      className="sp-display grid h-6 min-w-[52px] place-items-center border-2 border-sp-mist px-2 text-[10px] text-sp-mist"
+      className="sp-display grid h-8 min-w-[64px] place-items-center border-2 border-sp-mist px-3 text-[11px] text-sp-mist"
       role="img"
       aria-label="Google Pay accepted"
     >

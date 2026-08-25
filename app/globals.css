@@ -36,12 +36,15 @@
   --font-body: var(--font-space-grotesk), "Segoe UI", system-ui, sans-serif;
   --font-mono: var(--font-dm-mono), ui-monospace, "SFMono-Regular", monospace;
 
-  --text-display-xl: clamp(3.5rem, 11vw, 8.5rem);
-  --text-display-l: clamp(2.75rem, 7vw, 5.25rem);
-  --text-display-m: clamp(2rem, 4.5vw, 3rem);
-  --text-display-s: 1.5rem;
+  /* Floors are set so the longest word in each slot still fits inside a
+     320px viewport's 272px content box. "ALTERNATIVES." at the old 2.75rem
+     floor was 330px wide and overflowed its own heading. */
+  --text-display-xl: clamp(2.75rem, 11vw, 8.5rem);
+  --text-display-l: clamp(1.85rem, 7vw, 5.25rem);
+  --text-display-m: clamp(1.6rem, 4.5vw, 3rem);
+  --text-display-s: clamp(1.25rem, 3.5vw, 1.5rem);
   --text-price-hero: clamp(2.5rem, 6vw, 4rem);
-  --text-marquee: clamp(1.75rem, 4vw, 3.25rem);
+  --text-marquee: clamp(1.25rem, 4vw, 3.25rem);
 }
 
 /* ------------------------------- Base ------------------------------------ */
@@ -94,16 +97,10 @@ h1, h2, h3, .sp-display {
   text-transform: none;
 }
 
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
-}
+/* `sr-only` is Tailwind's own utility. Redefining it here out-specified the
+   `focus:not-sr-only` variant, which left the skip link stuck at 6x6px when
+   focused - visually hidden from the keyboard user it exists for. Do not
+   reintroduce it. */
 
 /* Two-tone focus ring. A single-colour ring is invisible on at least one of
    this palette's surfaces — cyan on cyan, ink on an ink border. */
@@ -128,7 +125,27 @@ h1, h2, h3, .sp-display {
 .sp-shell {
   max-width: 1200px;
   margin-inline: auto;
-  padding-inline: 24px;
+  padding-inline: 16px;
+}
+@media (min-width: 480px) {
+  .sp-shell { padding-inline: 24px; }
+}
+
+/* Comfortable touch target. 44px is the floor, applied to every control that
+   would otherwise be sized by its text alone.
+
+   Deliberately sets no `display`: a plain class here out-specifies Tailwind's
+   `hidden` utility, which silently un-hid the motion toggle on mobile and
+   pushed the buy pill off the screen edge. Pair it with `inline-flex` at the
+   call site instead. */
+.sp-tap {
+  min-height: 44px;
+}
+
+/* Long uppercase display words must never overflow their own box on a narrow
+   screen. Breaking is preferable to bleeding. */
+h1, h2, h3, .sp-display {
+  overflow-wrap: break-word;
 }
 
 .sp-section {

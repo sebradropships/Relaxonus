@@ -13,7 +13,7 @@ import { BASIS_TAG, STICKY_OFFSET, STRIKE_SR_PREFIX, TIERS, VARIANTS } from "@/l
  * visible, never truncated.
  */
 export function StickyBar() {
-  const { heroRef, variant, priceFor, compareAtFor } = useProduct();
+  const { heroRef, variant, priceFor, compareAtFor, quantity } = useProduct();
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -50,7 +50,10 @@ export function StickyBar() {
         </span>
 
         <span className="min-w-0 flex-1">
-          <span className="sp-mono block truncate text-[11px] text-sp-mist">
+          {/* Quantity is shown here too — the stepper lives in the buy box,
+              which is off screen whenever this bar exists. */}
+          <span className="sp-mono block truncate text-xs text-sp-mist">
+            {quantity > 1 && `${quantity} × `}
             {TIERS[variant].title}
           </span>
           <span className="flex items-baseline gap-2">
@@ -63,7 +66,7 @@ export function StickyBar() {
             <span className="sp-display sp-num text-xl text-sp-paper">{priceFor(variant)}</span>
           </span>
           {compareAt && (
-            <span aria-hidden="true" className="sp-disclosure block text-[11px] text-sp-mist">
+            <span aria-hidden="true" className="sp-disclosure block text-xs text-sp-mist">
               {BASIS_TAG}
             </span>
           )}

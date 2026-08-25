@@ -49,7 +49,7 @@ export function FinalCta() {
                 aria-checked={selected}
                 tabIndex={selected ? 0 : -1}
                 onClick={() => selectVariant(key)}
-                className={`sp-squeeze sp-display rounded-full border-[3px] px-5 py-3 text-sm transition-colors ${
+                className={`sp-tap inline-flex items-center justify-center sp-squeeze sp-display rounded-full border-[3px] px-5 text-[13px] transition-colors sm:text-sm ${
                   selected
                     ? "border-sp-black bg-sp-black text-sp-paper sp-hard-ink"
                     : "border-sp-black bg-sp-bubblegum text-sp-ink hover:bg-sp-black hover:text-sp-paper"

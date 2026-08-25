@@ -4,6 +4,7 @@ import Image from "next/image";
 
 import { AddToCartButton, CartError, CheckoutLink } from "@/components/AddToCartButton";
 import { useProduct } from "@/components/ProductProvider";
+import { QuantityControl } from "@/components/QuantityControl";
 import { TierSelector } from "@/components/TierSelector";
 import { HERO, VARIANTS } from "@/lib/product";
 
@@ -115,7 +116,9 @@ export function Hero() {
         >
           <TierSelector />
 
-          <div className="mt-6 flex flex-col gap-3">
+          <QuantityControl className="mt-6" />
+
+          <div className="mt-4 flex flex-col gap-3">
             <AddToCartButton />
             <CartError />
             <CheckoutLink />

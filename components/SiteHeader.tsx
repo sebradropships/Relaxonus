@@ -22,19 +22,27 @@ export function SiteHeader() {
   return (
     /* Fully opaque, never translucent — a see-through header over the pink
        marquee has undefined contrast. */
-    <header className="sticky top-11 z-40 border-b-[3px] border-sp-paper bg-sp-black">
-      <div className="sp-shell flex h-16 items-center justify-between gap-4">
-        <a href="#top" className="sp-display flex items-center gap-2 text-lg text-sp-paper">
+    /* Sticky offset follows the announcement bar, which can be two lines on a
+       narrow screen — so it is measured, not assumed at 44px. */
+    <header
+      className="sticky z-40 border-b-[3px] border-sp-paper bg-sp-black"
+      style={{ top: "var(--sp-announce-h, 44px)" }}
+    >
+      <div className="sp-shell flex min-h-16 items-center justify-between gap-2 py-2 sm:gap-4">
+        <a
+          href="#top"
+          className="sp-tap inline-flex items-center gap-2 sp-display text-base text-sp-paper sm:text-lg"
+        >
           <RollerMark />
           RELAXONUS
         </a>
 
-        <nav className="hidden items-center gap-6 min-[900px]:flex" aria-label="Primary">
+        <nav className="hidden items-center gap-5 min-[900px]:flex" aria-label="Primary">
           {NAV_LINKS.map((link) => (
             <a
               key={link.label}
               href={link.href}
-              className="sp-mono text-[13px] text-sp-mist transition-colors hover:text-sp-chlorine"
+              className="sp-tap inline-flex items-center sp-mono text-[13px] text-sp-mist transition-colors hover:text-sp-chlorine"
             >
               {link.label}
             </a>
@@ -42,12 +50,12 @@ export function SiteHeader() {
         </nav>
 
         <div className="flex items-center gap-2">
-          <MotionToggle className="hidden sm:inline-block" />
+          <MotionToggle className="hidden md:inline-flex" />
 
           {/* Mirrors the live tier — never hardcodes a price the buy box contradicts. */}
           <a
             href={canCheckout ? (checkoutUrl as string) : "#top"}
-            className="sp-display sp-squeeze border-[3px] border-sp-black bg-sp-bubblegum px-4 py-2 text-sm text-sp-ink"
+            className="sp-tap inline-flex items-center sp-display sp-squeeze whitespace-nowrap border-[3px] border-sp-black bg-sp-bubblegum px-3 text-[13px] text-sp-ink sm:px-4 sm:text-sm"
           >
             {canCheckout ? `CHECK OUT · ${cart}` : `ADD — ${priceFor(variant)}`}
           </a>

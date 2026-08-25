@@ -57,6 +57,9 @@ export const PRODUCT_NAME = "Relaxonus Neck Massager";
 export const ADDED_MS = 1600;
 export const STICKY_OFFSET = 40;
 
+/** Ceiling for the quantity stepper, enforced on the server too. */
+export const MAX_QUANTITY = 10;
+
 const ALT_IN_USE =
   "The massager hooked behind a model's neck, a column of rollers resting either side of the spine";
 const ALT_ROLLERS = "Close-up of the six grooved rollers, arranged in two columns of three";

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { ANNOUNCEMENTS } from "@/lib/product";
 
@@ -15,6 +15,27 @@ import { ANNOUNCEMENTS } from "@/lib/product";
 export function Announce() {
   const [index, setIndex] = useState(0);
   const [cycling, setCycling] = useState(false);
+  const barRef = useRef<HTMLDivElement | null>(null);
+
+  /* Publish the real height so the sticky header sits directly beneath it.
+     The bar is two lines on a narrow screen, and a hardcoded 44px offset left
+     a gap there through which the page showed. */
+  useEffect(() => {
+    const bar = barRef.current;
+    if (!bar) return;
+
+    const publish = () => {
+      document.documentElement.style.setProperty(
+        "--sp-announce-h",
+        `${Math.round(bar.getBoundingClientRect().height)}px`,
+      );
+    };
+
+    publish();
+    const observer = new ResizeObserver(publish);
+    observer.observe(bar);
+    return () => observer.disconnect();
+  }, [cycling]);
 
   useEffect(() => {
     const on = document.documentElement.dataset.motion !== "off";
@@ -28,13 +49,15 @@ export function Announce() {
   }, []);
 
   return (
-    <div className="sticky top-0 z-50 border-b-[3px] border-sp-bubblegum bg-sp-black">
+    <div ref={barRef} className="sticky top-0 z-50 border-b-[3px] border-sp-bubblegum bg-sp-black">
       <div className="sp-announce-stripes">
-        <div className="flex h-11 items-center justify-center px-6">
+        {/* min-h, not h: at 320px the longest message wraps to two lines and a
+            fixed 44px box clipped it. */}
+        <div className="flex min-h-11 items-center justify-center px-4 py-1.5 sm:px-6">
           {cycling ? (
             <p
               key={index}
-              className="sp-disclosure text-center text-sp-paper"
+              className="sp-disclosure text-balance text-center text-[13px] text-sp-paper sm:text-sm"
               aria-live="off"
             >
               {ANNOUNCEMENTS[index]}

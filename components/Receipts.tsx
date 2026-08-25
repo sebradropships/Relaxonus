@@ -25,8 +25,10 @@ export function Receipts() {
             <div key={spec.label}>
               <dt className="sr-only">{spec.label}</dt>
               <dd>
-                <span className="sp-mono sp-num block text-4xl text-sp-black">{spec.value}</span>
-                <span className="sp-mono mt-2 block text-[11px] leading-tight text-sp-black">
+                <span className="sp-mono sp-num block text-3xl text-sp-black sm:text-4xl">
+                  {spec.value}
+                </span>
+                <span className="sp-mono mt-2 block text-xs leading-tight text-sp-black">
                   {spec.label}
                 </span>
               </dd>

@@ -15,7 +15,7 @@ import {
 } from "react";
 
 import { addToCartAction, getCartAction } from "@/app/actions/cart";
-import { ADDED_MS, DEFAULT_TIER, VARIANTS, type VariantKey } from "@/lib/product";
+import { ADDED_MS, DEFAULT_TIER, MAX_QUANTITY, VARIANTS, type VariantKey } from "@/lib/product";
 import { formatMoney } from "@/lib/money";
 import type { CartSummary, ProductCommerce } from "@/lib/shopify/types";
 
@@ -23,6 +23,9 @@ interface ProductState {
   /** Selected tier. The tier IS the Shopify variant — one control, one state. */
   variant: VariantKey;
   image: number;
+  /** Units of the selected tier to add. Clamped 1–MAX_QUANTITY. */
+  quantity: number;
+  setQuantity: (next: number) => void;
   heroRef: RefObject<HTMLElement | null>;
 
   cart: number;
@@ -59,6 +62,7 @@ export function ProductProvider({
 }) {
   const [variant, setVariant] = useState<VariantKey>(DEFAULT_TIER);
   const [image, setImage] = useState(0);
+  const [quantity, setQuantityState] = useState(1);
   const [summary, setSummary] = useState<CartSummary | null>(null);
   const [added, setAdded] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -105,6 +109,12 @@ export function ProductProvider({
 
   const selectImage = useCallback((index: number) => setImage(index), []);
 
+  /* Clamped here as well as on the server, so the UI can never present a
+     value the action would silently rewrite. */
+  const setQuantity = useCallback((next: number) => {
+    setQuantityState(Math.min(Math.max(Math.floor(next) || 1, 1), MAX_QUANTITY));
+  }, []);
+
   const priceFor = useCallback(
     (key: VariantKey) => {
       const live = commerce.variants?.[key];
@@ -137,10 +147,13 @@ export function ProductProvider({
     setError(null);
 
     startTransition(async () => {
-      addOptimisticUnits(1);
+      // Read once: the badge must reflect what this click actually sent, even
+      // if the stepper moves while the request is in flight.
+      const sending = quantity;
+      addOptimisticUnits(sending);
 
       try {
-        const result = await addToCartAction(variant);
+        const result = await addToCartAction(variant, sending);
 
         if (!result.ok || !result.cart) {
           // CartError carries role="alert" and announces itself; writing the
@@ -152,7 +165,7 @@ export function ProductProvider({
         setSummary(result.cart);
         setAdded(true);
         setAnnouncement(
-          `${selected.name} added to cart. ${result.cart.totalQuantity} ` +
+          `${sending} × ${selected.name} added to cart. ${result.cart.totalQuantity} ` +
             `${result.cart.totalQuantity === 1 ? "item" : "items"} in cart.`,
         );
 
@@ -166,12 +179,14 @@ export function ProductProvider({
         inFlight.current = false;
       }
     });
-  }, [variant, addOptimisticUnits]);
+  }, [variant, quantity, addOptimisticUnits]);
 
   const value = useMemo<ProductState>(
     () => ({
       variant,
       image,
+      quantity,
+      setQuantity,
       heroRef,
       cart: cartCount,
       checkoutUrl: summary?.checkoutUrl ?? null,
@@ -186,7 +201,7 @@ export function ProductProvider({
       addToCart,
     }),
     [
-      variant, image, cartCount, summary, added, pending, error,
+      variant, image, quantity, setQuantity, cartCount, summary, added, pending, error,
       priceFor, compareAtFor, availableFor, selectVariant, selectImage, addToCart,
     ],
   );
