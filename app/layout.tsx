@@ -44,11 +44,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       className={`${bricolage.variable} ${spaceGrotesk.variable} ${dmMono.variable}`}
       suppressHydrationWarning
     >
-      <head>
-        {/* Runs before paint, so the page never starts animating and then stops. */}
+      <body className="max-[899px]:pb-28">
+        {/*
+          First child of <body>, not <head>: React 19 hoists scripts out of
+          head, which broke hydration and then wiped the attribute the script
+          had just set. Here it still runs before any content paints.
+        */}
         <script dangerouslySetInnerHTML={{ __html: MOTION_BOOTSTRAP }} />
-      </head>
-      <body className="pb-0 min-[899px]:pb-0 max-[899px]:pb-28">{children}</body>
+        {children}
+      </body>
     </html>
   );
 }
