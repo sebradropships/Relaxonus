@@ -56,6 +56,12 @@
 html {
   scroll-behavior: smooth;
   background: var(--color-sp-black);
+  /* Mobile Safari can scroll the document element itself rather than
+     <body> — `body`'s own overflow-x:hidden below does not stop that.
+     Both need it, or an intentionally-overwide descendant (the marquee's
+     ticker track, clipped via its own overflow-hidden ancestor) can still
+     hand the outer visual viewport real horizontal scroll room. */
+  overflow-x: hidden;
 }
 
 body {
