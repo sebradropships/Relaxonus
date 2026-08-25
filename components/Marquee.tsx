@@ -44,8 +44,18 @@ export function Marquee({
   return (
     <div className={tilt ? "overflow-hidden" : undefined}>
       <div
-        className={`${ground} ${ink} border-y-[3px] border-sp-black overflow-hidden`}
-        style={tilt ? { rotate: "-2deg", scale: "1.06" } : undefined}
+        className={`${ground} ${ink} border-y-[3px] border-sp-black overflow-hidden isolate`}
+        style={{
+          // Forces its own compositing layer. Without it, WebKit (Safari and
+          // any iOS browser — they all share the engine) can let the
+          // continuously-animated, translated ticker child inside leak past
+          // this element's own overflow:hidden clip — Chromium clips it
+          // correctly either way, which is why this never showed up in any
+          // Chromium-based check. `transform` composes with the standalone
+          // `rotate`/`scale` properties rather than replacing them.
+          transform: "translateZ(0)",
+          ...(tilt ? { rotate: "-2deg", scale: "1.06" } : null),
+        }}
       >
         <div
           className="sp-ticker-track flex py-4"
