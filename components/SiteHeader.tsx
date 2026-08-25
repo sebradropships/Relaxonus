@@ -1,79 +1,57 @@
 "use client";
 
-import { NAV_LINKS } from "@/lib/product";
+import { MotionToggle } from "@/components/Motion";
 import { useProduct } from "@/components/ProductProvider";
+import { NAV_LINKS } from "@/lib/product";
 
-import styles from "./SiteHeader.module.css";
-
-function CartIcon() {
+function RollerMark() {
   return (
-    <svg
-      width="17"
-      height="17"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      aria-hidden="true"
-    >
-      <path d="M5 8h14l-1.2 11H6.2L5 8Z" />
-      <path d="M9 8V6a3 3 0 0 1 6 0v2" />
+    <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" className="shrink-0">
+      <circle cx="8" cy="7" r="3" fill="none" stroke="currentColor" strokeWidth="2" />
+      <circle cx="16" cy="7" r="3" fill="none" stroke="currentColor" strokeWidth="2" />
+      <circle cx="8" cy="17" r="3" fill="none" stroke="currentColor" strokeWidth="2" />
+      <circle cx="16" cy="17" r="3" fill="none" stroke="currentColor" strokeWidth="2" />
     </svg>
   );
 }
 
 export function SiteHeader() {
-  const { cart, checkoutUrl } = useProduct();
-
-  // Two separate questions: are there items (drives the badge), and do we have
-  // a real checkout URL yet (drives the href). Only the second may gate the
-  // link — gating the badge on it hides the count for the whole round trip,
-  // which is exactly the window the optimistic count exists to cover.
-  const hasItems = cart > 0;
-  const canCheckout = hasItems && Boolean(checkoutUrl);
+  const { cart, checkoutUrl, priceFor, variant } = useProduct();
+  const canCheckout = cart > 0 && Boolean(checkoutUrl);
 
   return (
-    <header className={styles.header}>
-      <div className={`shell ${styles.inner}`}>
-        <a className="brand" href="#top">
+    /* Fully opaque, never translucent — a see-through header over the pink
+       marquee has undefined contrast. */
+    <header className="sticky top-11 z-40 border-b-[3px] border-sp-paper bg-sp-black">
+      <div className="sp-shell flex h-16 items-center justify-between gap-4">
+        <a href="#top" className="sp-display flex items-center gap-2 text-lg text-sp-paper">
+          <RollerMark />
           RELAXONUS
         </a>
 
-        <nav className={styles.nav} aria-label="Primary">
+        <nav className="hidden items-center gap-6 min-[900px]:flex" aria-label="Primary">
           {NAV_LINKS.map((link) => (
-            <a key={link.label} className={styles.link} href={link.href}>
+            <a
+              key={link.label}
+              href={link.href}
+              className="sp-mono text-[13px] text-sp-mist transition-colors hover:text-sp-chlorine"
+            >
               {link.label}
             </a>
           ))}
-
-          {/* With a cart, this goes to checkout. Without one, it returns to the
-              buy box — it never silently adds a product, which is what a cart
-              icon doing double duty as an add button would do. */}
-          {canCheckout ? (
-            <a
-              className={styles.cartButton}
-              href={checkoutUrl as string}
-              aria-label={`Check out, ${cart} ${cart === 1 ? "item" : "items"} in cart`}
-            >
-              <CartIcon />
-              <span className={styles.badge}>{cart}</span>
-            </a>
-          ) : (
-            <a
-              className={styles.cartButton}
-              href="#top"
-              aria-label={
-                hasItems
-                  ? `Adding to cart, ${cart} ${cart === 1 ? "item" : "items"}`
-                  : "Your cart is empty. Go to the product options."
-              }
-            >
-              <CartIcon />
-              {hasItems ? <span className={styles.badge}>{cart}</span> : null}
-            </a>
-          )}
         </nav>
+
+        <div className="flex items-center gap-2">
+          <MotionToggle className="hidden sm:inline-block" />
+
+          {/* Mirrors the live tier — never hardcodes a price the buy box contradicts. */}
+          <a
+            href={canCheckout ? (checkoutUrl as string) : "#top"}
+            className="sp-display sp-squeeze border-[3px] border-sp-black bg-sp-bubblegum px-4 py-2 text-sm text-sp-ink"
+          >
+            {canCheckout ? `CHECK OUT · ${cart}` : `ADD — ${priceFor(variant)}`}
+          </a>
+        </div>
       </div>
     </header>
   );

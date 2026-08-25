@@ -1,60 +1,52 @@
+import { Announce } from "@/components/Announce";
+import { Compare } from "@/components/Compare";
 import { Demo } from "@/components/Demo";
 import { Faq } from "@/components/Faq";
 import { Features } from "@/components/Features";
 import { FinalCta } from "@/components/FinalCta";
+import { Hero } from "@/components/Hero";
 import { Lifestyle } from "@/components/Lifestyle";
-import { ProductHero } from "@/components/ProductHero";
+import { Marquee } from "@/components/Marquee";
 import { ProductProvider } from "@/components/ProductProvider";
-import { ProductTruth } from "@/components/ProductTruth";
-import { Reviews } from "@/components/Reviews";
+import { Receipts } from "@/components/Receipts";
 import { Shop } from "@/components/Shop";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Steps } from "@/components/Steps";
 import { StickyBar } from "@/components/StickyBar";
-import { Why } from "@/components/Why";
-import { ANNOUNCEMENT, VARIANTS, VARIANT_ORDER, type VariantKey } from "@/lib/product";
-import { formatMoney } from "@/lib/money";
+import { TruthBlock } from "@/components/TruthBlock";
+import { MARQUEE_A, MARQUEE_B } from "@/lib/product";
 import { getProductCommerce } from "@/lib/shopify/product";
-import type { ProductCommerce } from "@/lib/shopify/types";
-
-/**
- * Live pricing is read once per render pass and handed down, so the server
- * components and the client context can never disagree about the price.
- */
-function priceTable(commerce: ProductCommerce): Record<VariantKey, string> {
-  const table = {} as Record<VariantKey, string>;
-  for (const key of VARIANT_ORDER) {
-    const live = commerce.variants?.[key];
-    table[key] = live ? formatMoney(live.price) : VARIANTS[key].price;
-  }
-  return table;
-}
 
 export default async function Page() {
   const commerce = await getProductCommerce();
-  const prices = priceTable(commerce);
 
   return (
     <ProductProvider commerce={commerce}>
-      <a className="skip-link" href="#top">
+      <a
+        href="#top"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[60] focus:border-[3px] focus:border-sp-chlorine focus:bg-sp-black focus:px-4 focus:py-2 focus:text-sp-paper"
+      >
         Skip to product
       </a>
 
-      <div className="announce">{ANNOUNCEMENT}</div>
-
+      <Announce />
       <SiteHeader />
 
       <main>
-        <ProductHero />
+        <Hero />
+        <Marquee items={MARQUEE_A} tone="pink" direction="left" />
         <Features />
-        <Demo />
-        <ProductTruth />
-        <Lifestyle />
         <Steps />
-        <Shop prices={prices} />
-        <Reviews />
-        <Why />
+        <Demo />
+        <TruthBlock />
+        <Lifestyle />
+        <Compare />
+        <Receipts />
+        <Shop />
+        {/* Band B carries the value-and-logistics reel, not a repeat of band A —
+            it self-substantiates the strikethrough wherever it scrolls past. */}
+        <Marquee items={MARQUEE_B} tone="deep" direction="right" tilt />
         <Faq />
         <FinalCta />
       </main>

@@ -1,71 +1,61 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
-import { DEMO_VIDEO } from "@/lib/product";
-
-import styles from "./Demo.module.css";
+import { DEMO } from "@/lib/product";
 
 /**
- * Demonstration video.
- *
- * Autoplays muted and looping, because the point of the clip is the squeeze
- * motion and a still cannot carry it. Anyone who has asked their system for
- * reduced motion gets a paused poster frame and the controls instead — the
- * video never starts itself for them.
+ * Controls are always visible, not focus-only, so a mouse user has a
+ * discoverable pause affordance (WCAG 2.2.2). With motion off it never
+ * autoplays — the poster frame and the play button are the whole interface.
  */
 export function Demo() {
   const videoRef = useRef<HTMLVideoElement | null>(null);
-  const [motionOk, setMotionOk] = useState(false);
 
   useEffect(() => {
-    const query = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const apply = () => {
-      const allowed = !query.matches;
-      setMotionOk(allowed);
-
-      const video = videoRef.current;
-      if (!video) return;
-
-      if (allowed) {
-        // Autoplay can still be refused (low power mode, data saver). That is
-        // fine — the poster and controls remain.
-        video.play().catch(() => {});
-      } else {
-        video.pause();
-        video.currentTime = 0;
-      }
-    };
-
-    apply();
-    query.addEventListener("change", apply);
-    return () => query.removeEventListener("change", apply);
+    const video = videoRef.current;
+    if (!video) return;
+    if (document.documentElement.dataset.motion === "off") return;
+    video.play().catch(() => {});
   }, []);
 
   return (
-    <section className="shell section" id="demo">
-      <div className={styles.wrap}>
-        <div className={styles.copy}>
-          <h2 className="h2">{DEMO_VIDEO.heading}</h2>
-          <p className="lede">{DEMO_VIDEO.body}</p>
-        </div>
+    <section className="sp-section">
+      <div className="sp-shell">
+        <p className="sp-mono text-[13px] text-sp-mist">{DEMO.eyebrow}</p>
+        <h2 className="mt-3 text-[length:var(--text-display-l)] text-sp-paper">{DEMO.heading}</h2>
+        <p className="mt-4 max-w-[60ch] text-xl text-sp-paper">{DEMO.deck}</p>
 
-        <div className={styles.player}>
+        <div className="relative mx-auto mt-10 max-w-[900px]">
+          <span
+            className="sp-sticker sp-display absolute -left-3 -top-4 z-10 border-[3px] border-sp-black bg-sp-bubblegum px-3 py-1.5 text-sm text-sp-ink"
+            style={{ animationDelay: "180ms" }}
+          >
+            {DEMO.stickers[0]}
+          </span>
+          <span
+            className="sp-sticker sp-display absolute -bottom-4 -right-3 z-10 border-[3px] border-sp-black bg-sp-chlorine px-3 py-1.5 text-sm text-sp-ink"
+            style={{ animationDelay: "900ms" }}
+          >
+            {DEMO.stickers[1]}
+          </span>
+
           <video
             ref={videoRef}
-            className={styles.video}
-            src={DEMO_VIDEO.src}
-            poster={DEMO_VIDEO.poster}
-            width={DEMO_VIDEO.width}
-            height={DEMO_VIDEO.height}
+            src={DEMO.src}
+            poster={DEMO.poster}
             preload="metadata"
             muted
-            loop={motionOk}
+            loop
             playsInline
             controls
             aria-label="Demonstration of the Relaxonus neck massager being used"
+            className="block w-full border-[3px] border-sp-paper bg-sp-carbon"
+            style={{ boxShadow: "10px 10px 0 var(--color-sp-chlorine)" }}
           />
         </div>
+
+        <p className="sp-disclosure mt-5 text-center text-sp-mist">{DEMO.caption}</p>
       </div>
     </section>
   );

@@ -1,12 +1,12 @@
 "use server";
 
-import { VARIANT_ORDER, type VariantKey } from "@/lib/product";
+import { TIER_ORDER, type VariantKey } from "@/lib/product";
 import { addLine, getCart, type AddResult } from "@/lib/shopify/cart";
 import { getProductCommerce, merchandiseIdFor } from "@/lib/shopify/product";
 import type { CartSummary } from "@/lib/shopify/types";
 
 function isVariantKey(value: unknown): value is VariantKey {
-  return typeof value === "string" && (VARIANT_ORDER as string[]).includes(value);
+  return typeof value === "string" && (TIER_ORDER as string[]).includes(value);
 }
 
 /**

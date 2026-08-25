@@ -3,33 +3,29 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
-import { AddToCartButton } from "@/components/AddToCartButton";
-import { CartError } from "@/components/CheckoutLink";
+import { AddToCartButton, CartError } from "@/components/AddToCartButton";
 import { useProduct } from "@/components/ProductProvider";
-import { PRODUCT_NAME, STICKY_OFFSET, VARIANTS } from "@/lib/product";
-
-import styles from "./Product.module.css";
+import { BASIS_TAG, STICKY_OFFSET, STRIKE_SR_PREFIX, TIERS, VARIANTS } from "@/lib/product";
 
 /**
- * Follows the buy box: once the hero has scrolled off the top of the viewport,
- * the current option and its call to action stay reachable at the bottom.
+ * The bar is glued to the viewport and is frequently the only price context a
+ * mobile visitor can see, so it carries the strikethrough basis too — always
+ * visible, never truncated.
  */
 export function StickyBar() {
-  const { heroRef, variant, priceFor } = useProduct();
+  const { heroRef, variant, priceFor, compareAtFor } = useProduct();
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
     const hero = heroRef.current;
     if (!hero) return;
 
-    /* Pulling the root's top edge down by STICKY_OFFSET means the hero stops
-       intersecting exactly when its bottom passes that line — the same moment
-       the design calls for, without a scroll listener. */
+    /* Pulling the root's top edge down means the hero stops intersecting
+       exactly when its bottom crosses that line — no scroll listener. */
     const observer = new IntersectionObserver(
       ([entry]) => setVisible(!entry.isIntersecting),
       { rootMargin: `-${STICKY_OFFSET}px 0px 0px 0px`, threshold: 0 },
     );
-
     observer.observe(hero);
     return () => observer.disconnect();
   }, [heroRef]);
@@ -37,35 +33,45 @@ export function StickyBar() {
   if (!visible) return null;
 
   const option = VARIANTS[variant];
+  const compareAt = compareAtFor(variant);
 
   return (
-    <div className={styles.stickyBar}>
-      <div className={`shell ${styles.stickyInner}`}>
-        <span className={styles.stickyThumb} style={{ background: option.tint }}>
-          <Image
-            src={option.frames[0].url}
-            alt=""
-            fill
-            sizes="40px"
-            className={styles.stickyImage}
-          />
-        </span>
-
-        <span className={styles.stickyText}>
-          <span className={styles.stickyTitle}>
-            {option.name} • {PRODUCT_NAME}
-          </span>
-          <span className={`${styles.stickyPrice} price`}>{priceFor(variant)}</span>
-        </span>
-
-        <AddToCartButton className={`btn btn-primary ${styles.stickyCta}`} />
+    <div className="sp-bar fixed inset-x-0 bottom-0 z-50 border-t-[3px] border-sp-bubblegum bg-sp-black min-[900px]:hidden">
+      <div className="px-4 pb-2 pt-2">
+        <CartError decorative />
       </div>
 
-      {/* Visual only: the hero's alert already announced this. Without it a
-          failed add from down the page looks like a silent no-op, because the
-          hero's error message is by definition scrolled off screen. */}
-      <div className={`shell ${styles.stickyError}`}>
-        <CartError decorative />
+      <div className="flex items-center gap-3 px-4 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
+        <span
+          className="relative size-11 shrink-0 border-2 border-sp-paper"
+          style={{ background: option.panel }}
+        >
+          <Image src={option.frames[0].url} alt="" fill sizes="44px" className="object-cover" />
+        </span>
+
+        <span className="min-w-0 flex-1">
+          <span className="sp-mono block truncate text-[11px] text-sp-mist">
+            {TIERS[variant].title}
+          </span>
+          <span className="flex items-baseline gap-2">
+            {compareAt && (
+              <>
+                <span className="sr-only">{STRIKE_SR_PREFIX}</span>
+                <s className="sp-strike sp-num text-[13px] text-sp-mist">{compareAt}</s>
+              </>
+            )}
+            <span className="sp-display sp-num text-xl text-sp-paper">{priceFor(variant)}</span>
+          </span>
+          {compareAt && (
+            <span aria-hidden="true" className="sp-disclosure block text-[11px] text-sp-mist">
+              {BASIS_TAG}
+            </span>
+          )}
+        </span>
+
+        <div className="w-auto shrink-0">
+          <AddToCartButton compact className="!w-auto" />
+        </div>
       </div>
     </div>
   );

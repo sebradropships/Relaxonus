@@ -1,64 +1,94 @@
+"use client";
+
 import Image from "next/image";
 
-import { ChooseVariantButton } from "@/components/ChooseVariantButton";
-import { OFFERS, SHOP_HEADING, VARIANTS, type VariantKey } from "@/lib/product";
+import { useProduct } from "@/components/ProductProvider";
+import {
+  BASIS_TAG,
+  SHOP_CARDS,
+  SHOP_HEADING,
+  STRIKE_SR_PREFIX,
+  VARIANTS,
+} from "@/lib/product";
 
-import styles from "./Marketing.module.css";
+export function Shop() {
+  const { selectVariant, addToCart, priceFor, compareAtFor, pending } = useProduct();
 
-const MEDIA_TINT = {
-  blue: styles.tintBlue,
-  pink: styles.tintPink,
-  set: styles.tintSet,
-} as const;
-
-const EYEBROW_TONE = {
-  blue: styles.eyebrowBlue,
-  pink: styles.eyebrowPink,
-  set: "",
-} as const;
-
-export function Shop({ prices }: { prices: Record<VariantKey, string> }) {
   return (
-    <section className="band" id="shop">
-      <div className="shell section">
-        <h2 className="h2 h2-stacked">{SHOP_HEADING}</h2>
+    <section id="shop" className="sp-section">
+      <div className="sp-shell">
+        <h2 className="text-[length:var(--text-display-l)] text-sp-paper">{SHOP_HEADING}</h2>
 
-        <div className={styles.offerGrid}>
-          {OFFERS.map((offer) => {
-            const option = VARIANTS[offer.variant];
-            const hero = option.frames[0];
+        <div className="mt-12 grid gap-6 md:grid-cols-3">
+          {SHOP_CARDS.map((card) => {
+            const option = VARIANTS[card.key];
+            const compareAt = compareAtFor(card.key);
+            const featured = Boolean(card.badge);
 
             return (
               <div
-                key={offer.variant}
-                className={`${styles.offer} ${offer.featured ? styles.offerFeatured : ""}`}
+                key={card.key}
+                className={`sp-card sp-lift relative flex flex-col border-[3px] bg-sp-carbon p-6 sp-hard-pink ${
+                  featured ? "border-sp-chlorine" : "border-sp-paper"
+                }`}
               >
-                {offer.featured && (
-                  <span className={`pill ${styles.offerBadge}`}>BEST VALUE</span>
+                {card.badge && (
+                  <span
+                    className="sp-sticker sp-display absolute -top-4 left-5 z-10 border-[3px] border-sp-black bg-sp-bubblegum px-3 py-1.5 text-[11px] text-sp-ink"
+                    style={{ animationDelay: "260ms" }}
+                  >
+                    {card.badge}
+                  </span>
                 )}
 
-                <div className={`${styles.offerMedia} ${MEDIA_TINT[offer.variant]}`}>
+                <div
+                  className="relative aspect-square border-[3px] border-sp-black"
+                  style={{ background: option.panel }}
+                >
                   <Image
-                    src={hero.url}
-                    alt={hero.alt}
+                    src={option.frames[0].url}
+                    alt={option.frames[0].alt}
                     fill
-                    sizes="(max-width: 780px) 100vw, 360px"
-                    className={styles.offerImage}
+                    sizes="(max-width: 768px) 100vw, 360px"
+                    className="object-cover"
                   />
                 </div>
 
-                <span className={`${styles.offerEyebrow} ${EYEBROW_TONE[offer.variant]}`}>
-                  {offer.eyebrow}
-                </span>
-                <h3 className={styles.offerTitle}>{offer.title}</h3>
-                <p className={styles.offerBody}>{offer.body}</p>
-                <span className={`${styles.offerPrice} price`}>{prices[offer.variant]}</span>
+                <h3 className="mt-5 text-[length:var(--text-display-s)] text-sp-paper">
+                  <span aria-hidden="true">{card.emoji} </span>
+                  {card.title}
+                </h3>
+                <p className="mt-2 text-[15px] text-sp-paper">{card.sub}</p>
 
-                <ChooseVariantButton
-                  variant={offer.variant}
-                  label={offer.cta}
-                  className={offer.featured ? "btn btn-primary" : "btn btn-outline"}
-                />
+                <div className="mt-4 flex items-baseline gap-3">
+                  {compareAt && (
+                    <>
+                      <span className="sr-only">{STRIKE_SR_PREFIX}</span>
+                      <s className="sp-strike sp-num text-lg text-sp-mist">{compareAt}</s>
+                    </>
+                  )}
+                  <span className="sp-display sp-num text-3xl text-sp-paper">
+                    {priceFor(card.key)}
+                  </span>
+                </div>
+                {compareAt && (
+                  <span aria-hidden="true" className="sp-disclosure text-[12px] text-sp-mist">
+                    {BASIS_TAG}
+                  </span>
+                )}
+                <span className="sp-mono mt-1 block text-[13px] text-sp-mist">{card.perUnit}</span>
+
+                <button
+                  type="button"
+                  disabled={pending}
+                  onClick={() => {
+                    selectVariant(card.key);
+                    addToCart();
+                  }}
+                  className="sp-squeeze sp-display mt-6 w-full border-[3px] border-sp-black bg-sp-bubblegum px-4 py-4 text-base text-sp-ink disabled:cursor-wait"
+                >
+                  {card.cta} — {priceFor(card.key)}
+                </button>
               </div>
             );
           })}

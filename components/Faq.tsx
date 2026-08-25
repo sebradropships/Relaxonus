@@ -1,92 +1,41 @@
-"use client";
+import { FAQS, FAQ_HEADING } from "@/lib/product";
 
-import { useCallback, useEffect, useRef, useState } from "react";
-
-import { FAQS } from "@/lib/product";
-
-import styles from "./Marketing.module.css";
-
-const ALL_CLOSED = -1;
-
+/**
+ * Native <details>/<summary>: works with JavaScript off and is keyboard
+ * accessible without any code. The marker rotates on the open transition only —
+ * eight rows each spinning perpetually would be both a 2.2.2 problem and a
+ * misuse of the universal loading convention as an idle state.
+ */
 export function Faq() {
-  const [open, setOpen] = useState(0);
-  const [ready, setReady] = useState(false);
-
-  const panels = useRef<Array<HTMLDivElement | null>>([]);
-
-  /* Heights are measured rather than hard-coded, so an answer of any length
-     opens fully instead of being clipped. */
-  const sync = useCallback(() => {
-    panels.current.forEach((panel, index) => {
-      if (!panel) return;
-      panel.style.maxHeight = index === open ? `${panel.scrollHeight}px` : "0px";
-    });
-  }, [open]);
-
-  useEffect(() => {
-    sync();
-    setReady(true);
-  }, [sync]);
-
-  useEffect(() => {
-    window.addEventListener("resize", sync);
-    return () => window.removeEventListener("resize", sync);
-  }, [sync]);
-
-  /* Web fonts land after first paint and change how the answers wrap. */
-  useEffect(() => {
-    let cancelled = false;
-    document.fonts?.ready.then(() => {
-      if (!cancelled) sync();
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [sync]);
-
   return (
-    <section className={`shell shell-narrow ${styles.faqSection}`} id="faq">
-      <h2 className="h2 h2-stacked">FAQ</h2>
+    <section id="faq" className="sp-section">
+      <div className="sp-shell max-w-[820px]">
+        <h2 className="text-[length:var(--text-display-l)] text-sp-paper">{FAQ_HEADING}</h2>
 
-      <div className={styles.faqList} data-ready={ready}>
-        {FAQS.map((faq, index) => {
-          const isOpen = index === open;
-
-          return (
-            <div key={faq.q} className={styles.faqItem}>
-              <h3 className={styles.faqHeading}>
-                <button
-                  type="button"
-                  id={`faq-q-${index}`}
-                  className={styles.faqQuestion}
-                  aria-expanded={isOpen}
-                  aria-controls={`faq-a-${index}`}
-                  onClick={() => setOpen(isOpen ? ALL_CLOSED : index)}
+        <div className="mt-10 flex flex-col gap-3">
+          {FAQS.map((faq, index) => (
+            <details
+              key={faq.q}
+              open={index === 0}
+              className="group border-[3px] border-sp-paper bg-sp-carbon"
+            >
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-6 py-5 [&::-webkit-details-marker]:hidden">
+                <span className="sp-display text-[length:var(--text-display-s)] text-sp-paper">
+                  {faq.q}
+                </span>
+                <span
+                  aria-hidden="true"
+                  className="shrink-0 text-2xl text-sp-chlorine transition-transform duration-200 group-open:rotate-90"
                 >
-                  <span>{faq.q}</span>
-                  <span
-                    className={`${styles.faqSign} ${isOpen ? styles.faqSignOpen : ""}`}
-                    aria-hidden="true"
-                  >
-                    +
-                  </span>
-                </button>
-              </h3>
-
-              <div
-                id={`faq-a-${index}`}
-                role="region"
-                aria-labelledby={`faq-q-${index}`}
-                ref={(node) => {
-                  panels.current[index] = node;
-                }}
-                className={`${styles.faqAnswer} ${isOpen ? styles.faqAnswerOpen : ""}`}
-              >
-                <p>{faq.a}</p>
-              </div>
-            </div>
-          );
-        })}
+                  ›
+                </span>
+              </summary>
+              <p className="max-w-[60ch] px-6 pb-6 text-[17px] leading-relaxed text-sp-paper">
+                {faq.a}
+              </p>
+            </details>
+          ))}
+        </div>
       </div>
     </section>
   );

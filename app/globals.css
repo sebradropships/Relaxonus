@@ -1,400 +1,298 @@
+@import "tailwindcss";
+
 /* ==========================================================================
-   Relaxonus — global foundations
-   Design tokens, resets, layout primitives and the shared visual language.
-   Component-specific rules live in the CSS modules next to each component.
+   RELAXONUS — SPA PUNK
+   The product's real blue and pink, cranked against black.
+
+   Every colour pair used for text in this file has a computed WCAG ratio in
+   the comment beside it. Pairs not listed here are not permitted for text.
    ========================================================================== */
 
-:root {
-  --ink:        #17181A;
-  --paper:      #F7F6F3;
-  --white:      #FFFFFF;
+@theme {
+  /* Surfaces */
+  --color-sp-black: #0b0b10;
+  --color-sp-carbon: #14141c;
+  --color-sp-carbon-lift: #1a1a24;
+  --color-sp-ink: #000000;
+  --color-sp-steam: #e6f9ff;
+  --color-sp-blush: #ffd6e8;
 
-  --blue:       #4F86C6;
-  --blue-tint:  #DCE9F7;
-  --blue-soft:  #E7EFF9;
+  /* Neons */
+  --color-sp-chlorine: #00e5ff;
+  --color-sp-deep: #1b4dff;
+  --color-sp-bubblegum: #ff4fa3;
 
-  --pink:       #C96C8C;
-  --pink-tint:  #F7DEE7;
-  --pink-soft:  #FAE6EE;
+  /* Text */
+  --color-sp-paper: #f7f5ff;
+  --color-sp-mist: #b9b6cc;
 
-  --sand:       #EDEAE4;
-  --gold:       #E0A93B;
+  /* Semantic */
+  --color-sp-go: #00f5a0;
+  --color-sp-no: #ff5a5a;
+  --color-sp-rule: #6f6c8a;
 
-  --set-tint: linear-gradient(90deg, #DCE9F7 50%, #F7DEE7 50%);
+  /* Type */
+  --font-display: var(--font-bricolage), "Arial Black", system-ui, sans-serif;
+  --font-body: var(--font-space-grotesk), "Segoe UI", system-ui, sans-serif;
+  --font-mono: var(--font-dm-mono), ui-monospace, "SFMono-Regular", monospace;
 
-  --line-06: rgba(23, 24, 26, .06);
-  --line-07: rgba(23, 24, 26, .07);
-  --line-08: rgba(23, 24, 26, .08);
-  --line-09: rgba(23, 24, 26, .09);
-  --line-10: rgba(23, 24, 26, .10);
-  --line-14: rgba(23, 24, 26, .14);
-  --line-34: rgba(23, 24, 26, .34);
-
-  --ink-38: rgba(23, 24, 26, .38);
-  --ink-42: rgba(23, 24, 26, .42);
-  --ink-45: rgba(23, 24, 26, .45);
-  --ink-50: rgba(23, 24, 26, .50);
-  --ink-55: rgba(23, 24, 26, .55);
-  --ink-58: rgba(23, 24, 26, .58);
-  --ink-60: rgba(23, 24, 26, .60);
-  --ink-62: rgba(23, 24, 26, .62);
-
-  --shell: 1180px;
-  --shell-narrow: 760px;
-  --gutter: 20px;
-
-  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
-  --sans: var(--font-manrope), -apple-system, BlinkMacSystemFont,
-          "Helvetica Neue", Helvetica, sans-serif;
+  --text-display-xl: clamp(3.5rem, 11vw, 8.5rem);
+  --text-display-l: clamp(2.75rem, 7vw, 5.25rem);
+  --text-display-m: clamp(2rem, 4.5vw, 3rem);
+  --text-display-s: 1.5rem;
+  --text-price-hero: clamp(2.5rem, 6vw, 4rem);
+  --text-marquee: clamp(1.75rem, 4vw, 3.25rem);
 }
 
-/* --------------------------------- Reset --------------------------------- */
+/* ------------------------------- Base ------------------------------------ */
 
-*,
-*::before,
-*::after { box-sizing: border-box; }
+* {
+  border-color: currentColor;
+}
 
-html { scroll-behavior: smooth; }
+html {
+  scroll-behavior: smooth;
+  background: var(--color-sp-black);
+}
 
 body {
-  margin: 0;
-  background: var(--paper);
-  color: var(--ink);
-  font-family: var(--sans);
+  background: var(--color-sp-black);
+  color: var(--color-sp-paper);
+  font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
   text-wrap: pretty;
   overflow-x: hidden;
-  padding-bottom: 76px; /* clearance for the fixed add-to-cart bar */
 }
 
-h1, h2, h3, p, ul, figure { margin: 0; }
-ul { padding: 0; list-style: none; }
+h1, h2, h3, .sp-display {
+  font-family: var(--font-display);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: -0.035em;
+  line-height: 0.92;
+}
 
-a { color: var(--ink); text-decoration: none; transition: color .18s ease; }
-a:hover { color: var(--blue); }
+.sp-mono {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
 
-img, svg { display: block; max-width: 100%; }
+/* Prices, spec numerals and table figures never jitter between values. */
+.sp-num {
+  font-variant-numeric: tabular-nums;
+}
 
-button { font: inherit; }
-
-:focus-visible {
-  outline: 2px solid var(--blue);
-  outline-offset: 3px;
-  border-radius: 4px;
+/* Material disclosures. Never mono, never below 14px, never all-caps. */
+.sp-disclosure {
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  letter-spacing: 0;
+  text-transform: none;
 }
 
 .sr-only {
   position: absolute;
-  width: 1px; height: 1px;
-  padding: 0; margin: -1px;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
   overflow: hidden;
-  clip: rect(0 0 0 0);
   clip-path: inset(50%);
   white-space: nowrap;
 }
 
-.skip-link {
-  position: absolute;
-  left: 12px; top: -60px;
-  z-index: 100;
-  padding: 10px 16px;
-  border-radius: 10px;
-  background: var(--ink);
-  color: var(--white);
-  font-size: 13px;
-  font-weight: 700;
-  transition: top .18s ease;
-}
-.skip-link:focus { top: 12px; color: var(--white); }
-
-/* -------------------------------- Layout --------------------------------- */
-
-.shell {
-  max-width: var(--shell);
-  margin: 0 auto;
-  padding-left: var(--gutter);
-  padding-right: var(--gutter);
-}
-.shell-narrow { max-width: var(--shell-narrow); }
-
-.section { padding-top: 56px; padding-bottom: 56px; }
-.section-sm { padding-top: 44px; padding-bottom: 44px; }
-.section-tight-top { padding-top: 8px; padding-bottom: 56px; }
-
-.band {
-  background: var(--white);
-  border-top: 1px solid var(--line-07);
-  border-bottom: 1px solid var(--line-07);
+/* Two-tone focus ring. A single-colour ring is invisible on at least one of
+   this palette's surfaces — cyan on cyan, ink on an ink border. */
+:focus-visible {
+  outline: 3px solid var(--color-sp-chlorine);
+  outline-offset: 0;
+  box-shadow: 0 0 0 6px var(--color-sp-ink);
 }
 
-/* ------------------------------- Typography ------------------------------ */
-
-.h1 {
-  font-size: clamp(30px, 4.4vw, 44px);
-  line-height: 1.05;
-  letter-spacing: -.025em;
-  font-weight: 800;
-}
-.h2 {
-  font-size: clamp(24px, 3vw, 34px);
-  font-weight: 800;
-  letter-spacing: -.02em;
-}
-.h2-xl {
-  font-size: clamp(28px, 4.4vw, 44px);
-  line-height: 1.05;
-  letter-spacing: -.03em;
-}
-.h2-stacked { margin-bottom: 24px; }
-
-.lede { font-size: 16.5px; line-height: 1.45; color: var(--ink-62); }
-.lede-invert { color: rgba(247, 246, 243, .62); }
-
-.eyebrow {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: .16em;
-  color: var(--blue);
-}
-.field-label {
-  font-size: 11.5px;
-  font-weight: 700;
-  letter-spacing: .13em;
-  color: var(--ink-45);
+::selection {
+  background: var(--color-sp-bubblegum);
+  color: var(--color-sp-ink);
 }
 
-.note {
-  font-family: var(--mono);
-  font-size: 11px;
-  line-height: 1.5;
-  color: var(--ink-42);
-}
-.note-spaced { margin-top: 14px; }
-
-.price { font-variant-numeric: tabular-nums; }
-
-.brand { font-size: 17px; font-weight: 800; letter-spacing: .18em; }
-.brand-sm { font-size: 14px; }
-
-/* --------------------------- Placeholder artwork -------------------------- */
-/* Diagonal hatch standing in for photography that has not been shot yet. */
-
-.hatch {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background-image: repeating-linear-gradient(
-    135deg, rgba(23, 24, 26, .045) 0 10px, transparent 10px 22px
-  );
-}
-.hatch-sm {
-  background-image: repeating-linear-gradient(
-    135deg, rgba(23, 24, 26, .045) 0 9px, transparent 9px 20px
-  );
-}
-.hatch-lg {
-  background-image: repeating-linear-gradient(
-    135deg, rgba(23, 24, 26, .045) 0 12px, transparent 12px 26px
-  );
+/* Sticky chrome must never obscure a keyboard target (WCAG 2.4.11). */
+[id] {
+  scroll-margin-top: 120px;
 }
 
-.img-tag {
-  position: relative;
-  font-family: var(--mono);
-  font-size: 11.5px;
-  line-height: 1.4;
-  color: var(--ink-50);
-  background: rgba(255, 255, 255, .75);
-  padding: 7px 12px;
-  border-radius: 8px;
-  text-align: center;
-}
-.img-tag-sm { font-size: 11px; padding: 6px 10px; border-radius: 7px; }
-.img-tag-corner {
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  max-width: calc(100% - 40px);
+/* --------------------------- Structural motifs ---------------------------- */
+
+.sp-shell {
+  max-width: 1200px;
+  margin-inline: auto;
+  padding-inline: 24px;
 }
 
-/* -------------------------------- Buttons -------------------------------- */
-
-.btn {
-  display: inline-block;
-  font-family: inherit;
-  font-weight: 800;
-  letter-spacing: .1em;
-  text-align: center;
-  border: none;
-  cursor: pointer;
-  transition: background .18s ease, color .18s ease, border-color .18s ease,
-              transform .18s ease, box-shadow .18s ease;
+.sp-section {
+  padding-block: 96px;
+}
+@media (min-width: 900px) {
+  .sp-section { padding-block: 128px; }
 }
 
-.btn-primary {
-  background: var(--ink);
-  color: var(--white);
-  padding: 15px 26px;
-  border-radius: 13px;
-  font-size: 13px;
-  letter-spacing: .08em;
-}
-.btn-primary:hover { background: #000; color: var(--white); }
+/* Zero blur, hard offset. The structural signature of the whole design. */
+.sp-hard-pink { box-shadow: 6px 6px 0 var(--color-sp-bubblegum); }
+.sp-hard-cyan { box-shadow: 6px 6px 0 var(--color-sp-chlorine); }
+.sp-hard-ink  { box-shadow: 6px 6px 0 var(--color-sp-ink); }
 
-.btn-block {
-  display: block;
-  width: 100%;
-  padding: 19px;
-  border-radius: 16px;
-  font-size: 15px;
-  letter-spacing: .1em;
-  box-shadow: 0 6px 20px rgba(23, 24, 26, .18);
+.sp-lift {
+  transition: transform 140ms ease-out, box-shadow 140ms ease-out, border-color 140ms ease-out;
 }
-.btn-block:hover { transform: translateY(-1px); }
-.btn-block:active { transform: translateY(0); }
-
-.btn-inline {
-  align-self: flex-start;
-  padding: 15px 26px;
-  border-radius: 14px;
-  font-size: 13px;
-  letter-spacing: .1em;
+.sp-lift:hover {
+  transform: translate(-3px, -3px);
+  box-shadow: 9px 9px 0 var(--color-sp-bubblegum);
 }
 
-.btn-outline {
-  background: var(--white);
-  color: var(--ink);
-  border: 1px solid var(--ink);
-  padding: 15px;
-  border-radius: 13px;
-  font-size: 13px;
-  letter-spacing: .08em;
-}
-.btn-outline:hover { background: var(--ink); color: var(--white); }
-
-.btn-invert {
-  margin-top: 6px;
-  background: var(--paper);
-  color: var(--ink);
-  padding: 18px 34px;
-  border-radius: 15px;
-  font-size: 13.5px;
-}
-.btn-invert:hover { background: var(--white); color: var(--ink); }
-
-/* Unavailable and in-flight CTAs. `:disabled` covers the permanent sold-out
-   state. `[aria-disabled]` covers the in-flight state, which stays focusable so
-   the shopper does not lose their place mid-add — see AddToCartButton.
-   Not opacity: that would drop white-on-black under 4.5:1, and an
-   aria-disabled control is not exempt from contrast requirements the way a
-   natively disabled one is. */
-.btn:disabled,
-.btn[aria-disabled="true"] { cursor: not-allowed; }
-
-.btn-primary:disabled,
-.btn-primary:disabled:hover,
-.btn-primary[aria-disabled="true"],
-.btn-primary[aria-disabled="true"]:hover {
-  /* --ink lightened toward --paper: white text still clears 4.5:1 (5.05:1). */
-  background: #6E6F71;
-  color: var(--white);
-  box-shadow: none;
-  transform: none;
-}
-.btn-primary:disabled:active,
-.btn-primary[aria-disabled="true"]:active { transform: none; }
-
-/* ---------------------------- Small shared bits --------------------------- */
-
-.announce {
-  background: var(--ink);
-  color: var(--paper);
-  text-align: center;
-  font-size: 11px;
-  letter-spacing: .14em;
-  font-weight: 600;
-  padding: 9px 16px;
-  text-transform: uppercase;
+/* SQUEEZE — the signature interaction, mapped to the product's own gesture.
+   Deliberately NOT gated by the motion kill switch: it is click feedback. */
+.sp-squeeze:active {
+  transform: scaleX(0.965) scaleY(1.035);
+  transition: transform 90ms cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.rating {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-.rating-invert { margin-top: 4px; }
-.rating-invert .rating-score { color: rgba(247, 246, 243, .8); }
+/* ------------------------------ Keyframes -------------------------------- */
 
-.stars { color: var(--gold); font-size: 14px; letter-spacing: .08em; }
-.stars-lg { font-size: 15px; }
-.stars-sm { font-size: 13px; }
-
-.rating-score { font-size: 13.5px; font-weight: 700; }
-.rating-meta { font-size: 13px; color: var(--ink-50); }
-
-.tick {
-  flex: none;
-  width: 22px;
-  height: 22px;
-  border-radius: 11px;
-  background: var(--blue-soft);
-  color: var(--blue);
-  font-size: 12px;
-  font-weight: 800;
-  display: grid;
-  place-items: center;
-}
-.tick-lg { width: 24px; height: 24px; border-radius: 12px; font-size: 13px; }
-
-.pill {
-  font-size: 9.5px;
-  font-weight: 800;
-  letter-spacing: .1em;
-  padding: 3px 7px;
-  border-radius: 6px;
-  background: var(--ink);
-  color: var(--white);
+@keyframes sp-stripe-crawl {
+  from { background-position: 0 0; }
+  to   { background-position: 20px 0; }
 }
 
-.card {
-  background: var(--white);
-  border: 1px solid var(--line-07);
-  border-radius: 18px;
-  padding: 20px;
+@keyframes sp-ticker-left {
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(-50%, 0, 0); }
 }
 
-.icon {
-  width: 32px;
-  height: 32px;
-  border-radius: 10px;
-  display: grid;
-  place-items: center;
+@keyframes sp-ticker-right {
+  from { transform: translate3d(-50%, 0, 0); }
+  to   { transform: translate3d(0, 0, 0); }
 }
-.icon-blue { background: var(--blue-soft); color: var(--blue); }
-.icon-pink { background: var(--pink-soft); color: var(--pink); }
 
-/* -------------------------------- Keyframes ------------------------------- */
+/* It breathes. It does not flash — this is a wellness product. */
+@keyframes sp-breath {
+  0%, 100% { transform: scale(1);      box-shadow: 0 0 0 0 rgb(255 79 163 / 0.55); }
+  50%      { transform: scale(1.025);  box-shadow: 0 0 0 14px rgb(255 79 163 / 0); }
+}
 
-@keyframes riseIn {
+@keyframes sp-wobble {
+  from { rotate: -4deg; }
+  to   { rotate: 4deg; }
+}
+
+@keyframes sp-roller { to { rotate: 360deg; } }
+
+@keyframes sp-bar-rise {
   from { transform: translateY(100%); }
   to   { transform: translateY(0); }
 }
 
-/* ------------------------------- Responsive ------------------------------- */
-
-@media (max-width: 640px) {
-  .section { padding-top: 44px; padding-bottom: 44px; }
+@keyframes sp-tier-lock {
+  from { transform: scale(0); }
+  to   { transform: scale(1); }
 }
 
-/* --------------------------- Motion preferences --------------------------- */
+.sp-announce-stripes {
+  background-image: repeating-linear-gradient(
+    45deg,
+    rgb(255 79 163 / 0.12) 0 10px,
+    transparent 10px 20px
+  );
+  animation: sp-stripe-crawl 1.1s linear infinite;
+}
+
+.sp-ticker-a { animation: sp-ticker-left 26s linear infinite; will-change: transform; }
+.sp-ticker-b { animation: sp-ticker-right 32s linear infinite; will-change: transform; }
+
+.sp-cta { animation: sp-breath 2.6s ease-in-out infinite; }
+/* Once it is in the cart the button has done its job and stops for good. */
+.sp-cta[data-in-cart="true"] { animation: none; }
+
+.sp-sticker { animation: sp-wobble 3.4s ease-in-out infinite alternate; }
+.sp-roller { animation: sp-roller 7s linear infinite; }
+
+.sp-bar { animation: sp-bar-rise 240ms ease-out; }
+.sp-tick-disc { animation: sp-tier-lock 220ms cubic-bezier(0.34, 1.56, 0.64, 1); }
+
+/* ----------------------------- Motion switch ------------------------------ */
+/*
+   One attribute on <html> gates every infinite animation at once. This is the
+   WCAG 2.2.2 mechanism — prefers-reduced-motion is not one, hover does not
+   exist on touch, and focus-within never fires inside a marquee that contains
+   nothing focusable.
+
+   Scoped to the animation classes, NOT to `*`, so state-change transitions
+   (tier lock, accordion, squeeze) survive and clicks still feel answered.
+*/
+html[data-motion="off"] .sp-announce-stripes,
+html[data-motion="off"] .sp-ticker-a,
+html[data-motion="off"] .sp-ticker-b,
+html[data-motion="off"] .sp-cta,
+html[data-motion="off"] .sp-sticker,
+html[data-motion="off"] .sp-roller {
+  animation: none !important;
+}
+
+/* Stripping the pulse must not let the buy button flatten into the page. */
+html[data-motion="off"] .sp-cta {
+  box-shadow: 0 0 0 4px rgb(255 79 163 / 0.4);
+}
+
+/* A scroll container with no focusable child is keyboard-unreachable. */
+html[data-motion="off"] .sp-ticker-track {
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+}
+html[data-motion="off"] .sp-ticker-dupe { display: none; }
 
 @media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
-  *, *::before, *::after {
-    animation-duration: .001ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: .001ms !important;
-    scroll-behavior: auto !important;
+  html:not([data-motion="on"]) .sp-announce-stripes,
+  html:not([data-motion="on"]) .sp-ticker-a,
+  html:not([data-motion="on"]) .sp-ticker-b,
+  html:not([data-motion="on"]) .sp-cta,
+  html:not([data-motion="on"]) .sp-sticker,
+  html:not([data-motion="on"]) .sp-roller {
+    animation: none !important;
   }
+  html { scroll-behavior: auto; }
+}
+
+/* ----------------------------- Forced colors ------------------------------ */
+/*
+   box-shadow is not painted in forced-colors mode, and the offset shadow is
+   one of two carriers of the selected-tier state. Replace it with border
+   weight and an outline so nothing depends on a shadow that will not exist.
+*/
+@media (forced-colors: active) {
+  .sp-card,
+  .sp-tier,
+  .sp-cta,
+  .sp-sticker {
+    border: 3px solid CanvasText;
+    box-shadow: none;
+  }
+  .sp-tier[aria-checked="true"] {
+    border-width: 6px;
+    outline: 3px solid Highlight;
+    outline-offset: 3px;
+  }
+  .sp-glyph { forced-color-adjust: none; fill: currentColor; }
+  .sp-strike { text-decoration: line-through 3px; }
+}
+
+/* ------------------------------ Strikethrough ----------------------------- */
+/*
+   Semantic <s>, not a drawn decoration — this is the page's single
+   price-comparison claim and it must reach assistive technology.
+*/
+.sp-strike {
+  text-decoration: line-through;
+  text-decoration-color: var(--color-sp-no);
+  text-decoration-thickness: 3px;
 }

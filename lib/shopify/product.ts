@@ -1,6 +1,6 @@
 import "server-only";
 
-import { VARIANTS, VARIANT_ORDER, type VariantKey } from "@/lib/product";
+import { VARIANTS, TIER_ORDER, type VariantKey } from "@/lib/product";
 import { isConfigured, storefrontCached } from "@/lib/shopify/client";
 import {
   COUNTRY,
@@ -80,7 +80,7 @@ export async function getProductCommerce(): Promise<ProductCommerce> {
     }
 
     // Only trust the live data if every option we sell came back.
-    const complete = VARIANT_ORDER.every((key) => byKey[key]);
+    const complete = TIER_ORDER.every((key) => byKey[key]);
     if (!complete) return { variants: null, availableForSale: data.product.availableForSale };
 
     return { variants: byKey, availableForSale: data.product.availableForSale };
