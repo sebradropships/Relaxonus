@@ -354,3 +354,20 @@ html[data-motion="off"] .sp-ticker-dupe { display: none; }
   text-decoration-color: var(--color-sp-no);
   text-decoration-thickness: 3px;
 }
+
+/* ---------------------------- Nested x-scrollers -------------------------- */
+/*
+   The page has three intentional horizontal scrollers: the comparison table,
+   the announcement row with motion off, and the ticker tracks. None of them
+   may hand a leftover horizontal delta up to the document once the shopper
+   drags past their end — that chaining is how a contained scroller still ends
+   up moving the page sideways on touch.
+
+   Deliberately NOT `touch-action`: constraining that here would swallow a
+   vertical page scroll that happens to begin on top of one of these strips.
+*/
+.sp-ticker-track,
+[role="group"][aria-label="Comparison table, scrollable"],
+[role="group"][aria-label="Store announcements"] {
+  overscroll-behavior-x: contain;
+}

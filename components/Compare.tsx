@@ -53,7 +53,20 @@ export function Compare() {
         <h2 className="text-[length:var(--text-display-l)] text-sp-paper">{COMPARE_HEADING}</h2>
 
         <div
-          className="mt-10 overflow-x-auto border-[3px] border-sp-paper"
+          /* `relative` here is containment, not styling — do not drop it.
+             Every `sr-only` span in the cells below is `position: absolute`
+             with no insets, and an absolutely positioned box contributes its
+             scrollable overflow to its CONTAINING BLOCK, not to its parent.
+             With nothing positioned between those spans and <html>, that
+             containing block was the initial one — the viewport — so their
+             static positions inside this 760px-wide table (out to x≈627)
+             became document-level scrollable overflow that no `overflow`
+             rule on the page could reach, including `overflow-x: clip` on
+             <body>, since `clip` establishes no containing block. Chromium
+             declines to scroll it; iOS WebKit hands it over as ~240px of real
+             sideways travel on a phone-width screen. Positioning this box
+             makes it their containing block, so this scroller absorbs them. */
+          className="relative mt-10 overflow-x-auto border-[3px] border-sp-paper"
           tabIndex={0}
           role="group"
           aria-label="Comparison table, scrollable"
