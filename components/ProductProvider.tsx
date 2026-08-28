@@ -11,7 +11,6 @@ import {
   useState,
   useTransition,
   type ReactNode,
-  type RefObject,
 } from "react";
 
 import {
@@ -31,7 +30,13 @@ interface ProductState {
   /** Units of the selected tier to add. Clamped 1–MAX_QUANTITY. */
   quantity: number;
   setQuantity: (next: number) => void;
-  heroRef: RefObject<HTMLElement | null>;
+  /**
+   * Attach to every element that contains a real Add-to-cart button. The
+   * sticky mobile bar hides while any of them is on screen, so it can never
+   * duplicate a CTA the shopper is already looking at.
+   */
+  registerBuyZone: (node: HTMLElement | null) => (() => void) | void;
+  buyZoneVisible: boolean;
 
   cart: number;
   checkoutUrl: string | null;
@@ -70,6 +75,27 @@ export function useProduct(): ProductState {
   return context;
 }
 
+/**
+ * Marks the element it is attached to as containing a real Add-to-cart
+ * button, so the sticky mobile bar can stand down while it is on screen.
+ *
+ * Registration happens in an effect rather than from the ref callback itself:
+ * child effects run before the parent's, so the provider's first measurement
+ * already sees every zone on the page.
+ */
+export function useBuyZone() {
+  const ref = useRef<HTMLDivElement | null>(null);
+  const { registerBuyZone } = useProduct();
+
+  useEffect(() => {
+    const node = ref.current;
+    if (!node) return;
+    return registerBuyZone(node) ?? undefined;
+  }, [registerBuyZone]);
+
+  return ref;
+}
+
 export function ProductProvider({
   children,
   commerce,
@@ -91,7 +117,10 @@ export function ProductProvider({
   const [lineError, setLineError] = useState<string | null>(null);
   const [, startLineTransition] = useTransition();
 
-  const heroRef = useRef<HTMLElement | null>(null);
+  const [buyZoneVisible, setBuyZoneVisible] = useState(false);
+  const zoneNodes = useRef<Set<HTMLElement>>(new Set());
+  const recompute = useRef<() => void>(() => {});
+
   const addedTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const inFlight = useRef(false);
   /** Synchronous guard per line — `lineBusy` only flips after React commits. */
@@ -132,6 +161,62 @@ export function ProductProvider({
   }, []);
 
   const selectImage = useCallback((index: number) => setImage(index), []);
+
+  /*
+    Is any real Add-to-cart button on screen right now?
+
+    Measured against the viewport on scroll rather than with an
+    IntersectionObserver: the insets below have to match the sticky bar's own
+    height so the bar never appears while a CTA is merely sitting behind it,
+    and a plain rect comparison makes that relationship legible — and
+    testable — instead of hiding it in a rootMargin string.
+  */
+  useEffect(() => {
+    /* Deliberately not rAF-throttled. Two getBoundingClientRect reads is far
+       cheaper than the bookkeeping, and a rAF callback never runs while the
+       tab is not compositing — which would strand the bar in whatever state
+       it held when the page was last painted. */
+    const measure = () => {
+      const height = window.innerHeight;
+      let onScreen = false;
+      for (const node of zoneNodes.current) {
+        const rect = node.getBoundingClientRect();
+        // 56px clears the sticky header, 96px the sticky purchase bar.
+        if (rect.bottom > 56 && rect.top < height - 96) {
+          onScreen = true;
+          break;
+        }
+      }
+      setBuyZoneVisible(onScreen);
+    };
+
+    recompute.current = measure;
+    measure();
+
+    window.addEventListener("scroll", measure, { passive: true });
+    window.addEventListener("resize", measure);
+    // Late-loading images reflow the page under a stationary scroll position.
+    const resize = new ResizeObserver(measure);
+    resize.observe(document.documentElement);
+
+    return () => {
+      recompute.current = () => {};
+      window.removeEventListener("scroll", measure);
+      window.removeEventListener("resize", measure);
+      resize.disconnect();
+    };
+  }, []);
+
+  const registerBuyZone = useCallback((node: HTMLElement | null) => {
+    if (!node) return;
+    zoneNodes.current.add(node);
+    recompute.current();
+
+    return () => {
+      zoneNodes.current.delete(node);
+      recompute.current();
+    };
+  }, []);
 
   const openCart = useCallback(() => setCartOpen(true), []);
   const closeCart = useCallback(() => setCartOpen(false), []);
@@ -266,7 +351,8 @@ export function ProductProvider({
       image,
       quantity,
       setQuantity,
-      heroRef,
+      registerBuyZone,
+      buyZoneVisible,
       cart: cartCount,
       checkoutUrl: summary?.checkoutUrl ?? null,
       added,
@@ -289,7 +375,8 @@ export function ProductProvider({
       addToCart,
     }),
     [
-      variant, image, quantity, setQuantity, cartCount, summary, added, pending, error,
+      variant, image, quantity, setQuantity, registerBuyZone, buyZoneVisible,
+      cartCount, summary, added, pending, error,
       cartOpen, openCart, closeCart, lineBusy, lineError, setLineQuantity, removeCartLine,
       priceFor, compareAtFor, availableFor, selectVariant, selectImage, addToCart,
     ],

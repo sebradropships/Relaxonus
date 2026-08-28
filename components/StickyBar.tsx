@@ -1,109 +1,66 @@
 "use client";
 
-import Image from "next/image";
-import { useEffect, useState } from "react";
-
-import { AddToCartButton, CartError } from "@/components/AddToCartButton";
 import { useProduct } from "@/components/ProductProvider";
-import { BASIS_TAG, STICKY_OFFSET, STRIKE_SR_PREFIX, TIERS, VARIANTS } from "@/lib/product";
+import { STRIKE_SR_PREFIX, VARIANTS } from "@/lib/product";
 
 /**
- * The bar is glued to the viewport and is frequently the only price context a
- * mobile visitor can see, so it carries the strikethrough basis too — always
- * visible, never truncated.
+ * Mobile purchase bar.
+ *
+ * Appears only while the real buy box is off screen — duplicating a CTA the
+ * shopper can already see is noise, and the brief is explicit that it should
+ * hide then. Watches the buy box itself rather than the whole hero, so it
+ * behaves the same however tall the section grows.
  */
 export function StickyBar() {
-  const { heroRef, variant, priceFor, compareAtFor, quantity, cart, openCart } = useProduct();
-  const [visible, setVisible] = useState(false);
+  const {
+    buyZoneVisible,
+    variant,
+    priceFor,
+    compareAtFor,
+    addToCart,
+    pending,
+    added,
+    availableFor,
+  } = useProduct();
 
-  useEffect(() => {
-    const hero = heroRef.current;
-    if (!hero) return;
-
-    /* Pulling the root's top edge down means the hero stops intersecting
-       exactly when its bottom crosses that line — no scroll listener. */
-    const observer = new IntersectionObserver(
-      ([entry]) => setVisible(!entry.isIntersecting),
-      { rootMargin: `-${STICKY_OFFSET}px 0px 0px 0px`, threshold: 0 },
-    );
-    observer.observe(hero);
-    return () => observer.disconnect();
-  }, [heroRef]);
-
-  if (!visible) return null;
+  /* Both the hero buy box and the closing panel register as buy zones, so the
+     bar stands down for either one. */
+  if (buyZoneVisible) return null;
 
   const option = VARIANTS[variant];
   const compareAt = compareAtFor(variant);
+  const soldOut = !availableFor(variant);
 
   return (
-    <div className="sp-bar fixed inset-x-0 bottom-0 z-50 border-t-[3px] border-sp-bubblegum bg-sp-black pb-[max(0.5rem,env(safe-area-inset-bottom))] min-[900px]:hidden">
-      <div className="px-4 pb-2 pt-2">
-        <CartError decorative />
-      </div>
-
+    <div className="fade fixed inset-x-0 bottom-0 z-40 border-t border-line bg-paper/95 pb-[max(0.6rem,env(safe-area-inset-bottom))] pt-2.5 backdrop-blur-md min-[900px]:hidden">
       <div className="flex items-center gap-3 px-4">
-        <span
-          className="relative size-11 shrink-0 border-2 border-sp-paper"
-          style={{ background: option.panel }}
-        >
-          <Image src={option.frames[0].url} alt="" fill sizes="44px" className="object-cover" />
-        </span>
-
-        <span className="min-w-0 flex-1">
-          {/* Quantity is shown here too — the stepper lives in the buy box,
-              which is off screen whenever this bar exists. */}
-          <span className="sp-mono block truncate text-xs text-sp-mist">
-            {quantity > 1 && `${quantity} × `}
-            {TIERS[variant].title}
-          </span>
-          <span className="flex flex-wrap items-baseline gap-x-2">
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-[13px] text-muted">{option.name}</p>
+          <p className="flex items-baseline gap-2">
+            <span className="display num text-lg text-ink">{priceFor(variant)}</span>
             {compareAt && (
               <>
                 <span className="sr-only">{STRIKE_SR_PREFIX}</span>
-                <s className="sp-strike sp-num text-[13px] text-sp-mist">{compareAt}</s>
+                <s className="strike num text-[13px] text-faint">{compareAt}</s>
               </>
             )}
-            <span className="sp-display sp-num text-xl text-sp-paper">{priceFor(variant)}</span>
-          </span>
-        </span>
-
-        {/* Persistent secondary CTA once there is something to check out — the
-            sticky bar otherwise carries only ADD, and a mobile shopper who has
-            already added something should never have to scroll to review it. */}
-        {cart > 0 && (
-          <button
-            type="button"
-            onClick={openCart}
-            aria-label={`Open cart, ${cart} ${cart === 1 ? "item" : "items"}`}
-            className="sp-tap sp-squeeze relative grid size-11 shrink-0 place-items-center border-2 border-sp-mist text-lg text-sp-paper"
-          >
-            <span aria-hidden="true">🛒</span>
-            <span
-              key={cart}
-              aria-hidden="true"
-              className="sp-count-pop sp-mono sp-num absolute -right-1.5 -top-1.5 grid min-w-[18px] place-items-center rounded-full border-2 border-sp-black bg-sp-bubblegum px-1 text-[10px] leading-[16px] text-sp-ink"
-            >
-              {cart}
-            </span>
-          </button>
-        )}
-
-        <div className="w-auto shrink-0">
-          <AddToCartButton compact className="!w-auto" />
+          </p>
         </div>
-      </div>
 
-      {/* Full-width row of its own, below the CTA row rather than inside the
-          middle column. Squeezed between a 44px thumbnail, a 44px cart button
-          and the ADD button, that column collapses to ~60px on a 390px screen,
-          which broke this line across four lines — one word each. It is the
-          substantiation the strikethrough rests on, so it stays visible and
-          untruncated; it just gets the whole width to say it in. */}
-      {compareAt && (
-        <p aria-hidden="true" className="sp-disclosure mt-1 px-4 text-xs text-sp-mist">
-          {BASIS_TAG} — {compareAt}
-        </p>
-      )}
+        <button
+          type="button"
+          onClick={() => {
+            if (pending || soldOut) return;
+            addToCart();
+          }}
+          disabled={soldOut}
+          aria-disabled={pending || undefined}
+          aria-busy={pending}
+          className="btn btn-primary tap-lg shrink-0 px-5 py-3 text-[15px]"
+        >
+          {soldOut ? "SOLD OUT" : pending ? "ADDING…" : added ? "ADDED ✓" : "ADD TO CART"}
+        </button>
+      </div>
     </div>
   );
 }

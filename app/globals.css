@@ -1,373 +1,250 @@
 @import "tailwindcss";
 
 /* ==========================================================================
-   RELAXONUS — SPA PUNK
-   The product's real blue and pink, cranked against black.
+   RELAXONUS — quiet premium DTC
+   Warm ivory ground, soft charcoal type, one restrained accent drawn from the
+   product's own blue. No neon, no gradients, no discount-sticker red.
 
-   Every colour pair used for text in this file has a computed WCAG ratio in
-   the comment beside it. Pairs not listed here are not permitted for text.
+   Contrast ratios against --color-paper (#faf7f2) are noted where text uses
+   them. Pairs not listed here are not approved for text.
    ========================================================================== */
 
 @theme {
-  /* Surfaces */
-  --color-sp-black: #0b0b10;
-  --color-sp-carbon: #14141c;
-  --color-sp-carbon-lift: #1a1a24;
-  --color-sp-ink: #000000;
-  --color-sp-steam: #e6f9ff;
-  --color-sp-blush: #ffd6e8;
-
-  /* Neons */
-  --color-sp-chlorine: #00e5ff;
-  --color-sp-deep: #1b4dff;
-  --color-sp-bubblegum: #ff4fa3;
-
-  /* Text */
-  --color-sp-paper: #f7f5ff;
-  --color-sp-mist: #b9b6cc;
-
-  /* Semantic */
-  --color-sp-go: #00f5a0;
-  --color-sp-no: #ff5a5a;
-  --color-sp-rule: #6f6c8a;
+  /* Ground */
+  --color-paper: #faf7f2;      /* warm ivory */
+  --color-surface: #ffffff;
+  --color-sand: #f2ede4;       /* section alternate */
 
   /* Type */
-  --font-display: var(--font-bricolage), "Arial Black", system-ui, sans-serif;
-  --font-body: var(--font-space-grotesk), "Segoe UI", system-ui, sans-serif;
-  --font-mono: var(--font-dm-mono), ui-monospace, "SFMono-Regular", monospace;
+  --color-ink: #1b1a18;        /* 15.8:1 on paper */
+  --color-muted: #6b665e;      /* 5.4:1 on paper — body secondary, never below 14px */
+  --color-faint: #8d887f;      /* 3.6:1 — decorative/large only, never body copy */
 
-  /* Floors are set so the longest word in each slot still fits inside a
-     320px viewport's 272px content box. "ALTERNATIVES." at the old 2.75rem
-     floor was 330px wide and overflowed its own heading. */
-  --text-display-xl: clamp(2.75rem, 11vw, 8.5rem);
-  --text-display-l: clamp(1.85rem, 7vw, 5.25rem);
-  --text-display-m: clamp(1.6rem, 4.5vw, 3rem);
-  --text-display-s: clamp(1.25rem, 3.5vw, 1.5rem);
-  --text-price-hero: clamp(2.5rem, 6vw, 4rem);
-  --text-marquee: clamp(1.25rem, 4vw, 3.25rem);
+  /* Lines */
+  --color-line: #e6e0d6;
+  --color-line-strong: #d5cec1;
+
+  /* One accent, deepened from the product's blue */
+  --color-accent: #1f5257;     /* 8.9:1 on paper, 8.4:1 under white text */
+  --color-accent-deep: #17403f;
+  --color-accent-soft: #eaf1f0;
+
+  /* Savings. Muted clay, deliberately not a marketplace red. */
+  --color-save: #8f3f2c;       /* 6.4:1 on paper */
+  --color-save-soft: #f8ece7;
+
+  /* Product swatches */
+  --color-prod-blue: #a9d8e8;
+  --color-prod-pink: #f4bcd2;
+
+  --font-display: var(--font-manrope), "Helvetica Neue", system-ui, sans-serif;
+  --font-body: var(--font-inter), system-ui, -apple-system, sans-serif;
+
+  /* Fluid type. Floors chosen so the longest word still fits a 320px screen. */
+  --text-h1: clamp(2rem, 6.2vw, 3.5rem);
+  --text-h2: clamp(1.65rem, 4.6vw, 2.5rem);
+  --text-h3: clamp(1.05rem, 2.4vw, 1.25rem);
+  --text-price: clamp(2.25rem, 7vw, 3rem);
 }
 
-/* ------------------------------- Base ------------------------------------ */
-
-* {
-  border-color: currentColor;
-}
+/* --------------------------------- Base ---------------------------------- */
 
 /*
-  Horizontal containment, on BOTH elements and in this exact order.
+  Horizontal containment, on BOTH elements, in this order.
 
-  `overflow-x: hidden` makes the element a scroll container that merely hides
-  its scrollbar — WebKit will still let a touch pan it, which is how the page
-  acquired real sideways travel on iOS despite this being set. `overflow-x:
-  clip` does not create a scroll container at all, so there is nothing to pan.
-  The `hidden` line stays first as the fallback for engines without `clip`.
+  `overflow-x: hidden` makes an element a scroll container that merely hides
+  its scrollbar — WebKit still lets a touch pan it. `overflow-x: clip` creates
+  no scroll container at all, and leaves `overflow-y` alone rather than forcing
+  it to `auto` (which would put sticky elements in a nested scrollport).
 
-  `clip` also leaves `overflow-y` alone: declaring `overflow-x: hidden` forces
-  the other axis to compute to `auto`, which is what puts the sticky header and
-  announcement bar inside a nested scrollport. `clip` keeps `overflow-y:
-  visible`, so both keep resolving against the real viewport.
+  This is containment of last resort, not a licence to overflow: `clip`
+  establishes no containing block, so it cannot catch an absolutely positioned
+  box that resolves against the initial containing block. Any element that
+  scrolls or is wider than the viewport must ALSO be `position: relative`, so
+  abspos descendants (Tailwind's `sr-only` is `position:absolute` with no
+  insets) resolve inside it instead of escaping to the viewport.
 */
 html {
-  scroll-behavior: smooth;
-  background: var(--color-sp-black);
   overflow-x: hidden;
   overflow-x: clip;
+  scroll-behavior: smooth;
+  background: var(--color-paper);
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
-  background: var(--color-sp-black);
-  color: var(--color-sp-paper);
-  font-family: var(--font-body);
-  -webkit-font-smoothing: antialiased;
-  text-wrap: pretty;
   overflow-x: hidden;
   overflow-x: clip;
-}
-
-h1, h2, h3, .sp-display {
-  font-family: var(--font-display);
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: -0.035em;
-  line-height: 0.92;
-}
-
-.sp-mono {
-  font-family: var(--font-mono);
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-}
-
-/* Prices, spec numerals and table figures never jitter between values. */
-.sp-num {
-  font-variant-numeric: tabular-nums;
-}
-
-/* Material disclosures. Never mono, never below 14px, never all-caps. */
-.sp-disclosure {
+  background: var(--color-paper);
+  color: var(--color-ink);
   font-family: var(--font-body);
-  font-weight: 400;
-  font-size: 0.875rem;
-  line-height: 1.5;
-  letter-spacing: 0;
-  text-transform: none;
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  text-wrap: pretty;
 }
 
-/* `sr-only` is Tailwind's own utility. Redefining it here out-specified the
-   `focus:not-sr-only` variant, which left the skip link stuck at 6x6px when
-   focused - visually hidden from the keyboard user it exists for. Do not
-   reintroduce it. */
-
-/* Two-tone focus ring. A single-colour ring is invisible on at least one of
-   this palette's surfaces — cyan on cyan, ink on an ink border. */
-:focus-visible {
-  outline: 3px solid var(--color-sp-chlorine);
-  outline-offset: 0;
-  box-shadow: 0 0 0 6px var(--color-sp-ink);
-}
-
-::selection {
-  background: var(--color-sp-bubblegum);
-  color: var(--color-sp-ink);
-}
-
-/* Sticky chrome must never obscure a keyboard target (WCAG 2.4.11). */
-[id] {
-  scroll-margin-top: 120px;
-}
-
-/* --------------------------- Structural motifs ---------------------------- */
-
-.sp-shell {
-  max-width: 1200px;
-  margin-inline: auto;
-  padding-inline: 16px;
-}
-@media (min-width: 480px) {
-  .sp-shell { padding-inline: 24px; }
-}
-
-/* Comfortable touch target. 44px is the floor, applied to every control that
-   would otherwise be sized by its text alone.
-
-   Deliberately sets no `display`: a plain class here out-specifies Tailwind's
-   `hidden` utility, which silently un-hid the motion toggle on mobile and
-   pushed the buy pill off the screen edge. Pair it with `inline-flex` at the
-   call site instead. */
-.sp-tap {
-  min-height: 44px;
-}
-
-/* Long uppercase display words must never overflow their own box on a narrow
-   screen. Breaking is preferable to bleeding. */
-h1, h2, h3, .sp-display {
+h1, h2, h3, .display {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.028em;
+  line-height: 1.05;
+  text-wrap: balance;
+  /* A long uppercase word must break rather than bleed on a narrow screen. */
   overflow-wrap: break-word;
 }
 
-.sp-section {
-  padding-block: 96px;
-}
-@media (min-width: 900px) {
-  .sp-section { padding-block: 128px; }
-}
+/* Prices and figures never jitter between values. */
+.num { font-variant-numeric: tabular-nums; }
 
-/* Zero blur, hard offset. The structural signature of the whole design. */
-.sp-hard-pink { box-shadow: 6px 6px 0 var(--color-sp-bubblegum); }
-.sp-hard-cyan { box-shadow: 6px 6px 0 var(--color-sp-chlorine); }
-.sp-hard-ink  { box-shadow: 6px 6px 0 var(--color-sp-ink); }
-
-.sp-lift {
-  transition: transform 140ms ease-out, box-shadow 140ms ease-out, border-color 140ms ease-out;
-}
-.sp-lift:hover {
-  transform: translate(-3px, -3px);
-  box-shadow: 9px 9px 0 var(--color-sp-bubblegum);
+.eyebrow {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  line-height: 1.4;
 }
 
-/* SQUEEZE — the signature interaction, mapped to the product's own gesture.
-   Deliberately NOT gated by the motion kill switch: it is click feedback. */
-.sp-squeeze:active {
-  transform: scaleX(0.965) scaleY(1.035);
-  transition: transform 90ms cubic-bezier(0.34, 1.56, 0.64, 1);
+/* Material disclosures. Never below 14px, never all-caps, never faint. */
+.disclosure {
+  font-size: 0.875rem;
+  line-height: 1.55;
+  color: var(--color-muted);
 }
 
-/* ------------------------------ Keyframes -------------------------------- */
+/* Comfortable touch target floor. Sets no `display` — a bare class here
+   out-specifies Tailwind's `hidden`, which would silently un-hide things.
+   Pair with a display utility at the call site. */
+.tap { min-height: 44px; }
+.tap-lg { min-height: 52px; }
 
-@keyframes sp-stripe-crawl {
-  from { background-position: 0 0; }
-  to   { background-position: 20px 0; }
+.shell {
+  max-width: 1180px;
+  margin-inline: auto;
+  padding-inline: 20px;
+}
+@media (min-width: 768px) { .shell { padding-inline: 32px; } }
+
+/* Sticky chrome must never obscure a keyboard target (WCAG 2.4.11). */
+[id] { scroll-margin-top: 96px; }
+
+/* Two-tone focus ring, legible on ivory, on white and on the accent. */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: 2px;
 }
 
-@keyframes sp-ticker-left {
-  from { transform: translate3d(0, 0, 0); }
-  to   { transform: translate3d(-50%, 0, 0); }
+::selection { background: var(--color-accent); color: #fff; }
+
+/* ------------------------------- Controls -------------------------------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  border-radius: 10px;
+  transition: background-color 160ms ease, color 160ms ease,
+              border-color 160ms ease, transform 120ms ease, box-shadow 160ms ease;
+}
+.btn:active { transform: translateY(1px); }
+
+.btn-primary {
+  background: var(--color-accent);
+  color: #fff;
+  box-shadow: 0 1px 2px rgb(27 26 24 / 0.10), 0 6px 20px -8px rgb(31 82 87 / 0.45);
+}
+.btn-primary:hover { background: var(--color-accent-deep); }
+.btn-primary:disabled {
+  background: var(--color-line-strong);
+  color: #fff;
+  box-shadow: none;
+  cursor: not-allowed;
 }
 
-@keyframes sp-ticker-right {
-  from { transform: translate3d(-50%, 0, 0); }
-  to   { transform: translate3d(0, 0, 0); }
+.btn-quiet {
+  background: var(--color-surface);
+  color: var(--color-ink);
+  border: 1px solid var(--color-line-strong);
+}
+.btn-quiet:hover { border-color: var(--color-accent); color: var(--color-accent); }
+
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: 14px;
 }
 
-/* It breathes. It does not flash — this is a wellness product. */
-@keyframes sp-breath {
-  0%, 100% { transform: scale(1);      box-shadow: 0 0 0 0 rgb(255 79 163 / 0.55); }
-  50%      { transform: scale(1.025);  box-shadow: 0 0 0 14px rgb(255 79 163 / 0); }
+/* Genuine price comparison. Semantic <s>, reaches assistive tech. */
+.strike {
+  text-decoration: line-through;
+  text-decoration-thickness: 2px;
+  text-decoration-color: var(--color-faint);
 }
 
-@keyframes sp-wobble {
-  from { rotate: -4deg; }
-  to   { rotate: 4deg; }
+/* ------------------------------- Motion ---------------------------------- */
+/*
+  Deliberately no infinite animation anywhere on this page — nothing marquees,
+  pulses or bounces. That removes the WCAG 2.2.2 obligation entirely and keeps
+  the page calm. What remains is entry and feedback only.
+*/
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: none; }
 }
-
-@keyframes sp-roller { to { rotate: 360deg; } }
-
-@keyframes sp-bar-rise {
+@keyframes sheet-up {
   from { transform: translateY(100%); }
-  to   { transform: translateY(0); }
+  to   { transform: none; }
 }
-
-@keyframes sp-tier-lock {
-  from { transform: scale(0); }
-  to   { transform: scale(1); }
-}
-
-@keyframes sp-drawer-in-y {
-  from { transform: translateY(100%); }
-  to   { transform: translateY(0); }
-}
-@keyframes sp-drawer-in-x {
+@keyframes panel-in {
   from { transform: translateX(100%); }
-  to   { transform: translateX(0); }
+  to   { transform: none; }
 }
-
-/* One-shot feedback on a cart-count change, not a loop — same class of
-   transition as sp-tick-disc, so it stays active even with motion off. */
-@keyframes sp-count-pop {
-  0%   { transform: scale(1); }
-  35%  { transform: scale(1.35); }
+@keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes pop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.28); }
   100% { transform: scale(1); }
 }
 
-.sp-announce-stripes {
-  background-image: repeating-linear-gradient(
-    45deg,
-    rgb(255 79 163 / 0.12) 0 10px,
-    transparent 10px 20px
-  );
-  animation: sp-stripe-crawl 1.1s linear infinite;
+.rise { animation: rise 520ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+.fade { animation: fade 260ms ease both; }
+.pop  { animation: pop 340ms cubic-bezier(0.34, 1.56, 0.64, 1); }
+
+.sheet { animation: sheet-up 280ms cubic-bezier(0.22, 1, 0.36, 1); }
+@media (min-width: 720px) {
+  .sheet { animation: panel-in 280ms cubic-bezier(0.22, 1, 0.36, 1); }
 }
-
-.sp-ticker-a { animation: sp-ticker-left 26s linear infinite; will-change: transform; }
-.sp-ticker-b { animation: sp-ticker-right 32s linear infinite; will-change: transform; }
-
-.sp-cta { animation: sp-breath 2.6s ease-in-out infinite; }
-/* Once it is in the cart the button has done its job and stops for good. */
-.sp-cta[data-in-cart="true"] { animation: none; }
-
-.sp-sticker { animation: sp-wobble 3.4s ease-in-out infinite alternate; }
-.sp-roller { animation: sp-roller 7s linear infinite; }
-
-.sp-bar { animation: sp-bar-rise 240ms ease-out; }
-.sp-tick-disc { animation: sp-tier-lock 220ms cubic-bezier(0.34, 1.56, 0.64, 1); }
-
-.sp-cart-drawer { animation: sp-drawer-in-y 240ms ease-out; }
-@media (min-width: 640px) {
-  .sp-cart-drawer { animation: sp-drawer-in-x 240ms ease-out; }
-}
-
-.sp-count-pop { animation: sp-count-pop 320ms cubic-bezier(0.34, 1.56, 0.64, 1); }
-
-/* ----------------------------- Motion switch ------------------------------ */
-/*
-   One attribute on <html> gates every infinite animation at once. This is the
-   WCAG 2.2.2 mechanism — prefers-reduced-motion is not one, hover does not
-   exist on touch, and focus-within never fires inside a marquee that contains
-   nothing focusable.
-
-   Scoped to the animation classes, NOT to `*`, so state-change transitions
-   (tier lock, accordion, squeeze) survive and clicks still feel answered.
-*/
-html[data-motion="off"] .sp-announce-stripes,
-html[data-motion="off"] .sp-ticker-a,
-html[data-motion="off"] .sp-ticker-b,
-html[data-motion="off"] .sp-cta,
-html[data-motion="off"] .sp-sticker,
-html[data-motion="off"] .sp-roller {
-  animation: none !important;
-}
-
-/* Stripping the pulse must not let the buy button flatten into the page. */
-html[data-motion="off"] .sp-cta {
-  box-shadow: 0 0 0 4px rgb(255 79 163 / 0.4);
-}
-
-/* A scroll container with no focusable child is keyboard-unreachable. */
-html[data-motion="off"] .sp-ticker-track {
-  overflow-x: auto;
-  scroll-snap-type: x proximity;
-}
-html[data-motion="off"] .sp-ticker-dupe { display: none; }
 
 @media (prefers-reduced-motion: reduce) {
-  html:not([data-motion="on"]) .sp-announce-stripes,
-  html:not([data-motion="on"]) .sp-ticker-a,
-  html:not([data-motion="on"]) .sp-ticker-b,
-  html:not([data-motion="on"]) .sp-cta,
-  html:not([data-motion="on"]) .sp-sticker,
-  html:not([data-motion="on"]) .sp-roller {
-    animation: none !important;
-  }
   html { scroll-behavior: auto; }
+  .rise, .fade, .pop, .sheet { animation: none !important; }
+  .btn:active { transform: none; }
 }
 
-/* ----------------------------- Forced colors ------------------------------ */
+/* --------------------------- Horizontal scrollers ------------------------- */
 /*
-   box-shadow is not painted in forced-colors mode, and the offset shadow is
-   one of two carriers of the selected-tier state. Replace it with border
-   weight and an outline so nothing depends on a shadow that will not exist.
+  Every intentional x-scroller: contain its overscroll so a swipe past the end
+  never chains a leftover delta to the document. NOT `touch-action`, which
+  would swallow a vertical page scroll that begins on top of one.
 */
-@media (forced-colors: active) {
-  .sp-card,
-  .sp-tier,
-  .sp-cta,
-  .sp-sticker {
-    border: 3px solid CanvasText;
-    box-shadow: none;
-  }
-  .sp-tier[aria-checked="true"] {
-    border-width: 6px;
-    outline: 3px solid Highlight;
-    outline-offset: 3px;
-  }
-  .sp-glyph { forced-color-adjust: none; fill: currentColor; }
-  .sp-strike { text-decoration: line-through 3px; }
-}
-
-/* ------------------------------ Strikethrough ----------------------------- */
-/*
-   Semantic <s>, not a drawn decoration — this is the page's single
-   price-comparison claim and it must reach assistive technology.
-*/
-.sp-strike {
-  text-decoration: line-through;
-  text-decoration-color: var(--color-sp-no);
-  text-decoration-thickness: 3px;
-}
-
-/* ---------------------------- Nested x-scrollers -------------------------- */
-/*
-   The page has three intentional horizontal scrollers: the comparison table,
-   the announcement row with motion off, and the ticker tracks. None of them
-   may hand a leftover horizontal delta up to the document once the shopper
-   drags past their end — that chaining is how a contained scroller still ends
-   up moving the page sideways on touch.
-
-   Deliberately NOT `touch-action`: constraining that here would swallow a
-   vertical page scroll that happens to begin on top of one of these strips.
-*/
-.sp-ticker-track,
-[role="group"][aria-label="Comparison table, scrollable"],
-[role="group"][aria-label="Store announcements"] {
+.xscroll {
+  position: relative;      /* load-bearing: see the html/body note above */
+  overflow-x: auto;
   overscroll-behavior-x: contain;
+  scrollbar-width: none;
+}
+.xscroll::-webkit-scrollbar { display: none; }
+
+/* ------------------------------ Forced colors ----------------------------- */
+@media (forced-colors: active) {
+  .card, .btn { border: 1px solid CanvasText; }
+  .strike { text-decoration: line-through 2px; }
 }
