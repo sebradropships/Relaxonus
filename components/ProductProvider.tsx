@@ -58,9 +58,18 @@ interface ProductState {
 
   /** Live Shopify price where available, otherwise the committed price. */
   priceFor: (key: VariantKey) => string;
-  /** Genuine reference price, or null. Only the Duo has one. */
+  /** Genuine reference price, or null. */
   compareAtFor: (key: VariantKey) => string | null;
   availableFor: (key: VariantKey) => boolean;
+
+  /** Numeric forms, for arithmetic the page has to show as a claim. */
+  amountFor: (key: VariantKey) => number;
+  /**
+   * Whole-percent reduction against a genuine compare-at, or null when there
+   * is no real discount. Derived from live Shopify money, never hardcoded —
+   * so the page cannot advertise a sale that is not actually on.
+   */
+  discountPercentFor: (key: VariantKey) => number | null;
 
   selectVariant: (variant: VariantKey) => void;
   selectImage: (index: number) => void;
@@ -300,6 +309,44 @@ export function ProductProvider({
     [commerce],
   );
 
+  /* The committed fallbacks in lib/product.ts are the REGULAR prices and are
+     deliberately left that way: if Shopify cannot be reached mid-promotion the
+     page quietly shows regular pricing rather than a discount it could not
+     verify. Overstating the price is recoverable; understating it is not. */
+  const parseMoney = (text: string) => Number.parseFloat(text.replace(/[^0-9.]/g, ""));
+
+  const amountFor = useCallback(
+    (key: VariantKey) => {
+      const live = commerce.variants?.[key];
+      return live ? Number.parseFloat(live.price.amount) : parseMoney(VARIANTS[key].price);
+    },
+    [commerce],
+  );
+
+  const compareAmountFor = useCallback(
+    (key: VariantKey) => {
+      const live = commerce.variants?.[key];
+      if (live) {
+        return live.compareAtPrice ? Number.parseFloat(live.compareAtPrice.amount) : null;
+      }
+      const committed = VARIANTS[key].compareAt;
+      return committed ? parseMoney(committed) : null;
+    },
+    [commerce],
+  );
+
+  const discountPercentFor = useCallback(
+    (key: VariantKey) => {
+      const now = amountFor(key);
+      const was = compareAmountFor(key);
+      // A compare-at at or below the price is not a reduction, whatever the
+      // merchant typed into Shopify.
+      if (was === null || !Number.isFinite(now) || was <= now) return null;
+      return Math.round(((was - now) / was) * 100);
+    },
+    [amountFor, compareAmountFor],
+  );
+
   const addToCart = useCallback(() => {
     // Synchronous guard: `pending` only flips after React commits, so a
     // same-tick second click would otherwise create a second cart.
@@ -369,6 +416,8 @@ export function ProductProvider({
       removeCartLine,
       priceFor,
       compareAtFor,
+      amountFor,
+      discountPercentFor,
       availableFor,
       selectVariant,
       selectImage,
@@ -378,7 +427,8 @@ export function ProductProvider({
       variant, image, quantity, setQuantity, registerBuyZone, buyZoneVisible,
       cartCount, summary, added, pending, error,
       cartOpen, openCart, closeCart, lineBusy, lineError, setLineQuantity, removeCartLine,
-      priceFor, compareAtFor, availableFor, selectVariant, selectImage, addToCart,
+      priceFor, compareAtFor, availableFor, amountFor, discountPercentFor,
+      selectVariant, selectImage, addToCart,
     ],
   );
 

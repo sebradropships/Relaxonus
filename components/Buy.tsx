@@ -17,9 +17,19 @@ import {
  * the Duo, the real cost of two singles bought separately.
  */
 export function PriceBlock({ compact = false }: { compact?: boolean }) {
-  const { variant, priceFor, compareAtFor } = useProduct();
+  const { variant, priceFor, compareAtFor, amountFor, discountPercentFor } = useProduct();
   const compareAt = compareAtFor(variant);
+  const percent = discountPercentFor(variant);
   const option = VARIANTS[variant];
+
+  /* Every figure below is arithmetic on live Shopify money. The Duo's bundle
+     line in particular has to be computed, not written down: the moment the
+     singles are discounted, a hardcoded "two singles cost $59.98" becomes a
+     false price comparison. */
+  const unit = amountFor(variant) / option.units;
+  const twoSingles = amountFor("blue") + amountFor("pink");
+  const bundleSaving = twoSingles - amountFor("set");
+  const money = (value: number) => `$${value.toFixed(2)}`;
 
   return (
     <div>
@@ -38,13 +48,15 @@ export function PriceBlock({ compact = false }: { compact?: boolean }) {
             <s className={`strike num text-faint ${compact ? "text-base" : "text-xl"}`}>
               {compareAt}
             </s>
-            <span
-              className={`num rounded-full bg-save-soft px-2.5 py-1 font-semibold text-save ${
-                compact ? "text-xs" : "text-sm"
-              }`}
-            >
-              SAVE {option.saving}
-            </span>
+            {percent !== null && (
+              <span
+                className={`num rounded-full bg-save-soft px-2.5 py-1 font-semibold text-save ${
+                  compact ? "text-xs" : "text-sm"
+                }`}
+              >
+                SAVE {percent}%
+              </span>
+            )}
           </>
         )}
       </div>
@@ -52,7 +64,8 @@ export function PriceBlock({ compact = false }: { compact?: boolean }) {
       {!compact && (
         <p className="disclosure mt-2">
           {option.units === 2
-            ? "Two massagers — $24.00 each. Two singles bought separately cost $59.98."
+            ? `Two massagers — ${money(unit)} each. Bought separately they are ` +
+              `${money(twoSingles)}, so the pair saves a further ${money(bundleSaving)}.`
             : "One massager. Shipping calculated at checkout."}
         </p>
       )}
@@ -77,11 +90,13 @@ function Swatch({ variantKey }: { variantKey: VariantKey }) {
  * saving has room to be stated rather than abbreviated into a sticker.
  */
 export function VariantPicker() {
-  const { variant, selectVariant, priceFor, availableFor } = useProduct();
+  const { variant, selectVariant, priceFor, compareAtFor, availableFor, discountPercentFor } =
+    useProduct();
 
   const singles = TIER_ORDER.filter((key) => VARIANTS[key].units === 1);
-  const duo = VARIANTS.set;
   const duoSelected = variant === "set";
+  const duoCompareAt = compareAtFor("set");
+  const duoPercent = discountPercentFor("set");
 
   return (
     <div role="radiogroup" aria-label="Choose your option">
@@ -108,7 +123,12 @@ export function VariantPicker() {
                 <span className="block truncate text-sm font-semibold text-ink">
                   {VARIANTS[key].short}
                 </span>
-                <span className="num block text-xs text-muted">{priceFor(key)}</span>
+                <span className="num flex items-baseline gap-1.5 text-xs">
+                  <span className="text-muted">{priceFor(key)}</span>
+                  {compareAtFor(key) && (
+                    <s className="strike text-faint">{compareAtFor(key)}</s>
+                  )}
+                </span>
               </span>
             </button>
           );
@@ -131,12 +151,15 @@ export function VariantPicker() {
         <span className="min-w-0 flex-1">
           <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
             <span className="text-sm font-semibold text-ink">Both — Blue + Pink</span>
-            <span className="num rounded-full bg-save-soft px-2 py-0.5 text-[11px] font-semibold text-save">
-              SAVE {duo.saving}
-            </span>
+            {duoPercent !== null && (
+              <span className="num rounded-full bg-save-soft px-2 py-0.5 text-[11px] font-semibold text-save">
+                SAVE {duoPercent}%
+              </span>
+            )}
           </span>
-          <span className="num mt-0.5 block text-xs text-muted">
-            {priceFor("set")} · two singles cost {duo.compareAt}
+          <span className="num mt-0.5 flex items-baseline gap-1.5 text-xs">
+            <span className="text-muted">{priceFor("set")}</span>
+            {duoCompareAt && <s className="strike text-faint">{duoCompareAt}</s>}
           </span>
         </span>
       </button>

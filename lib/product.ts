@@ -9,10 +9,14 @@
  *     The store has 0 orders and 0 customers. Inventing any of these is a
  *     violation of 16 CFR 465 (FTC rule on consumer reviews), which carries
  *     civil penalties per review. REVIEWS below stays [] until real ones exist.
- *   - Any strikethrough other than the Duo's $59.98, which is the genuine
- *     cost of two singles bought separately (16 CFR 233).
- *   - Scarcity and countdowns: 78,500 units are in stock. There is no
- *     deadline, so there is no "offer ends tonight".
+ *   - Any strikethrough not backed by a real `compareAtPrice` in Shopify.
+ *     Every reduction shown on the page is derived from live Storefront money
+ *     (16 CFR 233); none of it is written down here. A former price must be
+ *     one the variant was genuinely offered at.
+ *   - Scarcity: 78,500 units are in stock. No "only N left", no stock bars.
+ *   - Any countdown that is not a real deadline. The SALE block below carries
+ *     one fixed end date; it must never roll forward per visitor, and the
+ *     prices must actually be restored in Shopify when it passes.
  *   - Medical vocabulary: relief, pain, therapeutic, circulation, tension,
  *     trigger point, soothe, recovery, chiropractor. Not a medical device.
  *     `treat` and `cure` appear ONLY inside the disclaimer strings below.
@@ -52,9 +56,6 @@ export interface Variant {
    * former price the product was not actually offered at.
    */
   compareAt?: string;
-  /** Plain-language saving, shown only alongside a real compareAt. */
-  saving?: string;
-  savingPercent?: string;
   /** Massagers the customer receives. */
   units: number;
   frames: Frame[];
@@ -115,8 +116,6 @@ export const VARIANTS: Record<VariantKey, Variant> = {
     swatch: "linear-gradient(105deg, #A9D8E8 0 50%, #F4BCD2 50% 100%)",
     price: "$47.99",
     compareAt: "$59.98",
-    saving: "$11.99",
-    savingPercent: "20%",
     units: 2,
     frames: [
       { url: IMAGES.pair, alt: ALT_PAIR },
@@ -132,11 +131,39 @@ export const VARIANTS: Record<VariantKey, Variant> = {
 export const DEFAULT_TIER: VariantKey = "set";
 export const TIER_ORDER: VariantKey[] = ["blue", "pink", "set"];
 
-/** The substantiation the single strikethrough on this store rests on. */
-export const BASIS_LINE =
-  "Two singles bought separately cost $59.98. The Duo is $47.99 — a $11.99 saving, about 20%.";
-export const STRIKE_SR_PREFIX =
-  "Regular separate price, two singles bought separately: ";
+/**
+ * Neutral on purpose. A compare-at may be a genuine former price of the same
+ * variant, or a reference to what the parts cost separately — calling it
+ * "regular price" would assert the former in both cases. The specific basis is
+ * always spelled out in words next to the price.
+ */
+export const STRIKE_SR_PREFIX = "Compare at: ";
+
+/* ---------------------------------- Sale ---------------------------------- */
+
+/**
+ * The promotion's real deadline.
+ *
+ * This date does NOT set prices — prices live in Shopify, and every discount
+ * shown on the page is derived from a genuine `compareAtPrice` returned by the
+ * Storefront API. That split is deliberate:
+ *
+ *   - If Shopify carries no discount, no sale UI renders at all, whatever this
+ *     date says. The page cannot advertise a reduction that is not really on.
+ *   - Once this date passes, the banner and countdown disappear on their own,
+ *     so the page never shows a deadline that has already gone by.
+ *
+ * The prices must actually be restored in Shopify when this passes. A timer
+ * that expires and resets, or a "sale" that never ends, is the deceptive
+ * urgency this file exists to keep off the store (16 CFR 233).
+ */
+export const SALE = {
+  endsAt: "2026-08-31T23:59:59Z",
+  /** Spoken once by assistive tech instead of announcing every tick. */
+  endsAtSpoken: "31 August 2026 at 23:59 UTC",
+  label: "Launch sale",
+  countdownLabel: "Ends in",
+};
 
 /* ================================ SECTION 1 =============================== */
 

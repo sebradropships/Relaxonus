@@ -2,6 +2,7 @@ import { CartDrawer } from "@/components/CartDrawer";
 import { Close } from "@/components/Close";
 import { Hero } from "@/components/Hero";
 import { ProductProvider } from "@/components/ProductProvider";
+import { SaleBanner } from "@/components/SaleBanner";
 import { SiteHeader } from "@/components/SiteHeader";
 import { StickyBar } from "@/components/StickyBar";
 import { Value } from "@/components/Value";
@@ -30,6 +31,9 @@ export default async function Page() {
         Skip to buy
       </a>
 
+      {/* Above the header, and self-removing: it renders only while a genuine
+          discount is live in Shopify AND the deadline is still ahead. */}
+      <SaleBanner />
       <SiteHeader />
 
       <main>
