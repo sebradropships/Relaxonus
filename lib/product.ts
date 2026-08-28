@@ -218,6 +218,26 @@ export const VALUE = {
     { q: "How hard does it press?", a: "Exactly as hard as you squeeze. Firm, gentle, or anywhere between, decided by your hands." },
     { q: "Can I clean it?", a: "Yes. All six rollers pop off, rinse under a tap, and click back on." },
   ],
+  /**
+   * The demo. Silent by nature — there is no motor to hear — so it carries no
+   * audio track and needs no captions. It is video-only prerecorded content,
+   * which WCAG 1.2.1 requires an alternative for: the numbered steps beside it
+   * ARE that alternative, and the video points at them via aria-describedby.
+   */
+  demo: {
+    eyebrow: "HOW TO USE IT",
+    heading: "Hook it on. Squeeze. Roll.",
+    deck: "Three moves, no setup, nothing to pair. The clip is silent — there is no motor in it to make a noise.",
+    src: "/video/relaxonus-demo.web.mp4",
+    poster: "/video/relaxonus-demo-poster.jpg",
+    label: "Demonstration of the Relaxonus massager being used on the neck and shoulders",
+    steps: [
+      { num: "01", verb: "Hook", body: "Over your neck or your shoulder, rollers either side." },
+      { num: "02", verb: "Squeeze", body: "Two long handles. However firm you want it." },
+      { num: "03", verb: "Roll", body: "Up, down, repeat. Change the pressure as you go." },
+    ],
+  },
+
   spec: {
     heading: "What you get",
     items: [

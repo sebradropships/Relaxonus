@@ -1,5 +1,6 @@
 import Image from "next/image";
 
+import { Demo } from "@/components/Demo";
 import { REVIEWS, REVIEWS_EMPTY, VALUE } from "@/lib/product";
 
 /* Line icons, one stroke weight, no fill — they label the card, not decorate it. */
@@ -91,6 +92,8 @@ export function Value() {
             </div>
           ))}
         </div>
+
+        <Demo />
 
         {/* Proof and objections, side by side on desktop — the two things a
             hesitating visitor is actually looking for. */}
