@@ -81,7 +81,7 @@ export const VARIANTS: Record<VariantKey, Variant> = {
     variantId: "gid://shopify/ProductVariant/53761385136491",
     swatch: "#A9D8E8",
     price: "$34.99",
-    compareAt: "$49.99",
+    compareAt: "$40.99",
     units: 1,
     frames: [
       { url: "/products/blue/01-hero.webp", alt: "The blue Relaxonus massager standing against a pale wall" },
@@ -99,7 +99,7 @@ export const VARIANTS: Record<VariantKey, Variant> = {
     variantId: "gid://shopify/ProductVariant/53761385169259",
     swatch: "#F4BCD2",
     price: "$34.99",
-    compareAt: "$49.99",
+    compareAt: "$40.99",
     units: 1,
     frames: [
       { url: "/products/pink/01-hero.webp", alt: "The pink Relaxonus massager standing against a pale wall" },
