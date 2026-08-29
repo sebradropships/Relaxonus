@@ -219,22 +219,46 @@ export const VALUE = {
     { q: "Can I clean it?", a: "Yes. All six rollers pop off, rinse under a tap, and click back on." },
   ],
   /**
-   * The demo. Silent by nature — there is no motor to hear — so it carries no
-   * audio track and needs no captions. It is video-only prerecorded content,
-   * which WCAG 1.2.1 requires an alternative for: the numbered steps beside it
-   * ARE that alternative, and the video points at them via aria-describedby.
+   * The demo, built from real photography of this exact product rather than
+   * from generated footage — every frame here is the thing that ships.
+   *
+   * Each step owns the photograph that depicts it, so the picture and the
+   * instruction can never drift apart. The step text doubles as the accessible
+   * description of the image beside it.
    */
   demo: {
     eyebrow: "HOW TO USE IT",
     heading: "Hook it on. Squeeze. Roll.",
-    deck: "Three moves, no setup, nothing to pair. The clip is silent — there is no motor in it to make a noise.",
-    src: "/video/relaxonus-demo.web.mp4",
-    poster: "/video/relaxonus-demo-poster.jpg",
-    label: "Demonstration of the Relaxonus massager being used on the neck and shoulders",
+    deck: "Three moves, no setup, nothing to pair. Step through it, or let it play.",
+    label: "How to use the Relaxonus massager, in three steps",
     steps: [
-      { num: "01", verb: "Hook", body: "Over your neck or your shoulder, rollers either side." },
-      { num: "02", verb: "Squeeze", body: "Two long handles. However firm you want it." },
-      { num: "03", verb: "Roll", body: "Up, down, repeat. Change the pressure as you go." },
+      {
+        num: "01",
+        verb: "Hook",
+        body: "Over your neck or your shoulder, a column of rollers either side of the spine.",
+        image: {
+          url: "/products/blue/02-in-use.webp",
+          alt: "The massager hooked behind a model's neck, a column of rollers resting either side of the spine, both hands on the handles",
+        },
+      },
+      {
+        num: "02",
+        verb: "Squeeze",
+        body: "Two long handles are the only control. However firm you want it, changed mid-roll.",
+        image: {
+          url: "/products/blue/05-handles.webp",
+          alt: "Close-up of the two long looped handles that the hands grip and squeeze",
+        },
+      },
+      {
+        num: "03",
+        verb: "Roll",
+        body: "Up, down, repeat. Six grooved rollers, each spinning a full 360°.",
+        image: {
+          url: "/products/blue/03-rollers.webp",
+          alt: "Close-up of the six grooved rollers, arranged in two columns of three",
+        },
+      },
     ],
   },
 
