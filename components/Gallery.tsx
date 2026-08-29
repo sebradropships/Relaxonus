@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useEffect, useRef } from "react";
 
 import { useProduct } from "@/components/ProductProvider";
+import { SaleSticker } from "@/components/SaleSticker";
 import { VARIANTS } from "@/lib/product";
 
 /**
@@ -68,27 +69,32 @@ export function Gallery() {
 
   return (
     <div>
-      <div
-        ref={trackRef}
-        className="xscroll flex snap-x snap-mandatory rounded-2xl border border-line bg-surface"
-        aria-label={`${option.name} product images`}
-      >
-        {option.frames.map((frame, index) => (
-          <div
-            key={frame.url}
-            data-index={index}
-            className="relative aspect-square w-full shrink-0 snap-center"
-          >
-            <Image
-              src={frame.url}
-              alt={frame.alt}
-              fill
-              priority={index === 0}
-              sizes="(max-width: 1023px) 100vw, 560px"
-              className="object-cover"
-            />
-          </div>
-        ))}
+      {/* Wrapper, not the scroller: the sticker must sit still over the gallery
+          rather than slide away with the first slide. */}
+      <div className="relative">
+        <SaleSticker />
+        <div
+          ref={trackRef}
+          className="xscroll flex snap-x snap-mandatory rounded-2xl border border-line bg-surface"
+          aria-label={`${option.name} product images`}
+        >
+          {option.frames.map((frame, index) => (
+            <div
+              key={frame.url}
+              data-index={index}
+              className="relative aspect-square w-full shrink-0 snap-center"
+            >
+              <Image
+                src={frame.url}
+                alt={frame.alt}
+                fill
+                priority={index === 0}
+                sizes="(max-width: 1023px) 100vw, 560px"
+                className="object-cover"
+              />
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Dots: the swipe affordance on mobile, where thumbnails are hidden. */}
