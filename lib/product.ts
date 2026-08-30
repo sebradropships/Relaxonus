@@ -320,6 +320,17 @@ export interface Review {
   text: string;
   /** ISO date string. */
   date: string;
+  /**
+   * Where the review was actually written. Omit only for a review left by a
+   * customer of THIS store; anything carried over from a supplier platform
+   * must name it, and the UI prints it beside the reviewer.
+   *
+   * Misrepresenting where a review came from is the same offence as inventing
+   * one (16 CFR 465) — a CJ or AliExpress buyer is not a Relaxonus customer,
+   * however genuine their review is.
+   */
+  source?: string;
+  /** True only where the platform itself verified the purchase. */
   verifiedPurchase: boolean;
   variant: VariantKey;
   image?: Frame;

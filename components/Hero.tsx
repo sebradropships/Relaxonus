@@ -3,6 +3,7 @@
 import { AddToCart, CartError, PriceBlock, QtyStepper, VariantPicker } from "@/components/Buy";
 import { Gallery } from "@/components/Gallery";
 import { useBuyZone } from "@/components/ProductProvider";
+import { Rating } from "@/components/Rating";
 import { HERO } from "@/lib/product";
 
 function Tick() {
@@ -45,7 +46,12 @@ export function Hero() {
         </div>
 
         <div className="rise" style={{ animationDelay: "80ms" }}>
-          <p className="eyebrow text-accent">{HERO.eyebrow}</p>
+          {/* Rating sits ahead of the label and renders only once real reviews
+              exist, so the row collapses to just the label until then. */}
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+            <Rating />
+            <p className="eyebrow text-accent">{HERO.eyebrow}</p>
+          </div>
 
           <h1 className="mt-3 text-[length:var(--text-h1)] text-ink">{HERO.headline}</h1>
 

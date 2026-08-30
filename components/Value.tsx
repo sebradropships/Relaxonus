@@ -170,6 +170,12 @@ export function Value() {
                   <figcaption className="mt-4 text-[13px] text-muted">
                     {review.customerName}
                     {review.verifiedPurchase && " · Verified purchase"}
+                    {/* Named, not implied: a review carried over from a
+                        supplier platform was not written by a customer of
+                        this store, and the caption has to say so. */}
+                    {review.source && (
+                      <span className="mt-0.5 block text-faint">via {review.source}</span>
+                    )}
                   </figcaption>
                 </figure>
               ))}
