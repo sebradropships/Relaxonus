@@ -41,7 +41,11 @@ export function Demo() {
         <p className="mt-4 text-[17px] leading-relaxed text-muted">{DEMO.deck}</p>
       </div>
 
-      <div className="mx-auto mt-10 max-w-4xl overflow-hidden rounded-2xl border border-line bg-surface">
+      {/* The clip is 1080x1920 — shot vertically. The frame matches that ratio
+          so nothing is cropped; forcing it into a 16:9 box left a narrow
+          horizontal slice of the middle. Width-capped because a full-width
+          portrait video would be taller than most screens. */}
+      <div className="mx-auto mt-10 w-full max-w-[340px] overflow-hidden rounded-2xl border border-line bg-surface sm:max-w-[380px]">
         <video
           ref={videoRef}
           src={DEMO.src}
@@ -52,7 +56,7 @@ export function Demo() {
           controls
           aria-label={DEMO.label}
           aria-describedby="demo-steps"
-          className="block aspect-video w-full bg-sand object-cover"
+          className="block aspect-[9/16] w-full bg-sand object-cover"
         />
       </div>
 
