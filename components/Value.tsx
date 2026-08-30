@@ -97,8 +97,6 @@ export function Value() {
           ))}
         </div>
 
-        <Demo />
-
         {/* Proof and objections, side by side on desktop — the two things a
             hesitating visitor is actually looking for. */}
         <div className="mt-12 grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
