@@ -160,9 +160,13 @@ export const STRIKE_SR_PREFIX = "Compare at: ";
  * urgency this file exists to keep off the store (16 CFR 233).
  */
 export const SALE = {
-  endsAt: "2026-08-31T23:59:59Z",
+  /* An 8-hour window set at 16:36 UTC on 30 August 2026. Short deadlines are
+     the easiest kind to let slip: if the prices are still discounted after
+     this passes, the countdown was theatre. The banner hides itself either
+     way, but Shopify has to be put back by hand. */
+  endsAt: "2026-08-31T00:36:00Z",
   /** Spoken once by assistive tech instead of announcing every tick. */
-  endsAtSpoken: "31 August 2026 at 23:59 UTC",
+  endsAtSpoken: "31 August 2026 at 00:36 UTC",
   label: "Launch sale",
   countdownLabel: "Ends in",
 };
@@ -333,8 +337,15 @@ export const LEGAL = {
      A literal banned-word grep will flag them — do not delete. */
   disclaimer:
     "Relaxonus is a manual massage roller and a comfort accessory. It is not a medical device and is not intended to diagnose, treat, cure or prevent any condition.",
-  pricing:
-    "The only price reduction on this store is the Duo at $47.99 against the $59.98 that two single massagers cost bought separately. No other product is discounted and no sale is in effect. Shipping is calculated at checkout. Prices in USD.",
+  /**
+   * The price disclosure is COMPUTED in <Close> from live Shopify money, not
+   * written here. This string went stale the moment the prices changed — it
+   * was still claiming the Duo cost $47.99 against $59.98 and that no sale was
+   * in effect, while the page beside it showed a sale and different numbers.
+   * A disclosure that contradicts the prices it discloses is worse than none,
+   * so it is derived now and cannot drift again.
+   */
+  shipping: "Shipping is calculated at checkout. Prices in USD.",
   copyright: "© 2026 Relaxonus.",
 };
 

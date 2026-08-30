@@ -1,6 +1,7 @@
 "use client";
 
 import { useProduct } from "@/components/ProductProvider";
+import { BestValueSticker } from "@/components/SaleSticker";
 import {
   MAX_QUANTITY,
   STRIKE_SR_PREFIX,
@@ -90,13 +91,11 @@ function Swatch({ variantKey }: { variantKey: VariantKey }) {
  * saving has room to be stated rather than abbreviated into a sticker.
  */
 export function VariantPicker() {
-  const { variant, selectVariant, priceFor, compareAtFor, availableFor, discountPercentFor } =
-    useProduct();
+  const { variant, selectVariant, priceFor, compareAtFor, availableFor } = useProduct();
 
   const singles = TIER_ORDER.filter((key) => VARIANTS[key].units === 1);
   const duoSelected = variant === "set";
   const duoCompareAt = compareAtFor("set");
-  const duoPercent = discountPercentFor("set");
 
   return (
     <div role="radiogroup" aria-label="Choose your option">
@@ -141,21 +140,23 @@ export function VariantPicker() {
         aria-checked={duoSelected}
         disabled={!availableFor("set")}
         onClick={() => selectVariant("set")}
-        className={`tap-lg mt-2.5 flex w-full items-center gap-3 rounded-xl border px-3 py-3 text-left transition-colors ${
+        className={`tap-lg relative mt-2.5 flex w-full items-center gap-3 rounded-xl border px-3 py-3 text-left transition-colors ${
           duoSelected
             ? "border-accent bg-accent-soft ring-1 ring-accent"
             : "border-line bg-surface hover:border-line-strong"
         }`}
       >
+        {/* Replaces the inline SAVE pill rather than joining it — the sticker
+            lands in the same corner, and one badge stating the saving once is
+            clearer than two stating it twice. */}
+        <BestValueSticker />
+
         <Swatch variantKey="set" />
-        <span className="min-w-0 flex-1">
+        {/* Right padding reserves the sticker's footprint so the copy cannot
+            run underneath it on a narrow screen. */}
+        <span className="min-w-0 flex-1 pr-14">
           <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
             <span className="text-sm font-semibold text-ink">Both — Blue + Pink</span>
-            {duoPercent !== null && (
-              <span className="num rounded-full bg-save-soft px-2 py-0.5 text-[11px] font-semibold text-save">
-                SAVE {duoPercent}%
-              </span>
-            )}
           </span>
           <span className="num mt-0.5 flex items-baseline gap-1.5 text-xs">
             <span className="text-muted">{priceFor("set")}</span>

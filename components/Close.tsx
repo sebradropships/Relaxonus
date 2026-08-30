@@ -25,9 +25,21 @@ function Check() {
  * scrolled the whole page never has to scroll back up to buy.
  */
 export function Close() {
-  const { variant } = useProduct();
+  const { variant, amountFor, compareAtFor } = useProduct();
   const buyZone = useBuyZone();
   const option = VARIANTS[variant];
+
+  /* Derived, never written down: this sentence substantiates every
+     strikethrough on the page, so it has to move when the prices move. */
+  const money = (value: number) => `$${value.toFixed(2)}`;
+  const twoSingles = amountFor("blue") + amountFor("pink");
+  const singleCompareAt = compareAtFor("blue");
+  const pricingDisclosure =
+    `The Duo is ${money(amountFor("set"))} against the ${money(twoSingles)} that two single ` +
+    `massagers cost at their current price.` +
+    (singleCompareAt
+      ? ` Blue and Pink are ${money(amountFor("blue"))} against a ${singleCompareAt} compare-at price.`
+      : "");
 
   return (
     <section id="buy-now" className="py-16 sm:py-24">
@@ -80,7 +92,9 @@ export function Close() {
             disclaimer keeps a comfort accessory from reading as a treatment. */}
         <div className="mx-auto mt-12 max-w-3xl border-t border-line pt-6">
           <p className="disclosure">{LEGAL.disclaimer}</p>
-          <p className="disclosure mt-2">{LEGAL.pricing}</p>
+          <p className="disclosure mt-2">
+            {pricingDisclosure} {LEGAL.shipping}
+          </p>
           <p className="disclosure mt-4 text-faint">{LEGAL.copyright}</p>
         </div>
       </div>
