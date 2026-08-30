@@ -237,6 +237,21 @@ h1, h2, h3, .display {
 .marquee { animation: marquee-left 20s linear infinite; }
 
 /*
+  Attention pulse on the price sticker.
+
+  Deliberately a slow fade rather than a true flicker. WCAG 2.3.1 caps flashing
+  at three times per second because anything faster risks triggering seizures
+  in photosensitive visitors; this runs a single soft cycle every 1.8s, roughly
+  0.55Hz, and never fully extinguishes — it dips to 0.72 opacity rather than
+  blinking off, so there is no hard light/dark transition at all.
+*/
+@keyframes sticker-pulse {
+  0%, 100% { opacity: 1;    transform: scale(1); }
+  50%      { opacity: 0.72; transform: scale(0.955); }
+}
+.sticker-pulse { animation: sticker-pulse 1.8s ease-in-out infinite; }
+
+/*
   Two-slide crossslide. Holds on each frame, then travels — a constant crawl
   makes a diagram unreadable. The track is 200% wide, so -50% lands exactly on
   the second slide.
@@ -250,6 +265,7 @@ h1, h2, h3, .display {
 
 @media (prefers-reduced-motion: reduce) {
   .marquee,
+  .sticker-pulse,
   .slide-pair { animation: none; }
 }
 @media (min-width: 720px) {

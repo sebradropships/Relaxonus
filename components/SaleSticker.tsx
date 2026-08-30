@@ -150,7 +150,7 @@ export function SaleSticker() {
   return (
     <div
       aria-hidden="true"
-      className="pointer-events-none absolute -left-2 -top-2 z-10 size-[86px] drop-shadow-sm sm:-left-3 sm:-top-3 sm:size-[104px]"
+      className="sticker-pulse pointer-events-none absolute -left-2 -top-2 z-10 size-[86px] drop-shadow-sm sm:-left-3 sm:-top-3 sm:size-[104px]"
     >
       <svg viewBox="0 0 100 100" className="size-full" role="presentation">
         <polygon points={POINTS} fill="#e0342b" />
