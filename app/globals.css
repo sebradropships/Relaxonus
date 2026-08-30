@@ -237,6 +237,18 @@ h1, h2, h3, .display {
 .marquee { animation: marquee-left 20s linear infinite; }
 
 /*
+  Ribbon flow. The wave repeats every 400px, so travelling exactly one
+  wavelength leaves the crests where they were: the wave itself reads as
+  stationary while the lettering streams along it. Shifting by any other
+  distance makes the whole band visibly lurch sideways on each loop.
+*/
+@keyframes ribbon-flow {
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(-400px, 0, 0); }
+}
+.ribbon { animation: ribbon-flow 9s linear infinite; }
+
+/*
   Two-slide crossslide. Holds on each frame, then travels — a constant crawl
   makes a diagram unreadable. The track is 200% wide, so -50% lands exactly on
   the second slide.
@@ -250,6 +262,7 @@ h1, h2, h3, .display {
 
 @media (prefers-reduced-motion: reduce) {
   .marquee,
+  .ribbon,
   .slide-pair { animation: none; }
 }
 @media (min-width: 720px) {
