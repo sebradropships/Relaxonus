@@ -176,7 +176,7 @@ export const SALE = {
   endsAt: "2026-08-31T02:15:00Z" as string | null,
   /** Spoken once by assistive tech instead of announcing every tick. */
   endsAtSpoken: "31 August 2026 at 02:15 UTC" as string | null,
-  label: "Launch sale",
+  label: "Live sale",
   countdownLabel: "Ends in",
 };
 
