@@ -219,6 +219,26 @@ h1, h2, h3, .display {
 .pop  { animation: pop 340ms cubic-bezier(0.34, 1.56, 0.64, 1); }
 
 .sheet { animation: sheet-up 280ms cubic-bezier(0.22, 1, 0.36, 1); }
+
+/*
+  The one looping animation on the page. Its track is duplicated and shifted by
+  exactly half, so the loop is seamless.
+
+  `contain: paint` on the clipping parent is load-bearing, not decorative:
+  an animated, translated child inside plain `overflow: hidden` is the shape
+  WebKit fails to clip, which previously handed the document real horizontal
+  scroll. Deliberately no `will-change` here — promoting the track to its own
+  layer is what made that escape easy in the first place.
+*/
+@keyframes marquee-left {
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(-50%, 0, 0); }
+}
+.marquee { animation: marquee-left 20s linear infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee { animation: none; }
+}
 @media (min-width: 720px) {
   .sheet { animation: panel-in 280ms cubic-bezier(0.22, 1, 0.36, 1); }
 }

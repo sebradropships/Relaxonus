@@ -80,8 +80,7 @@ export const VARIANTS: Record<VariantKey, Variant> = {
     optionValue: "Blue",
     variantId: "gid://shopify/ProductVariant/53761385136491",
     swatch: "#A9D8E8",
-    price: "$34.99",
-    compareAt: "$40.99",
+    price: "$29.99",
     units: 1,
     frames: [
       { url: "/products/blue/01-hero.webp", alt: "The blue Relaxonus massager standing against a pale wall" },
@@ -98,8 +97,7 @@ export const VARIANTS: Record<VariantKey, Variant> = {
     optionValue: "Pink",
     variantId: "gid://shopify/ProductVariant/53761385169259",
     swatch: "#F4BCD2",
-    price: "$34.99",
-    compareAt: "$40.99",
+    price: "$29.99",
     units: 1,
     frames: [
       { url: "/products/pink/01-hero.webp", alt: "The pink Relaxonus massager standing against a pale wall" },
@@ -116,8 +114,8 @@ export const VARIANTS: Record<VariantKey, Variant> = {
     optionValue: "A set",
     variantId: "gid://shopify/ProductVariant/53761385103723",
     swatch: "linear-gradient(105deg, #A9D8E8 0 50%, #F4BCD2 50% 100%)",
-    price: "$49.99",
-    compareAt: "$69.98",
+    price: "$47.99",
+    compareAt: "$59.98",
     units: 2,
     frames: [
       { url: IMAGES.pair, alt: ALT_PAIR },
@@ -160,14 +158,24 @@ export const STRIKE_SR_PREFIX = "Compare at: ";
  * urgency this file exists to keep off the store (16 CFR 233).
  */
 export const SALE = {
-  /* An 8-hour window set at 16:36 UTC on 30 August 2026. Short deadlines are
-     the easiest kind to let slip: if the prices are still discounted after
-     this passes, the countdown was theatre. The banner hides itself either
-     way, but Shopify has to be put back by hand. */
-  endsAt: "2026-08-31T00:36:00Z",
+  /**
+   * Deadline for a TIMED promotion, or null when the live discount is a
+   * standing one with no end date.
+   *
+   * Null today: the launch sale was ended by restoring the prices in Shopify,
+   * and what remains is the Duo's ordinary bundle saving against two singles —
+   * real, but not expiring. Leaving a countdown running over it would have
+   * been a deadline attached to nothing, which is the deceptive urgency this
+   * file exists to keep off the store (16 CFR 233).
+   *
+   * To run a timed sale again: discount the variants in Shopify, then set both
+   * fields below. The countdown returns on its own, and disappears again the
+   * moment the date passes.
+   */
+  endsAt: null as string | null,
   /** Spoken once by assistive tech instead of announcing every tick. */
-  endsAtSpoken: "31 August 2026 at 00:36 UTC",
-  label: "Launch sale",
+  endsAtSpoken: null as string | null,
+  label: "Bundle offer",
   countdownLabel: "Ends in",
 };
 
@@ -235,8 +243,10 @@ export const VALUE = {
   demo: {
     eyebrow: "HOW TO USE IT",
     heading: "Hook it on. Squeeze. Roll.",
-    deck: "Three moves, no setup, nothing to pair. Step through it, or let it play.",
-    label: "How to use the Relaxonus massager, in three steps",
+    deck: "Three moves, no setup, nothing to pair. The clip is silent — there is no motor in it to make a noise.",
+    /** Supplier product footage, used unmodified. */
+    src: "/video/how-to-use.mp4",
+    label: "Demonstration of the Relaxonus massager being used on the neck and shoulders",
     steps: [
       {
         num: "01",
