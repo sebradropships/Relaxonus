@@ -9,62 +9,31 @@ function pad(value: number) {
   return String(value).padStart(2, "0");
 }
 
-/* One wave period, in user units. The flow animation travels exactly this far,
-   which is what keeps the crests from lurching on each loop. */
-const WAVE = 400;
-const PERIODS = 8;
-const RIBBON_W = WAVE * PERIODS;
-const RIBBON_H = 48;
-
-/* A smooth quadratic wave: one `q` to open it, then mirrored `t` segments.
-   Each 200-unit segment is half a period, so two make up WAVE. */
-const WAVE_PATH =
-  `M0,${RIBBON_H / 2} q100,-15 200,0 ` +
-  Array.from({ length: PERIODS * 2 - 1 }, () => "t200,0").join(" ");
-
 /**
- * The SALE ribbon: lettering running along a flowing wave rather than a flat
- * band.
+ * Sliding SALE strip beneath the banner.
  *
- * The trick is that the wave is periodic and the animation travels exactly one
- * wavelength, so the crests land back where they started every cycle. The wave
- * therefore looks stationary while the text streams through it, and the loop
- * has no seam. The band is drawn wider than any realistic viewport so the
- * translate never exposes an end.
- *
- * The whole thing is aria-hidden with one sr-only word beside it: a screen
- * reader should hear "sale" once, not sixty times.
+ * The track is rendered twice and the animation shifts it by exactly half, so
+ * it loops without a seam. Both copies are aria-hidden and a single sr-only
+ * word carries the meaning — a screen reader should hear "sale" once, not
+ * twenty times.
  */
 function SaleStrip() {
-  const letters = Array.from({ length: 60 }, () => "SALE").join("     ·     ");
+  const track = (
+    <div aria-hidden="true" className="flex shrink-0 items-center gap-7 pr-7">
+      {Array.from({ length: 14 }, (_, i) => (
+        <span key={i} className="eyebrow whitespace-nowrap text-white/95">
+          SALE
+        </span>
+      ))}
+    </div>
+  );
 
   return (
-    <div
-      className="relative overflow-hidden bg-[#c8322a] [contain:paint]"
-      style={{ height: RIBBON_H }}
-    >
-      <svg
-        aria-hidden="true"
-        className="ribbon absolute left-0 top-0"
-        width={RIBBON_W}
-        height={RIBBON_H}
-        viewBox={`0 0 ${RIBBON_W} ${RIBBON_H}`}
-        role="presentation"
-      >
-        <defs>
-          <path id="sale-wave" d={WAVE_PATH} fill="none" />
-        </defs>
-        <text
-          fill="#ffffff"
-          fontSize="13"
-          fontWeight="700"
-          letterSpacing="2.4"
-          fontFamily="var(--font-inter), system-ui, sans-serif"
-          dominantBaseline="middle"
-        >
-          <textPath href="#sale-wave">{letters}</textPath>
-        </text>
-      </svg>
+    <div className="relative overflow-hidden bg-[#c8322a] py-1.5 [contain:paint]">
+      <div className="marquee flex min-w-max">
+        {track}
+        {track}
+      </div>
       <span className="sr-only">Sale</span>
     </div>
   );
