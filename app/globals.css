@@ -236,8 +236,21 @@ h1, h2, h3, .display {
 }
 .marquee { animation: marquee-left 20s linear infinite; }
 
+/*
+  Two-slide crossslide. Holds on each frame, then travels — a constant crawl
+  makes a diagram unreadable. The track is 200% wide, so -50% lands exactly on
+  the second slide.
+*/
+@keyframes slide-pair {
+  0%, 44%   { transform: translate3d(0, 0, 0); }
+  56%, 94%  { transform: translate3d(-50%, 0, 0); }
+  100%      { transform: translate3d(0, 0, 0); }
+}
+.slide-pair { animation: slide-pair 11s ease-in-out infinite; }
+
 @media (prefers-reduced-motion: reduce) {
-  .marquee { animation: none; }
+  .marquee,
+  .slide-pair { animation: none; }
 }
 @media (min-width: 720px) {
   .sheet { animation: panel-in 280ms cubic-bezier(0.22, 1, 0.36, 1); }

@@ -101,14 +101,23 @@ export function Value() {
             hesitating visitor is actually looking for. */}
         <div className="mt-12 grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
           <div className="card overflow-hidden">
-            <div className="relative aspect-[16/11]">
-              <Image
-                src="/products/blue/02-in-use.webp"
-                alt="The massager hooked behind a model's neck, a column of rollers either side of the spine"
-                fill
-                sizes="(max-width: 1023px) 100vw, 560px"
-                className="object-cover"
-              />
+            {/* `contain: paint` rather than overflow alone: an animated,
+                translated child inside plain overflow:hidden is the shape
+                WebKit fails to clip. */}
+            <div className="relative aspect-[16/11] overflow-hidden [contain:paint]">
+              <div className="slide-pair flex h-full w-[200%]">
+                {VALUE.mechanism.map((frame) => (
+                  <div key={frame.url} className="relative h-full w-1/2">
+                    <Image
+                      src={frame.url}
+                      alt={frame.alt}
+                      fill
+                      sizes="(max-width: 1023px) 100vw, 560px"
+                      className="object-cover"
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
             <div className="grid grid-cols-2 gap-px bg-line">
               {REVIEWS_EMPTY.proof.map(([value, label]) => (

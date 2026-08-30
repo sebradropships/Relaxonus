@@ -278,6 +278,18 @@ export const VALUE = {
     ],
   },
 
+  /** The two mechanism diagrams, slid one after the other in the proof card. */
+  mechanism: [
+    {
+      url: "/products/blue/06-rollers-spin.jpg",
+      alt: "The rollers rotating on their axles, arrows showing the direction each one spins",
+    },
+    {
+      url: "/products/blue/07-squeeze.jpg",
+      alt: "Arrows showing the two handles squeezing inward to press the rollers together",
+    },
+  ],
+
   spec: {
     heading: "What you get",
     items: [
