@@ -183,8 +183,13 @@ export const SALE = {
 /* ================================ SECTION 1 =============================== */
 
 export const HERO = {
-  /** Truthful: the product is newly listed and genuinely in stock. */
-  eyebrow: "NEW ARRIVAL · IN STOCK",
+  /**
+   * States availability and dispatch, not scarcity. There are roughly 78,500
+   * units on hand, so "limited stock" or "only N left" would be invented
+   * urgency — the one kind that reliably draws enforcement. Real urgency comes
+   * from the sale deadline instead, which is a genuine one.
+   */
+  eyebrow: "IN STOCK · SHIPS NOW",
   headline: "The neck massager that never needs charging.",
   sub: "Hook it over your shoulders, squeeze the handles, roll. Six grooved rollers do the work — powered entirely by you.",
   bullets: [
