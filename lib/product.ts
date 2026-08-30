@@ -164,20 +164,19 @@ export const SALE = {
    * Deadline for a TIMED promotion, or null when the live discount is a
    * standing one with no end date.
    *
-   * Null today: the launch sale was ended by restoring the prices in Shopify,
-   * and what remains is the Duo's ordinary bundle saving against two singles —
-   * real, but not expiring. Leaving a countdown running over it would have
-   * been a deadline attached to nothing, which is the deceptive urgency this
-   * file exists to keep off the store (16 CFR 233).
+   * Set to null whenever the live discount is a standing one — a countdown
+   * over a price with no end date is a deadline attached to nothing, which is
+   * the deceptive urgency this file exists to keep off the store (16 CFR 233).
    *
-   * To run a timed sale again: discount the variants in Shopify, then set both
-   * fields below. The countdown returns on its own, and disappears again the
-   * moment the date passes.
+   * An 8-hour window set at 18:15 UTC on 30 August 2026, with all three
+   * variants genuinely discounted in Shopify behind it. The banner and clock
+   * remove themselves when it passes, but the PRICES DO NOT — they have to be
+   * put back by hand, or the countdown was theatre.
    */
-  endsAt: null as string | null,
+  endsAt: "2026-08-31T02:15:00Z" as string | null,
   /** Spoken once by assistive tech instead of announcing every tick. */
-  endsAtSpoken: null as string | null,
-  label: "Bundle offer",
+  endsAtSpoken: "31 August 2026 at 02:15 UTC" as string | null,
+  label: "Launch sale",
   countdownLabel: "Ends in",
 };
 
