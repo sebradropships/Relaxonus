@@ -316,20 +316,6 @@ export const REVIEWS_EMPTY = {
   ],
 };
 
-/* ================================ SECTION 3 =============================== */
-
-export const CLOSE = {
-  heading: "Ready when you are.",
-  deck: "One massager, or the pair. Both ship from stock.",
-  trust: [
-    "Secure checkout",
-    "Apple Pay & Google Pay",
-    "Shipping calculated at checkout",
-    "In stock — ships now",
-  ],
-  reassurance: "Simple. Secure. No unnecessary hassle.",
-};
-
 /* --------------------------------- Legal ---------------------------------- */
 
 export const LEGAL = {
@@ -338,7 +324,7 @@ export const LEGAL = {
   disclaimer:
     "Relaxonus is a manual massage roller and a comfort accessory. It is not a medical device and is not intended to diagnose, treat, cure or prevent any condition.",
   /**
-   * The price disclosure is COMPUTED in <Close> from live Shopify money, not
+   * The price disclosure is COMPUTED in <LegalStrip> from live Shopify money, not
    * written here. This string went stale the moment the prices changed — it
    * was still claiming the Duo cost $47.99 against $59.98 and that no sale was
    * in effect, while the page beside it showed a sale and different numbers.

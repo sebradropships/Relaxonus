@@ -1,6 +1,6 @@
 import { CartDrawer } from "@/components/CartDrawer";
-import { Close } from "@/components/Close";
 import { Hero } from "@/components/Hero";
+import { LegalStrip } from "@/components/LegalStrip";
 import { ProductProvider } from "@/components/ProductProvider";
 import { SaleBanner } from "@/components/SaleBanner";
 import { SiteHeader } from "@/components/SiteHeader";
@@ -9,15 +9,18 @@ import { Value } from "@/components/Value";
 import { getProductCommerce } from "@/lib/shopify/product";
 
 /**
- * Three sections, in the order the decision is actually made:
+ * Two sections, in the order the decision is actually made:
  *
- *   1  Hero    — what it is, what it costs, and the buy button.
- *   2  Value   — why it is worth it, what is verifiable, what people ask.
- *   3  Close   — a second complete purchase point, plus required disclosures.
+ *   1  Hero   — what it is, what it costs, and the buy button.
+ *   2  Value  — the demonstration, why it is worth it, what people ask.
  *
- * Everything else on the page is chrome: a wordmark, a cart, and the sticky
- * mobile bar. There is deliberately no nav, no about, no blog and no footer
- * of links — every extra destination is a way out of the purchase.
+ * The hero's buy box is now the only purchase point on the page, which is
+ * what makes the sticky mobile bar load-bearing rather than a convenience:
+ * once the hero scrolls away it is the sole route to the cart.
+ *
+ * Everything else is chrome — a wordmark, a cart, the sale strip, and the
+ * required disclosures. No nav, no about, no footer of links: every extra
+ * destination is a way out of the purchase.
  */
 export default async function Page() {
   const commerce = await getProductCommerce();
@@ -31,17 +34,17 @@ export default async function Page() {
         Skip to buy
       </a>
 
-      {/* Above the header, and self-removing: it renders only while a genuine
-          discount is live in Shopify AND the deadline is still ahead. */}
+      {/* Renders only while a genuine discount is live in Shopify AND the
+          deadline is still ahead. */}
       <SaleBanner />
       <SiteHeader />
 
       <main>
         <Hero />
         <Value />
-        <Close />
       </main>
 
+      <LegalStrip />
       <StickyBar />
       <CartDrawer />
     </ProductProvider>
