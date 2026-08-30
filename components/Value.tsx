@@ -77,7 +77,11 @@ export function Value() {
   return (
     <section id="why" className="border-y border-line bg-sand py-16 sm:py-24">
       <div className="shell">
-        <p className="eyebrow text-accent">{VALUE.eyebrow}</p>
+        {/* The demonstration leads the section: seeing it used is the fastest
+            way to understand it, and it earns the copy underneath. */}
+        <Demo />
+
+        <p className="eyebrow mt-16 text-accent">{VALUE.eyebrow}</p>
         <h2 className="mt-3 max-w-[18ch] text-[length:var(--text-h2)] text-ink">
           {VALUE.heading}
         </h2>
