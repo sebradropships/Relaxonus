@@ -1,6 +1,7 @@
 import { CartDrawer } from "@/components/CartDrawer";
 import { Hero } from "@/components/Hero";
 import { LegalStrip } from "@/components/LegalStrip";
+import { Popup } from "@/components/Popup";
 import { ProductProvider } from "@/components/ProductProvider";
 import { Reviews } from "@/components/Reviews";
 import { SaleBanner } from "@/components/SaleBanner";
@@ -49,6 +50,7 @@ export default async function Page() {
       <LegalStrip />
       <StickyBar />
       <CartDrawer />
+      <Popup />
     </ProductProvider>
   );
 }

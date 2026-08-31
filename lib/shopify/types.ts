@@ -29,12 +29,18 @@ export interface CartLine {
  * Deliberately excludes the cart id: that lives in an httpOnly cookie so the
  * browser cannot read or forge it.
  */
+export interface CartDiscount {
+  code: string;
+  applicable: boolean;
+}
+
 export interface CartSummary {
   totalQuantity: number;
   checkoutUrl: string;
   subtotal: Money;
   total: Money;
   lines: CartLine[];
+  discountCodes: CartDiscount[];
 }
 
 /** Live pricing for one option, merged over the curated copy at render time. */

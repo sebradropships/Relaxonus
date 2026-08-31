@@ -96,6 +96,76 @@ export const STOCK = {
   hideAbove: 20,
 } as const;
 
+/* ----------------------------- Quantity breaks ---------------------------- */
+
+/**
+ * Volume pricing.
+ *
+ * `code` must be a real discount code in Shopify. The storefront applies it to
+ * the cart rather than drawing a cheaper number next to an unchanged one:
+ * checkout charges what Shopify says, so a display-only break would show a
+ * saving the customer never receives. If the code does not exist the cart
+ * rejects it and the UI falls back to showing no break — never a phantom one.
+ */
+export interface QuantityBreak {
+  minQuantity: number;
+  percentOff: number;
+  code: string;
+  label: string;
+}
+
+export const QUANTITY_BREAKS = {
+  enabled: true,
+  heading: "Buy more, pay less",
+  tiers: [
+    { minQuantity: 2, percentOff: 5, code: "BULK5", label: "2+ units" },
+    { minQuantity: 3, percentOff: 10, code: "BULK10", label: "3+ units" },
+    { minQuantity: 5, percentOff: 15, code: "BULK15", label: "5+ units" },
+  ] as QuantityBreak[],
+} as const;
+
+/** Deepest tier the quantity qualifies for, or null. */
+export function breakFor(quantity: number): QuantityBreak | null {
+  if (!QUANTITY_BREAKS.enabled) return null;
+  let best: QuantityBreak | null = null;
+  for (const tier of QUANTITY_BREAKS.tiers) {
+    if (quantity >= tier.minQuantity && (!best || tier.minQuantity > best.minQuantity)) {
+      best = tier;
+    }
+  }
+  return best;
+}
+
+/* --------------------------------- Buy now -------------------------------- */
+
+export const BUY_NOW = {
+  enabled: true,
+  label: "Buy it now",
+} as const;
+
+/* --------------------------------- Popups --------------------------------- */
+
+export type PopupTrigger = "exit" | "delay" | "scroll";
+
+export const POPUP = {
+  enabled: true,
+  /** exit  — pointer leaves the viewport (desktop) or a fast upward flick (touch).
+   *  delay — after `delaySeconds`.
+   *  scroll — after `scrollPercent` of the page. */
+  trigger: "exit" as PopupTrigger,
+  delaySeconds: 25,
+  scrollPercent: 55,
+
+  /** Suppressed for this many days after a dismissal or a conversion. */
+  rememberDays: 7,
+  storageKey: "sp-popup-seen",
+
+  heading: "Before you go",
+  body: "The pair works out at $23.99 a massager against $34.99 bought singly — the biggest saving on the store.",
+  cta: "See the pair",
+  dismiss: "No thanks",
+} as const;
+
 /* --------------------------------- Upsell --------------------------------- */
 
 export const UPSELL = {

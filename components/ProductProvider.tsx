@@ -17,8 +17,10 @@ import {
   addToCartAction,
   getCartAction,
   removeLineAction,
+  setDiscountCodesAction,
   updateLineQuantityAction,
 } from "@/app/actions/cart";
+import { breakFor } from "@/lib/campaign";
 import { ADDED_MS, DEFAULT_TIER, MAX_QUANTITY, VARIANTS, type VariantKey } from "@/lib/product";
 import { formatMoney } from "@/lib/money";
 import type { CartLine, CartSummary, Money, ProductCommerce } from "@/lib/shopify/types";
@@ -74,6 +76,8 @@ interface ProductState {
   selectVariant: (variant: VariantKey) => void;
   selectImage: (index: number) => void;
   addToCart: () => void;
+  /** Adds the selection, then navigates straight to Shopify checkout. */
+  buyNow: () => void;
 }
 
 const ProductContext = createContext<ProductState | null>(null);
@@ -392,6 +396,84 @@ export function ProductProvider({
     });
   }, [variant, quantity, addOptimisticUnits, openCart]);
 
+  /**
+   * Adds the selection and goes straight to Shopify checkout.
+   *
+   * Navigates to the checkout URL that THIS add returned rather than to a
+   * cached one: on a first click no cart exists yet, and a stale URL would
+   * send the shopper to a checkout that predates the item they just chose.
+   */
+  const buyNow = useCallback(() => {
+    if (inFlight.current) return;
+    inFlight.current = true;
+    setError(null);
+
+    startTransition(async () => {
+      const sending = quantity;
+      try {
+        const result = await addToCartAction(variant, sending);
+
+        if (!result.ok || !result.cart) {
+          setError(result.error ?? "Could not start checkout.");
+          return;
+        }
+
+        const tier = breakFor(sending);
+        if (tier) {
+          /* Volume discount rides along, but a rejected code must not block
+             the sale: on failure the shopper still reaches checkout, just at
+             the undiscounted price the cart actually holds. */
+          const discounted = await setDiscountCodesAction([tier.code]);
+          if (discounted.cart) setSummary(discounted.cart);
+          if (discounted.cart?.checkoutUrl) {
+            window.location.assign(discounted.cart.checkoutUrl);
+            return;
+          }
+        }
+
+        setSummary(result.cart);
+        window.location.assign(result.cart.checkoutUrl);
+      } catch {
+        setError("Could not reach the store. Please try again.");
+      } finally {
+        inFlight.current = false;
+      }
+    });
+  }, [variant, quantity]);
+
+  /**
+   * Keeps the cart's volume discount in step with what is actually in it.
+   *
+   * Runs off the cart's own total quantity, not the stepper, so it is correct
+   * however the cart got there — a second add, a line edit, a removal. Only
+   * fires when the intended code differs from the one already applied, so it
+   * does not loop on its own result.
+   */
+  const syncedCodes = useRef<string>("");
+  useEffect(() => {
+    if (!summary) return;
+
+    const tier = breakFor(summary.totalQuantity);
+    const want = tier ? tier.code : "";
+    const have = summary.discountCodes
+      .filter((d) => d.applicable)
+      .map((d) => d.code)
+      .join(",");
+
+    if (want === have || syncedCodes.current === want) return;
+    syncedCodes.current = want;
+
+    startLineTransition(async () => {
+      try {
+        const result = await setDiscountCodesAction(want ? [want] : []);
+        if (result.cart) setSummary(result.cart);
+      } catch {
+        /* Leave the cart as-is: an unapplied volume discount is a smaller
+           problem than a cart that stops responding. */
+      }
+    });
+  }, [summary]);
+
   const value = useMemo<ProductState>(
     () => ({
       variant,
@@ -422,13 +504,14 @@ export function ProductProvider({
       selectVariant,
       selectImage,
       addToCart,
+      buyNow,
     }),
     [
       variant, image, quantity, setQuantity, registerBuyZone, buyZoneVisible,
       cartCount, summary, added, pending, error,
       cartOpen, openCart, closeCart, lineBusy, lineError, setLineQuantity, removeCartLine,
       priceFor, compareAtFor, availableFor, amountFor, discountPercentFor,
-      selectVariant, selectImage, addToCart,
+      selectVariant, selectImage, addToCart, buyNow,
     ],
   );
 

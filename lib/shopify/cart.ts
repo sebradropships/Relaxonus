@@ -7,6 +7,7 @@ import { storefrontLive } from "@/lib/shopify/client";
 import {
   CART_CREATE,
   CART_LINES_ADD,
+  CART_DISCOUNT_CODES_UPDATE,
   CART_LINES_REMOVE,
   CART_LINES_UPDATE,
   CART_QUERY,
@@ -33,6 +34,7 @@ interface RawCart {
   checkoutUrl: string;
   totalQuantity: number;
   cost: { subtotalAmount: Money; totalAmount: Money };
+  discountCodes: { code: string; applicable: boolean }[];
   lines: { nodes: RawCartLine[] };
 }
 
@@ -81,6 +83,7 @@ function toSummary(cart: RawCart): CartSummary {
     checkoutUrl: cart.checkoutUrl,
     subtotal: cart.cost.subtotalAmount,
     total: cart.cost.totalAmount,
+    discountCodes: cart.discountCodes ?? [],
     lines: cart.lines.nodes.map((line) => {
       const colour = line.merchandise.selectedOptions.find(
         (option) => option.name.trim().toLowerCase() === "color",
@@ -276,6 +279,49 @@ export async function removeLine(lineId: string): Promise<LineResult> {
     }
 
     return { ok: !error, cart: toSummary(cart), error: error ?? undefined };
+  } catch {
+    return { ok: false, cart: null, error: "Could not reach the store. Please try again." };
+  }
+}
+
+/**
+ * Applies discount codes to the cart, replacing whatever was there.
+ *
+ * Shopify accepts an unknown code without erroring and simply marks it
+ * inapplicable, so success is read off `discountCodes[].applicable` rather
+ * than off the absence of userErrors. Callers use that to avoid advertising a
+ * saving the cart did not actually receive. An empty array clears all codes.
+ */
+export async function setDiscountCodes(codes: string[]): Promise<LineResult> {
+  const id = await readCartId();
+  if (!id) {
+    return { ok: false, cart: null, error: "Your cart could not be found. Please refresh the page." };
+  }
+
+  try {
+    const data = await storefrontLive<{
+      cartDiscountCodesUpdate: { cart: RawCart | null; userErrors: UserError[] };
+    }>(CART_DISCOUNT_CODES_UPDATE, { cartId: id, codes, language: LANGUAGE });
+
+    const error = firstError(data.cartDiscountCodesUpdate.userErrors);
+    const cart = data.cartDiscountCodesUpdate.cart;
+
+    if (!cart) {
+      await clearCartId();
+      return { ok: false, cart: null, error: error ?? "Your cart has expired. Please add items again." };
+    }
+
+    const summary = toSummary(cart);
+    const rejected = codes.filter(
+      (code) => !summary.discountCodes.some((d) => d.code === code && d.applicable),
+    );
+
+    if (rejected.length > 0) {
+      console.error("[cart] discount code not applicable:", rejected.join(", "));
+      return { ok: false, cart: summary, error: "That discount is not available right now." };
+    }
+
+    return { ok: !error, cart: summary, error: error ?? undefined };
   } catch {
     return { ok: false, cart: null, error: "Could not reach the store. Please try again." };
   }

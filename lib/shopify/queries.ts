@@ -26,6 +26,9 @@ export const CART_FIELDS = /* GraphQL */ `
       subtotalAmount { amount currencyCode }
       totalAmount { amount currencyCode }
     }
+    # applicable is how a rejected code is detected: Shopify accepts the
+    # mutation and silently drops an unknown code rather than erroring.
+    discountCodes { code applicable }
     lines(first: 50) {
       nodes {
         id
@@ -111,6 +114,24 @@ export const CART_LINES_UPDATE = /* GraphQL */ `
   mutation CartLinesUpdate($cartId: ID!, $lines: [CartLineUpdateInput!]!, $language: LanguageCode)
   @inContext(language: $language) {
     cartLinesUpdate(cartId: $cartId, lines: $lines) {
+      cart { ...CartFields }
+      userErrors { code field message }
+    }
+  }
+`;
+
+/**
+ * Applies discount codes to the cart.
+ *
+ * Shopify silently drops a code it does not recognise rather than erroring, so
+ * the caller has to read `discountCodes[].applicable` back to find out whether
+ * it actually landed. Passing an empty array clears every code.
+ */
+export const CART_DISCOUNT_CODES_UPDATE = /* GraphQL */ `
+  ${CART_FIELDS}
+  mutation CartDiscountCodesUpdate($cartId: ID!, $codes: [String!], $language: LanguageCode)
+  @inContext(language: $language) {
+    cartDiscountCodesUpdate(cartId: $cartId, discountCodes: $codes) {
       cart { ...CartFields }
       userErrors { code field message }
     }

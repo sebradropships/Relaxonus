@@ -1,10 +1,12 @@
 "use server";
 
+import { QUANTITY_BREAKS } from "@/lib/campaign";
 import { MAX_QUANTITY, TIER_ORDER, type VariantKey } from "@/lib/product";
 import {
   addLine,
   getCart,
   removeLine,
+  setDiscountCodes,
   updateLineQuantity,
   type AddResult,
   type LineResult,
@@ -76,4 +78,22 @@ export async function removeLineAction(lineId: unknown): Promise<LineResult> {
   }
 
   return removeLine(lineId);
+}
+
+/**
+ * Applies volume-discount codes to the cart.
+ *
+ * Codes are validated against the configured tiers rather than trusted from
+ * the client: a server action is a public endpoint, and without this check any
+ * caller could apply any discount code the store has ever created.
+ */
+export async function setDiscountCodesAction(codes: unknown): Promise<LineResult> {
+  if (!Array.isArray(codes) || codes.some((c) => typeof c !== "string")) {
+    return { ok: false, cart: null, error: "Unknown discount." };
+  }
+
+  const allowed = new Set(QUANTITY_BREAKS.tiers.map((tier) => tier.code));
+  const safe = (codes as string[]).filter((code) => allowed.has(code));
+
+  return setDiscountCodes(safe);
 }
