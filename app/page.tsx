@@ -8,7 +8,7 @@ import { SaleBanner } from "@/components/SaleBanner";
 import { SiteHeader } from "@/components/SiteHeader";
 import { StickyBar } from "@/components/StickyBar";
 import { Value } from "@/components/Value";
-import { getProductCommerce } from "@/lib/shopify/product";
+import { getInventory, getProductCommerce } from "@/lib/shopify/product";
 
 /**
  * Two sections, in the order the decision is actually made:
@@ -25,10 +25,12 @@ import { getProductCommerce } from "@/lib/shopify/product";
  * destination is a way out of the purchase.
  */
 export default async function Page() {
-  const commerce = await getProductCommerce();
+  /* Fetched together so a slow inventory read cannot serialise behind pricing.
+     Inventory is allowed to be null; pricing is not. */
+  const [commerce, inventory] = await Promise.all([getProductCommerce(), getInventory()]);
 
   return (
-    <ProductProvider commerce={commerce}>
+    <ProductProvider commerce={{ ...commerce, inventory }}>
       <a
         href="#buy"
         className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[80] focus:rounded-lg focus:bg-accent focus:px-4 focus:py-2 focus:text-white"

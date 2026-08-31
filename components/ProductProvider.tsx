@@ -72,6 +72,8 @@ interface ProductState {
    * so the page cannot advertise a sale that is not actually on.
    */
   discountPercentFor: (key: VariantKey) => number | null;
+  /** Live units in stock, or null when inventory cannot be read. */
+  stockFor: (key: VariantKey) => number | null;
 
   selectVariant: (variant: VariantKey) => void;
   selectImage: (index: number) => void;
@@ -351,6 +353,11 @@ export function ProductProvider({
     [amountFor, compareAmountFor],
   );
 
+  const stockFor = useCallback(
+    (key: VariantKey) => commerce.inventory?.[key] ?? null,
+    [commerce],
+  );
+
   const addToCart = useCallback(() => {
     // Synchronous guard: `pending` only flips after React commits, so a
     // same-tick second click would otherwise create a second cart.
@@ -500,6 +507,7 @@ export function ProductProvider({
       compareAtFor,
       amountFor,
       discountPercentFor,
+      stockFor,
       availableFor,
       selectVariant,
       selectImage,
@@ -510,7 +518,7 @@ export function ProductProvider({
       variant, image, quantity, setQuantity, registerBuyZone, buyZoneVisible,
       cartCount, summary, added, pending, error,
       cartOpen, openCart, closeCart, lineBusy, lineError, setLineQuantity, removeCartLine,
-      priceFor, compareAtFor, availableFor, amountFor, discountPercentFor,
+      priceFor, compareAtFor, availableFor, amountFor, discountPercentFor, stockFor,
       selectVariant, selectImage, addToCart, buyNow,
     ],
   );

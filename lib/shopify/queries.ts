@@ -75,6 +75,30 @@ export const PRODUCT_COMMERCE_QUERY = /* GraphQL */ `
   }
 `;
 
+/**
+ * Live stock levels. Deliberately a SEPARATE query from PRODUCT_COMMERCE_QUERY.
+ *
+ * `quantityAvailable` needs the `unauthenticated_read_product_inventory` scope,
+ * and without it Shopify fails the whole request rather than omitting one
+ * field. Asking for it alongside pricing would therefore take the prices down
+ * with it whenever the scope is absent. Kept apart, a denial costs only the
+ * stock line.
+ */
+export const PRODUCT_INVENTORY_QUERY = /* GraphQL */ `
+  query ProductInventory($handle: String!, $country: CountryCode, $language: LanguageCode)
+  @inContext(country: $country, language: $language) {
+    product(handle: $handle) {
+      variants(first: 20) {
+        nodes {
+          id
+          quantityAvailable
+          selectedOptions { name value }
+        }
+      }
+    }
+  }
+`;
+
 /** `cart(id:)` is nullable — expired, completed or tampered ids return null. */
 export const CART_QUERY = /* GraphQL */ `
   ${CART_FIELDS}

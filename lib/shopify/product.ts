@@ -9,7 +9,7 @@ import {
   PRODUCT_CACHE_TAG,
   PRODUCT_REVALIDATE_SECONDS,
 } from "@/lib/shopify/config";
-import { PRODUCT_COMMERCE_QUERY } from "@/lib/shopify/queries";
+import { PRODUCT_COMMERCE_QUERY, PRODUCT_INVENTORY_QUERY } from "@/lib/shopify/queries";
 import type { Money, ProductCommerce, VariantCommerce } from "@/lib/shopify/types";
 
 interface RawVariant {
@@ -47,7 +47,7 @@ export async function getProductCommerce(): Promise<ProductCommerce> {
   const handle = process.env.SHOPIFY_PRODUCT_HANDLE;
 
   if (!isConfigured() || !handle) {
-    return { variants: null, availableForSale: true };
+    return { variants: null, availableForSale: true, inventory: null };
   }
 
   try {
@@ -58,7 +58,7 @@ export async function getProductCommerce(): Promise<ProductCommerce> {
       [PRODUCT_CACHE_TAG],
     );
 
-    if (!data.product) return { variants: null, availableForSale: true };
+    if (!data.product) return { variants: null, availableForSale: true, inventory: null };
 
     const byKey = {} as Record<VariantKey, VariantCommerce>;
 
@@ -81,15 +81,64 @@ export async function getProductCommerce(): Promise<ProductCommerce> {
 
     // Only trust the live data if every option we sell came back.
     const complete = TIER_ORDER.every((key) => byKey[key]);
-    if (!complete) return { variants: null, availableForSale: data.product.availableForSale };
+    if (!complete) return { variants: null, availableForSale: data.product.availableForSale, inventory: null };
 
-    return { variants: byKey, availableForSale: data.product.availableForSale };
+    return { variants: byKey, availableForSale: data.product.availableForSale, inventory: null };
   } catch {
-    return { variants: null, availableForSale: true };
+    return { variants: null, availableForSale: true, inventory: null };
   }
 }
 
 /** The merchandise id to add for a given option, live where possible. */
 export function merchandiseIdFor(key: VariantKey, commerce: ProductCommerce): string {
   return commerce.variants?.[key].merchandiseId ?? VARIANTS[key].variantId;
+}
+
+interface RawInventory {
+  product: {
+    variants: {
+      nodes: { id: string; quantityAvailable: number | null; selectedOptions: { name: string; value: string }[] }[];
+    };
+  } | null;
+}
+
+/**
+ * Live stock per variant, or null when it cannot be read.
+ *
+ * Returns null rather than throwing on ANY failure — most often a missing
+ * `unauthenticated_read_product_inventory` scope, which Shopify reports as a
+ * hard error. Callers render no stock line in that case rather than inventing
+ * a number, so the feature simply switches itself on once the scope exists.
+ */
+export async function getInventory(): Promise<Record<VariantKey, number | null> | null> {
+  const handle = process.env.SHOPIFY_PRODUCT_HANDLE;
+  if (!isConfigured() || !handle) return null;
+
+  try {
+    const data = await storefrontCached<RawInventory>(
+      PRODUCT_INVENTORY_QUERY,
+      { handle, country: COUNTRY, language: LANGUAGE },
+      /* Far shorter than the pricing window: a stock figure that lags is worse
+         than none, since it is the one number a shopper may act on fast. */
+      60,
+      [PRODUCT_CACHE_TAG],
+    );
+
+    if (!data.product) return null;
+
+    const byKey = {} as Record<VariantKey, number | null>;
+    for (const node of data.product.variants.nodes) {
+      const colour = node.selectedOptions.find(
+        (option) => option.name.trim().toLowerCase() === "color",
+      );
+      if (!colour) continue;
+      const key = KEY_BY_OPTION_VALUE[colour.value.trim().toLowerCase()];
+      if (!key) continue;
+      byKey[key] = node.quantityAvailable;
+    }
+
+    return Object.keys(byKey).length > 0 ? byKey : null;
+  } catch {
+    return null;
+  }
 }

@@ -52,6 +52,8 @@ export interface VariantCommerce {
 }
 
 export interface ProductCommerce {
+  /** Live stock per variant, or null when the token cannot read inventory. */
+  inventory: Record<VariantKey, number | null> | null;
   /** Null when Shopify could not be reached — the page falls back to static copy. */
   variants: Record<VariantKey, VariantCommerce> | null;
   availableForSale: boolean;
