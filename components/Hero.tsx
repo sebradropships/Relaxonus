@@ -56,7 +56,12 @@ export function Hero() {
 
           <h1 className="mt-3 text-[length:var(--text-h1)] text-ink">{HERO.headline}</h1>
 
-          <p className="mt-4 max-w-[46ch] text-[17px] leading-relaxed text-muted">{HERO.sub}</p>
+          {/* Two weights, not two identical paragraphs: the three-beat line
+              carries the rhythm, the outcome line carries the promise. */}
+          <p className="mt-4 text-[17px] font-medium leading-relaxed text-ink">{HERO.sub}</p>
+          <p className="mt-1.5 max-w-[46ch] text-[17px] leading-relaxed text-muted">
+            {HERO.outcome}
+          </p>
 
           <div className="mt-7">
             <PriceBlock />
