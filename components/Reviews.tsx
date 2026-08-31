@@ -5,7 +5,7 @@ import { useMemo, useState } from "react";
 
 import { Stars } from "@/components/Rating";
 import { REVIEWS_EMPTY, TIER_ORDER, VARIANTS, type VariantKey } from "@/lib/product";
-import { getReviews, reviewStats, usingDemoReviews, type Review } from "@/lib/reviews";
+import { getReviews, reviewStats, type Review } from "@/lib/reviews";
 
 type Filter = "all" | "photos" | "5" | "4" | "3" | "2" | "1";
 
@@ -120,7 +120,6 @@ function Distribution({
 export function Reviews() {
   const reviews = getReviews();
   const stats = useMemo(() => reviewStats(reviews), [reviews]);
-  const isDemo = usingDemoReviews();
 
   const [filter, setFilter] = useState<Filter>("all");
   const [variant, setVariant] = useState<VariantKey | "all">("all");
@@ -165,13 +164,6 @@ export function Reviews() {
   return (
     <section id="reviews" className="border-t border-line py-16 sm:py-24">
       <div className="shell">
-        {isDemo && (
-          <p className="mb-6 rounded-lg border border-save/40 bg-save-soft px-4 py-2.5 text-[13px] font-semibold text-save">
-            DEMO REVIEW DATA — development only. Not in the production build, never shown to a
-            customer. Replace by adding real reviews to REVIEWS in lib/reviews.ts.
-          </p>
-        )}
-
         <div className="grid gap-8 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:gap-14">
           {/* Summary rail */}
           <div className="lg:sticky lg:top-24 lg:self-start">
