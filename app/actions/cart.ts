@@ -92,8 +92,27 @@ export async function setDiscountCodesAction(codes: unknown): Promise<LineResult
     return { ok: false, cart: null, error: "Unknown discount." };
   }
 
-  const allowed = new Set(QUANTITY_BREAKS.tiers.map((tier) => tier.code));
-  const safe = (codes as string[]).filter((code) => allowed.has(code));
+  const requested = (codes as string[]).filter((code) =>
+    QUANTITY_BREAKS.tiers.some((tier) => tier.code === code),
+  );
 
-  return setDiscountCodes(safe);
+  /*
+    Earn the tier, do not merely name it.
+
+    Checking the code is one of ours is not enough: a server action is a public
+    endpoint, so anyone could post the deepest code with a single unit in the
+    cart. The quantity is read from the cart on the server — never from the
+    caller — and any tier it does not actually qualify for is dropped.
+
+    Shopify's own minimum-quantity rule on each code is the second lock. This
+    one holds even if that rule is missing or misconfigured.
+  */
+  const cart = await getCart();
+  const inCart = cart?.totalQuantity ?? 0;
+  const earned = requested.filter((code) => {
+    const tier = QUANTITY_BREAKS.tiers.find((t) => t.code === code);
+    return tier ? inCart >= tier.minQuantity : false;
+  });
+
+  return setDiscountCodes(earned);
 }
