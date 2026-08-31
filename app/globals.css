@@ -200,6 +200,17 @@ h1, h2, h3, .display {
 }
 .btn-pulse { animation: btn-pulse 2s ease-out infinite; }
 
+/*
+  Badge blink. A fade between full and 0.45, never to nothing and never a hard
+  on/off — one 1.4s cycle is 0.71Hz, inside the WCAG 2.3.1 three-per-second
+  limit, and the badge stays legible at every point in the cycle.
+*/
+@keyframes badge-blink {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.45; }
+}
+.badge-blink { animation: badge-blink 1.4s ease-in-out infinite; }
+
 .card {
   background: var(--color-surface);
   border: 1px solid var(--color-line);
@@ -292,6 +303,7 @@ h1, h2, h3, .display {
   .marquee,
   .sticker-pulse,
   .btn-pulse,
+  .badge-blink,
   .slide-pair { animation: none; }
 }
 @media (min-width: 720px) {

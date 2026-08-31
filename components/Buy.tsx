@@ -91,8 +91,26 @@ function Swatch({ variantKey }: { variantKey: VariantKey }) {
  * Two singles side by side, the Duo on its own full-width row so its genuine
  * saving has room to be stated rather than abbreviated into a sticker.
  */
+/**
+ * Blinking SALE flag for an option that is genuinely reduced.
+ *
+ * Gated on a live compare-at, like every other discount surface, so an option
+ * at full price never wears one.
+ */
+function SaleFlag() {
+  return (
+    <span
+      aria-hidden="true"
+      className="badge-blink absolute right-1.5 top-1.5 rounded-full bg-[#c8322a] px-1.5 py-0.5 text-[9px] font-bold leading-none tracking-wide text-white"
+    >
+      SALE
+    </span>
+  );
+}
+
 export function VariantPicker() {
-  const { variant, selectVariant, priceFor, compareAtFor, availableFor } = useProduct();
+  const { variant, selectVariant, priceFor, compareAtFor, availableFor, discountPercentFor } =
+    useProduct();
 
   const singles = TIER_ORDER.filter((key) => VARIANTS[key].units === 1);
   const duoSelected = variant === "set";
@@ -112,14 +130,18 @@ export function VariantPicker() {
               aria-checked={selected}
               disabled={soldOut}
               onClick={() => selectVariant(key)}
-              className={`tap-lg flex items-center gap-2.5 rounded-xl border px-3 py-2.5 text-left transition-colors ${
+              className={`tap-lg relative flex items-center gap-2.5 rounded-xl border px-3 py-2.5 text-left transition-colors ${
                 selected
                   ? "border-accent bg-accent-soft ring-1 ring-accent"
                   : "border-line bg-surface hover:border-line-strong"
               } ${soldOut ? "cursor-not-allowed opacity-45" : ""}`}
             >
+              {discountPercentFor(key) !== null && <SaleFlag />}
+
               <Swatch variantKey={key} />
-              <span className="min-w-0">
+              {/* Right padding reserves the flag's footprint so the price row
+                  cannot run under it on a narrow card. */}
+              <span className="min-w-0 pr-8">
                 <span className="block truncate text-sm font-semibold text-ink">
                   {VARIANTS[key].short}
                 </span>
