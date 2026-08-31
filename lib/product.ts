@@ -22,11 +22,11 @@
  *     medical device and must not read as one. `treat` and `cure` appear ONLY
  *     inside the disclaimer strings below.
  *
- *     The hero says "Relief" at the owner's direction. That is a wellness
- *     claim rather than a clinical one — it names no condition and promises no
- *     outcome — and the not-a-medical-device disclaimer stays on the page to
- *     hold the line. Do not extend it: "pain relief", or relief of any named
- *     condition, is the point where this becomes a device claim.
+ *     "Relief" on its own is a wellness claim and has been used here before —
+ *     it names no condition and promises no outcome. The line is "pain
+ *     relief", or relief of any named condition: that is where copy becomes a
+ *     device claim. The not-a-medical-device disclaimer stays on the page
+ *     either way.
  *   - Free shipping and BNPL. Only Apple Pay and Google Pay are live.
  */
 
