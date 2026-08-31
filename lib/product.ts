@@ -17,9 +17,16 @@
  *   - Countdown behaviour is set by COUNTDOWN.mode in lib/campaign.ts. A
  *     fixed deadline must be a real one, and the prices must actually be
  *     restored in Shopify when it passes.
- *   - Medical vocabulary: relief, pain, therapeutic, circulation, tension,
- *     trigger point, soothe, recovery, chiropractor. Not a medical device.
- *     `treat` and `cure` appear ONLY inside the disclaimer strings below.
+ *   - Named conditions and clinical vocabulary: pain, therapeutic, circulation,
+ *     inflammation, trigger point, recovery, chiropractor. This is not a
+ *     medical device and must not read as one. `treat` and `cure` appear ONLY
+ *     inside the disclaimer strings below.
+ *
+ *     The hero says "Relief" at the owner's direction. That is a wellness
+ *     claim rather than a clinical one — it names no condition and promises no
+ *     outcome — and the not-a-medical-device disclaimer stays on the page to
+ *     hold the line. Do not extend it: "pain relief", or relief of any named
+ *     condition, is the point where this becomes a device claim.
  *   - Free shipping and BNPL. Only Apple Pay and Google Pay are live.
  */
 
@@ -154,8 +161,8 @@ export const HERO = {
    * from the sale deadline instead, which is a genuine one.
    */
   eyebrow: "IN STOCK · SHIPS NOW",
-  headline: "The neck massager that never needs charging.",
-  sub: "Hook it over your shoulders, squeeze the handles, roll. Six grooved rollers do the work — powered entirely by you.",
+  headline: "Relief. Anytime. No charging.",
+  sub: "Hook. Squeeze. Roll. Feel the difference.",
   bullets: [
     "Ready the second you pick it up — nothing to charge, ever",
     "You set the pressure, from feather-light to firm",
