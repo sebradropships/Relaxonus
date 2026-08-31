@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter, Manrope } from "next/font/google";
 
 import { SEO } from "@/lib/product";
+import { STOREFRONT_URL } from "@/lib/site";
 
 import "./globals.css";
 
@@ -21,10 +22,21 @@ const inter = Inter({
   variable: "--font-inter",
 });
 
+/* metadataBase pins every generated URL to the headless storefront. Without a
+   canonical here the only page claiming to be this product is the Shopify
+   Online Store, which emits its own canonical on the myshopify domain. */
 export const metadata: Metadata = {
+  metadataBase: new URL(STOREFRONT_URL),
   title: SEO.title,
   description: SEO.description,
-  openGraph: { type: "website", title: SEO.title, description: SEO.description },
+  alternates: { canonical: "/" },
+  openGraph: {
+    type: "website",
+    url: "/",
+    siteName: "Relaxonus",
+    title: SEO.title,
+    description: SEO.description,
+  },
 };
 
 export const viewport: Viewport = {
