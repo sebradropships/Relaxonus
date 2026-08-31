@@ -280,7 +280,7 @@ export function BuyNow() {
       }}
       disabled={soldOut}
       aria-disabled={pending || undefined}
-      className="btn btn-quiet tap-lg w-full px-6 py-3.5 text-[15px]"
+      className="btn btn-urgent btn-pulse tap-lg w-full px-6 py-3.5 text-[15px]"
     >
       {BUY_NOW.label}
     </button>
