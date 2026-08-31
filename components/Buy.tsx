@@ -2,7 +2,7 @@
 
 import { useProduct } from "@/components/ProductProvider";
 import { BestValueSticker } from "@/components/SaleSticker";
-import { BUY_NOW, QUANTITY_BREAKS, breakFor } from "@/lib/campaign";
+import { BUY_NOW } from "@/lib/campaign";
 import {
   MAX_QUANTITY,
   STRIKE_SR_PREFIX,
@@ -284,49 +284,6 @@ export function BuyNow() {
     >
       {BUY_NOW.label}
     </button>
-  );
-}
-
-/**
- * Volume pricing.
- *
- * Highlights the tier the current quantity qualifies for. The saving is only
- * ever claimed once the matching discount code has actually applied to the
- * cart, so the panel cannot promise a reduction the checkout will not honour.
- */
-export function QuantityBreaks() {
-  const { quantity, setQuantity } = useProduct();
-  if (!QUANTITY_BREAKS.enabled || QUANTITY_BREAKS.tiers.length === 0) return null;
-
-  const active = breakFor(quantity);
-
-  return (
-    <div className="rounded-xl border border-line bg-surface p-3">
-      <p className="text-[13px] font-semibold text-ink">{QUANTITY_BREAKS.heading}</p>
-      <div className="mt-2 grid grid-cols-3 gap-2">
-        {QUANTITY_BREAKS.tiers.map((tier) => {
-          const selected = active?.code === tier.code;
-          return (
-            <button
-              key={tier.code}
-              type="button"
-              onClick={() => setQuantity(tier.minQuantity)}
-              aria-pressed={selected}
-              className={`tap rounded-lg border px-2 py-1.5 text-center transition-colors ${
-                selected
-                  ? "border-accent bg-accent-soft"
-                  : "border-line hover:border-line-strong"
-              }`}
-            >
-              <span className="num block text-[13px] font-semibold text-ink">
-                −{tier.percentOff}%
-              </span>
-              <span className="block text-[11px] leading-tight text-muted">{tier.label}</span>
-            </button>
-          );
-        })}
-      </div>
-    </div>
   );
 }
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { AddToCart, BuyNow, CartError, PriceBlock, QtyStepper, QuantityBreaks, VariantPicker } from "@/components/Buy";
+import { AddToCart, BuyNow, CartError, PriceBlock, QtyStepper, VariantPicker } from "@/components/Buy";
 import { Gallery } from "@/components/Gallery";
 import { useBuyZone } from "@/components/ProductProvider";
 import { Rating } from "@/components/Rating";
@@ -68,7 +68,6 @@ export function Hero() {
           {/* Stacked, never side by side: a stepper sharing a row with the CTA
               is what clips the CTA at 320px. */}
           <div ref={buyZone} className="mt-6 flex flex-col gap-3">
-            <QuantityBreaks />
             <QtyStepper />
             <AddToCart id="buy" />
             <BuyNow />

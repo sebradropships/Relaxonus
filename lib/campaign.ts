@@ -35,13 +35,9 @@ export const COUNTDOWN = {
    */
   cycleAnchor: "2026-08-31T00:00:00Z",
 
-  /**
-   * Wording sits next to the clock. Set it to whatever the campaign actually
-   * is — on a recurring cycle the offer refreshes rather than terminates, so
-   * the default says so.
-   */
+  /** Wording next to the clock. */
   label: "Live sale",
-  countdownLabel: "Offer refreshes in",
+  countdownLabel: "Offer ends in",
 } as const;
 
 /** Milliseconds left in the current window, or null when there is no clock. */
@@ -115,7 +111,17 @@ export interface QuantityBreak {
 }
 
 export const QUANTITY_BREAKS = {
-  enabled: true,
+  /**
+   * Off. With this false `breakFor` returns null, so the cart applies no
+   * volume code and the discount sync clears any that is already on it —
+   * the feature is inert rather than merely hidden.
+   *
+   * The tiers below are kept as configuration for whenever it comes back. To
+   * switch it on: create the matching codes in Shopify with their minimum
+   * quantities, flip this to true, and render <QuantityBreaks /> in the buy
+   * box (see git history for the component).
+   */
+  enabled: false,
   heading: "Buy more, pay less",
   tiers: [
     { minQuantity: 2, percentOff: 5, code: "BULK5", label: "2+ units" },
