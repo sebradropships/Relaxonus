@@ -2,6 +2,7 @@
 
 import { AddToCart, BuyNow, CartError, PriceBlock, QtyStepper, VariantPicker } from "@/components/Buy";
 import { Gallery } from "@/components/Gallery";
+import { OfferCountdown } from "@/components/OfferCountdown";
 import { useBuyZone } from "@/components/ProductProvider";
 import { Rating } from "@/components/Rating";
 import { HERO } from "@/lib/product";
@@ -61,7 +62,8 @@ export function Hero() {
             <PriceBlock />
           </div>
 
-          <div className="mt-6">
+          <div className="mt-6 flex flex-col gap-3">
+            <OfferCountdown />
             <VariantPicker />
           </div>
 
