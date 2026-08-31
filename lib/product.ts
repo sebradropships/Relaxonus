@@ -161,8 +161,8 @@ export const HERO = {
    * from the sale deadline instead, which is a genuine one.
    */
   eyebrow: "IN STOCK · SHIPS NOW",
-  headline: "Relief. Anytime. No charging.",
-  sub: "Hook. Squeeze. Roll. Feel the difference.",
+  headline: "The Neck & Shoulder Massager",
+  sub: "Hook. Squeeze. Relax.",
   bullets: [
     "Ready the second you pick it up — nothing to charge, ever",
     "You set the pressure, from feather-light to firm",
