@@ -1,7 +1,7 @@
 import Image from "next/image";
 
 import { Demo } from "@/components/Demo";
-import { REVIEWS, REVIEWS_EMPTY, VALUE } from "@/lib/product";
+import { REVIEWS_EMPTY, VALUE } from "@/lib/product";
 
 /* Line icons, one stroke weight, no fill — they label the card, not decorate it. */
 function Icon({ name }: { name: string }) {
@@ -53,27 +53,13 @@ function Icon({ name }: { name: string }) {
   );
 }
 
-function Stars({ rating }: { rating: number }) {
-  return (
-    <span aria-hidden="true" className="text-accent">
-      {"★".repeat(rating)}
-      <span className="text-line-strong">{"★".repeat(5 - rating)}</span>
-    </span>
-  );
-}
-
 /**
- * SECTION 2 — turns curiosity into wanting it.
+ * SECTION 2 — turns curiosity into wanting it: the demonstration, the four
+ * reasons, the mechanism diagrams, and the questions people ask before buying.
  *
- * The review slot is real architecture, not a placeholder: the moment a
- * genuine review is added to REVIEWS it renders here, with its name, rating
- * and verified-purchase status. Until then the honest empty state stands and
- * the checkable facts carry the trust instead. Never seed REVIEWS with
- * invented content — see the rules at the top of lib/product.ts.
+ * Reviews live in their own <Reviews> section below this one.
  */
 export function Value() {
-  const hasReviews = REVIEWS.length > 0;
-
   return (
     <section id="why" className="border-y border-line bg-sand py-16 sm:py-24">
       <div className="shell">
@@ -157,38 +143,6 @@ export function Value() {
           </div>
         </div>
 
-        {/* Social proof. Honest by construction. */}
-        <div className="mt-4">
-          {hasReviews ? (
-            <div className="grid gap-4 sm:grid-cols-3">
-              {REVIEWS.slice(0, 3).map((review) => (
-                <figure key={review.id} className="card p-6">
-                  <Stars rating={review.rating} />
-                  <blockquote className="mt-3 text-[15px] leading-relaxed text-ink">
-                    {review.text}
-                  </blockquote>
-                  <figcaption className="mt-4 text-[13px] text-muted">
-                    {review.customerName}
-                    {review.verifiedPurchase && " · Verified purchase"}
-                    {/* Named, not implied: a review carried over from a
-                        supplier platform was not written by a customer of
-                        this store, and the caption has to say so. */}
-                    {review.source && (
-                      <span className="mt-0.5 block text-faint">via {review.source}</span>
-                    )}
-                  </figcaption>
-                </figure>
-              ))}
-            </div>
-          ) : (
-            <div className="card p-6 sm:p-7">
-              <h3 className="text-[length:var(--text-h3)] text-ink">{REVIEWS_EMPTY.heading}</h3>
-              <p className="mt-2 max-w-[70ch] text-[15px] leading-relaxed text-muted">
-                {REVIEWS_EMPTY.body}
-              </p>
-            </div>
-          )}
-        </div>
       </div>
     </section>
   );

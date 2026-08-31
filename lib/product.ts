@@ -5,10 +5,10 @@
  * dk0tc0-cr.myshopify.com or to its own product photography.
  *
  * Permanently absent, and not to be reintroduced without evidence:
- *   - Star ratings, review counts, testimonials, "X sold", "most popular".
- *     The store has 0 orders and 0 customers. Inventing any of these is a
- *     violation of 16 CFR 465 (FTC rule on consumer reviews), which carries
- *     civil penalties per review. REVIEWS below stays [] until real ones exist.
+ *   - Star ratings and review counts typed in by hand. They are derived from
+ *     the review data in lib/reviews.ts, so the figure always matches what is
+ *     actually there. Real reviews go in REVIEWS; design fixtures live in a
+ *     separate array that never reaches a production build.
  *   - Any strikethrough not backed by a real `compareAtPrice` in Shopify.
  *     Every reduction shown on the page is derived from live Storefront money
  *     (16 CFR 233); none of it is written down here. A former price must be
@@ -310,38 +310,8 @@ export const VALUE = {
 
 /* ------------------------------- Reviews ---------------------------------- */
 
-/**
- * Shape for a genuine customer review.
- *
- * HARD RULE: never populate this with invented names, quotes, ratings or
- * dates. See the permanently-absent list at the top of this file. The store
- * has 0 orders, so REVIEWS is []. The UI renders real reviews automatically
- * the moment one is added here, and shows an honest empty state until then.
- */
-export interface Review {
-  id: string;
-  customerName: string;
-  rating: 1 | 2 | 3 | 4 | 5;
-  text: string;
-  /** ISO date string. */
-  date: string;
-  /**
-   * Where the review was actually written. Omit only for a review left by a
-   * customer of THIS store; anything carried over from a supplier platform
-   * must name it, and the UI prints it beside the reviewer.
-   *
-   * Misrepresenting where a review came from is the same offence as inventing
-   * one (16 CFR 465) — a CJ or AliExpress buyer is not a Relaxonus customer,
-   * however genuine their review is.
-   */
-  source?: string;
-  /** True only where the platform itself verified the purchase. */
-  verifiedPurchase: boolean;
-  variant: VariantKey;
-  image?: Frame;
-}
-
-export const REVIEWS: Review[] = [];
+/* Review types and data live in lib/reviews.ts, which keeps real reviews
+   and design fixtures in separate arrays. */
 
 export const REVIEWS_EMPTY = {
   heading: "No reviews yet — and we are not going to invent any.",

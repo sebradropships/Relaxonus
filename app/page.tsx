@@ -2,6 +2,7 @@ import { CartDrawer } from "@/components/CartDrawer";
 import { Hero } from "@/components/Hero";
 import { LegalStrip } from "@/components/LegalStrip";
 import { ProductProvider } from "@/components/ProductProvider";
+import { Reviews } from "@/components/Reviews";
 import { SaleBanner } from "@/components/SaleBanner";
 import { SiteHeader } from "@/components/SiteHeader";
 import { StickyBar } from "@/components/StickyBar";
@@ -42,6 +43,7 @@ export default async function Page() {
       <main>
         <Hero />
         <Value />
+        <Reviews />
       </main>
 
       <LegalStrip />
