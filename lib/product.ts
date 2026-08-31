@@ -163,8 +163,6 @@ export const HERO = {
   eyebrow: "IN STOCK · SHIPS NOW",
   headline: "The Neck & Shoulder Massager",
   sub: "Hook. Squeeze. Relax.",
-  /** The outcome line. Carries the promise the headline no longer makes. */
-  outcome: "Relief whenever you want it — nothing to charge, nothing to set up.",
   bullets: [
     "Ready the second you pick it up — nothing to charge, ever",
     "You set the pressure, from feather-light to firm",
