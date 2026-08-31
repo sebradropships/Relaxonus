@@ -14,9 +14,9 @@
  *     (16 CFR 233); none of it is written down here. A former price must be
  *     one the variant was genuinely offered at.
  *   - Scarcity: 78,500 units are in stock. No "only N left", no stock bars.
- *   - Any countdown that is not a real deadline. The SALE block below carries
- *     one fixed end date; it must never roll forward per visitor, and the
- *     prices must actually be restored in Shopify when it passes.
+ *   - Countdown behaviour is set by COUNTDOWN.mode in lib/campaign.ts. A
+ *     fixed deadline must be a real one, and the prices must actually be
+ *     restored in Shopify when it passes.
  *   - Medical vocabulary: relief, pain, therapeutic, circulation, tension,
  *     trigger point, soothe, recovery, chiropractor. Not a medical device.
  *     `treat` and `cure` appear ONLY inside the disclaimer strings below.
@@ -141,44 +141,8 @@ export const TIER_ORDER: VariantKey[] = ["blue", "pink", "set"];
  */
 export const STRIKE_SR_PREFIX = "Compare at: ";
 
-/* ---------------------------------- Sale ---------------------------------- */
-
-/**
- * The promotion's real deadline.
- *
- * This date does NOT set prices — prices live in Shopify, and every discount
- * shown on the page is derived from a genuine `compareAtPrice` returned by the
- * Storefront API. That split is deliberate:
- *
- *   - If Shopify carries no discount, no sale UI renders at all, whatever this
- *     date says. The page cannot advertise a reduction that is not really on.
- *   - Once this date passes, the banner and countdown disappear on their own,
- *     so the page never shows a deadline that has already gone by.
- *
- * The prices must actually be restored in Shopify when this passes. A timer
- * that expires and resets, or a "sale" that never ends, is the deceptive
- * urgency this file exists to keep off the store (16 CFR 233).
- */
-export const SALE = {
-  /**
-   * Deadline for a TIMED promotion, or null when the live discount is a
-   * standing one with no end date.
-   *
-   * Set to null whenever the live discount is a standing one — a countdown
-   * over a price with no end date is a deadline attached to nothing, which is
-   * the deceptive urgency this file exists to keep off the store (16 CFR 233).
-   *
-   * An 8-hour window set at 18:15 UTC on 30 August 2026, with all three
-   * variants genuinely discounted in Shopify behind it. The banner and clock
-   * remove themselves when it passes, but the PRICES DO NOT — they have to be
-   * put back by hand, or the countdown was theatre.
-   */
-  endsAt: "2026-08-31T02:15:00Z" as string | null,
-  /** Spoken once by assistive tech instead of announcing every tick. */
-  endsAtSpoken: "31 August 2026 at 02:15 UTC" as string | null,
-  label: "Live sale",
-  countdownLabel: "Ends in",
-};
+/* Campaign config — countdown, shipping, stock, upsell — lives in
+   lib/campaign.ts. */
 
 /* ================================ SECTION 1 =============================== */
 

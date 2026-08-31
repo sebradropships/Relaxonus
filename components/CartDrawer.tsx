@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useEffect, useRef } from "react";
 
+import { CartUpsell, ShippingProgress } from "@/components/CartBoosters";
 import { useProduct } from "@/components/ProductProvider";
 import { formatMoney } from "@/lib/money";
 import { MAX_QUANTITY } from "@/lib/product";
@@ -92,6 +93,9 @@ export function CartDrawer() {
             {lineError}
           </p>
         )}
+
+        {!empty && <ShippingProgress />}
+        {!empty && <CartUpsell />}
 
         <div className="flex-1 overflow-y-auto px-5 py-5">
           {empty ? (

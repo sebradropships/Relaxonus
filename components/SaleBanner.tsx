@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 
 import { useProduct } from "@/components/ProductProvider";
-import { SALE, TIER_ORDER } from "@/lib/product";
+import { COUNTDOWN, countdownRemaining } from "@/lib/campaign";
+import { TIER_ORDER } from "@/lib/product";
 
 function pad(value: number) {
   return String(value).padStart(2, "0");
@@ -49,19 +50,19 @@ function Unit({ value, label }: { value: string; label: string }) {
 }
 
 /**
- * Sale strip above the header, with a countdown to the promotion's real end.
+ * Sale banner and campaign clock.
  *
- * Two independent gates, and both must be open for anything to render:
+ * The banner has one gate: a genuine reduction live in Shopify. The percentage
+ * is the deepest real compare-at across the variants, so it cannot advertise a
+ * discount the store is not running.
  *
- *   1. A genuine discount is live in Shopify. The percentage shown is derived
- *      from the deepest real `compareAtPrice` reduction across the variants,
- *      so this strip cannot advertise a sale the store is not actually running.
- *   2. SALE.endsAt is still in the future. Once it passes the strip removes
- *      itself, so a stale deadline is never displayed and the countdown can
- *      never sit at zero or restart for the next visitor.
+ * The clock is a separate question, set entirely by COUNTDOWN.mode in
+ * lib/campaign.ts — a fixed deadline that expires and takes the clock with it,
+ * a recurring window that keeps cycling, or off. The banner survives on the
+ * discount either way.
  *
- * The ticking figures are aria-hidden and the deadline is given once, as a
- * date, to assistive technology — a per-second live region would make the page
+ * Ticking figures are aria-hidden and the spoken form describes the window
+ * rather than the seconds: a per-second live region would make the page
  * unusable with a screen reader.
  */
 export function SaleBanner() {
@@ -72,11 +73,7 @@ export function SaleBanner() {
   const [remaining, setRemaining] = useState<number | null>(null);
 
   useEffect(() => {
-    if (!SALE.endsAt) return;
-    const deadline = new Date(SALE.endsAt).getTime();
-    if (Number.isNaN(deadline)) return;
-
-    const tick = () => setRemaining(Math.max(0, deadline - Date.now()));
+    const tick = () => setRemaining(countdownRemaining(Date.now()));
     tick();
     const id = setInterval(tick, 1000);
     return () => clearInterval(id);
@@ -92,12 +89,17 @@ export function SaleBanner() {
      store is not running. */
   if (best <= 0) return null;
 
-  /* The countdown is a separate question from the discount. It appears only
-     for a genuine future deadline, and vanishes the moment that passes — the
-     discount may well outlive it, and a spent clock must not linger over one. */
-  const deadlineMs = SALE.endsAt ? new Date(SALE.endsAt).getTime() : NaN;
-  const showCountdown =
-    Number.isFinite(deadlineMs) && remaining !== null && remaining > 0;
+  /* The clock is a separate question from the discount: a recurring window
+     keeps running, a fixed one expires, and either way the banner still shows
+     a live reduction on its own. */
+  const showCountdown = remaining !== null && remaining > 0;
+
+  const spoken =
+    COUNTDOWN.mode === "recurring"
+      ? `Offer refreshes every ${COUNTDOWN.cycleHours} hours.`
+      : COUNTDOWN.endsAtSpoken
+        ? `Sale ends ${COUNTDOWN.endsAtSpoken}.`
+        : "";
 
   const totalSeconds = remaining === null ? 0 : Math.floor(remaining / 1000);
   const days = Math.floor(totalSeconds / 86400);
@@ -113,7 +115,7 @@ export function SaleBanner() {
       <div className="bg-accent">
         <div className="shell flex min-h-11 flex-wrap items-center justify-center gap-x-3 gap-y-1 py-2 text-center">
           <p className="eyebrow">
-            {SALE.label} · {best}% off
+            {COUNTDOWN.label} · {best}% off
           </p>
 
           {showCountdown && (
@@ -123,16 +125,16 @@ export function SaleBanner() {
               </span>
 
               <p className="flex items-baseline gap-1.5 text-[13px]">
-                <span className="opacity-70">{SALE.countdownLabel}</span>
+                <span className="opacity-70">{COUNTDOWN.countdownLabel}</span>
                 <span aria-hidden="true" className="flex items-baseline gap-1.5">
                   {days > 0 && <Unit value={String(days)} label="d" />}
                   <Unit value={pad(hours)} label="h" />
                   <Unit value={pad(minutes)} label="m" />
                   <Unit value={pad(seconds)} label="s" />
                 </span>
-                {SALE.endsAtSpoken && (
-                  <span className="sr-only">Sale ends {SALE.endsAtSpoken}.</span>
-                )}
+                {/* Describes the window, not the seconds — a per-second live
+                    region would make the page unusable with a screen reader. */}
+                {spoken && <span className="sr-only">{spoken}</span>}
               </p>
             </>
           )}
