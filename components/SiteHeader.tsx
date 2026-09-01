@@ -1,5 +1,7 @@
 "use client";
 
+import Image from "next/image";
+
 import { useProduct } from "@/components/ProductProvider";
 
 function CartGlyph() {
@@ -30,10 +32,18 @@ export function SiteHeader() {
       <div className="shell flex h-14 items-center justify-between gap-4 sm:h-16">
         <a
           href="#top"
-          className="tap display inline-flex items-center text-[15px] tracking-tight text-ink sm:text-base"
-          style={{ letterSpacing: "-0.02em" }}
+          className="tap -ml-1 inline-flex items-center rounded-lg px-1"
         >
-          RELAXONUS
+          {/* The alt text is the link's accessible name — it has to say the
+              brand, not describe the artwork. */}
+          <Image
+            src="/brand/logo.png"
+            alt="Relaxonus"
+            width={239}
+            height={96}
+            priority
+            className="h-7 w-auto sm:h-8"
+          />
         </a>
 
         <button
