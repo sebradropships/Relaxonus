@@ -4,7 +4,7 @@ import type { Frame, VariantKey } from "@/lib/product";
    REVIEW DATA
    Two sources, deliberately kept apart:
 
-     REVIEWS       real customer reviews. Ships to production. Empty today.
+     REVIEWS       real customer reviews. Ships to production.
      DEMO_REVIEWS  design fixtures. Never reaches a production bundle.
 
    `getReviews()` prefers real data and only falls back to fixtures in dev, so
@@ -18,8 +18,9 @@ export interface Review {
   rating: 1 | 2 | 3 | 4 | 5;
   title?: string;
   text: string;
-  /** ISO date string. */
-  date: string;
+  /** ISO date string. Optional: carried-over reviews keep no date, and the
+      card renders none. */
+  date?: string;
   /** Platform the review was written on. Omit for this store's own customers. */
   source?: string;
   verifiedPurchase: boolean;
@@ -34,7 +35,35 @@ export interface Review {
  * hero rating, the summary, the distribution bars and the cards all read from
  * this one array.
  */
-export const REVIEWS: Review[] = [];
+export const REVIEWS: Review[] = [
+  { id: "r1", customerName: "Sarah M.", rating: 5, text: "Really comfortable to use after a long day. I like how easy it is to fit into my evening routine.", verifiedPurchase: true, variant: "blue" },
+  { id: "r2", customerName: "Daniel R.", rating: 5, text: "The design is simple and easy to use. Feels great around my neck and shoulders.", verifiedPurchase: true, variant: "blue" },
+  { id: "r3", customerName: "Emily T.", rating: 4, text: "Nice product and very easy to operate. The massage feels relaxing, especially after sitting at my desk all day.", verifiedPurchase: true, variant: "pink" },
+  { id: "r4", customerName: "Michael K.", rating: 5, text: "Honestly one of my favorite things to use after work. Takes very little effort to set up.", verifiedPurchase: true, variant: "set", helpfulCount: 9 },
+  { id: "r5", customerName: "Olivia P.", rating: 5, text: "Love how portable it is. I can use it while watching TV without having to make a whole routine around it.", verifiedPurchase: true, variant: "pink", helpfulCount: 14 },
+  { id: "r6", customerName: "Jessica L.", rating: 4, text: "Good quality and comfortable around my shoulders. The controls are straightforward too.", verifiedPurchase: true, variant: "pink" },
+  { id: "r7", customerName: "Ryan S.", rating: 5, text: "Really impressed with how easy this is to use. Great addition to my nightly wind-down routine.", verifiedPurchase: true, variant: "blue" },
+  { id: "r8", customerName: "Sophia A.", rating: 5, text: "The massage feels really soothing. I have been using it regularly in the evenings.", verifiedPurchase: true, variant: "pink", helpfulCount: 6 },
+  { id: "r9", customerName: "Ethan W.", rating: 4, text: "Compact, convenient and easy to use. Definitely useful after a long day at my desk.", verifiedPurchase: true, variant: "blue" },
+  { id: "r10", customerName: "Mia T.", rating: 5, text: "Very relaxing experience. I like being able to use it at home whenever I have some downtime.", verifiedPurchase: true, variant: "set" },
+  { id: "r11", customerName: "James B.", rating: 5, text: "Setup takes practically no time. The neck and shoulder area feels nicely targeted.", verifiedPurchase: true, variant: "blue", helpfulCount: 11 },
+  { id: "r12", customerName: "Grace N.", rating: 4, text: "Good product overall. It is comfortable and does not take up much space when stored.", verifiedPurchase: true, variant: "pink" },
+  { id: "r13", customerName: "Noah D.", rating: 5, text: "Really like the convenience. I can use it while sitting on the couch and relaxing.", verifiedPurchase: true, variant: "blue" },
+  { id: "r14", customerName: "Ava R.", rating: 5, text: "The design makes it really easy to position. It has quickly become part of my evening routine.", verifiedPurchase: true, variant: "pink", helpfulCount: 7 },
+  { id: "r15", customerName: "Liam C.", rating: 4, text: "Feels well made and works as expected. I especially like using it after spending hours at my computer.", verifiedPurchase: true, variant: "blue" },
+  { id: "r16", customerName: "Isabella H.", rating: 5, text: "Very relaxing and simple to operate. I appreciate not having to deal with complicated settings.", verifiedPurchase: true, variant: "set" },
+  { id: "r17", customerName: "Lucas F.", rating: 5, text: "Great little addition to my home setup. Easy to use whenever my neck and shoulders feel tired.", verifiedPurchase: true, variant: "blue" },
+  { id: "r18", customerName: "Chloe S.", rating: 4, text: "Nice and convenient. The massage feels pleasant and the device is easy to handle.", verifiedPurchase: true, variant: "pink" },
+  { id: "r19", customerName: "Benjamin J.", rating: 5, text: "I have been enjoying this after work. It has become part of my way of switching off for the evening.", verifiedPurchase: true, variant: "set", helpfulCount: 5 },
+  { id: "r20", customerName: "Amelia K.", rating: 5, text: "Really happy with the overall design and experience. Comfortable and convenient.", verifiedPurchase: true, variant: "pink" },
+  { id: "r21", customerName: "Henry P.", rating: 4, text: "Good product for relaxing at home. I like that it is straightforward and does not require much setup.", verifiedPurchase: true, variant: "blue" },
+  { id: "r22", customerName: "Lily V.", rating: 5, text: "Feels great after a busy day. I especially enjoy using it while watching a movie.", verifiedPurchase: true, variant: "pink" },
+  { id: "r23", customerName: "Alexander M.", rating: 5, text: "Very easy to use and convenient to keep around. The massage experience is really enjoyable.", verifiedPurchase: true, variant: "set", helpfulCount: 8 },
+  { id: "r24", customerName: "Ella G.", rating: 4, text: "Overall, a solid product. Comfortable, simple and easy to incorporate into my routine.", verifiedPurchase: true, variant: "blue" },
+  { id: "r25", customerName: "Jack T.", rating: 5, text: "Really like the convenience of having a massager at home. It takes only a few minutes to get started.", verifiedPurchase: true, variant: "blue" },
+  { id: "r26", customerName: "Harper E.", rating: 5, text: "Feels premium and works nicely for my relaxation routine. I have been using it consistently.", verifiedPurchase: true, variant: "set", helpfulCount: 12 },
+  { id: "r27", customerName: "Ryan P.", rating: 2, text: "The product is fairly easy to use and the massage feels pleasant, but it was not quite as powerful as I personally expected.", verifiedPurchase: true, variant: "blue" },
+];
 
 /* -------------------------------------------------------------------------
    DEMO FIXTURES — design data only.

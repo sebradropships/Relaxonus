@@ -9,23 +9,12 @@ import { getReviews, reviewStats, type Review } from "@/lib/reviews";
 
 type Filter = "all" | "photos" | "5" | "4" | "3" | "2" | "1";
 
-function formatDate(iso: string) {
-  const date = new Date(iso);
-  if (Number.isNaN(date.getTime())) return "";
-  /* Fixed locale: the server and client must produce identical output or
-     React reports a hydration mismatch. */
-  return date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
-}
-
 /* ------------------------------- Review card ------------------------------ */
 
 function ReviewCard({ review }: { review: Review }) {
   return (
     <figure className="card flex h-full flex-col p-5">
-      <div className="flex items-start justify-between gap-3">
-        <Stars value={review.rating} size={13} />
-        <span className="num shrink-0 text-[12px] text-faint">{formatDate(review.date)}</span>
-      </div>
+      <Stars value={review.rating} size={13} />
 
       {review.title && (
         <figcaption className="mt-3 text-[15px] font-semibold leading-snug text-ink">
