@@ -11,9 +11,11 @@ export interface CartLineImage {
   altText: string | null;
 }
 
-/** One line in the cart drawer. Carries only what the drawer renders. */
+/** One line in the cart drawer. Carries what the drawer renders, plus the variant id the Meta Pixel reports. */
 export interface CartLine {
   id: string;
+  /** Shopify variant GID of what is actually in the cart. */
+  merchandiseId: string;
   quantity: number;
   title: string;
   /** The selected Color option value, or the variant title as a fallback. */

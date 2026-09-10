@@ -91,6 +91,7 @@ function toSummary(cart: RawCart): CartSummary {
 
       return {
         id: line.id,
+        merchandiseId: line.merchandise.id,
         quantity: line.quantity,
         title: line.merchandise.product.title,
         variantLabel: colour?.value ?? line.merchandise.title,

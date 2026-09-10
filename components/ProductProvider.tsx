@@ -21,6 +21,7 @@ import {
   updateLineQuantityAction,
 } from "@/app/actions/cart";
 import { breakFor } from "@/lib/campaign";
+import { trackAddToCart, trackInitiateCheckout } from "@/lib/meta-pixel";
 import { ADDED_MS, DEFAULT_TIER, MAX_QUANTITY, VARIANTS, type VariantKey } from "@/lib/product";
 import { formatMoney } from "@/lib/money";
 import type { CartLine, CartSummary, Money, ProductCommerce } from "@/lib/shopify/types";
@@ -74,6 +75,8 @@ interface ProductState {
   discountPercentFor: (key: VariantKey) => number | null;
   /** Live units in stock, or null when inventory cannot be read. */
   stockFor: (key: VariantKey) => number | null;
+  /** Live Shopify variant id, otherwise the committed one — the id the cart adds by. */
+  merchandiseIdFor: (key: VariantKey) => string;
 
   selectVariant: (variant: VariantKey) => void;
   selectImage: (index: number) => void;
@@ -358,6 +361,14 @@ export function ProductProvider({
     [commerce],
   );
 
+  /* The same rule as merchandiseIdFor in lib/shopify/product.ts, which is
+     server-only. Mirrored so the ids the pixel reports are the ids that
+     actually land in the cart. */
+  const merchandiseIdFor = useCallback(
+    (key: VariantKey) => commerce.variants?.[key].merchandiseId ?? VARIANTS[key].variantId,
+    [commerce],
+  );
+
   const addToCart = useCallback(() => {
     // Synchronous guard: `pending` only flips after React commits, so a
     // same-tick second click would otherwise create a second cart.
@@ -384,6 +395,12 @@ export function ProductProvider({
         }
 
         setSummary(result.cart);
+        trackAddToCart({
+          merchandiseId: merchandiseIdFor(variant),
+          option: selected.name,
+          quantity: sending,
+          unitPrice: amountFor(variant),
+        });
         setAdded(true);
         openCart();
         setAnnouncement(
@@ -401,7 +418,7 @@ export function ProductProvider({
         inFlight.current = false;
       }
     });
-  }, [variant, quantity, addOptimisticUnits, openCart]);
+  }, [variant, quantity, addOptimisticUnits, openCart, amountFor, merchandiseIdFor]);
 
   /**
    * Adds the selection and goes straight to Shopify checkout.
@@ -425,6 +442,16 @@ export function ProductProvider({
           return;
         }
 
+        trackAddToCart({
+          merchandiseId: merchandiseIdFor(variant),
+          option: VARIANTS[variant].name,
+          quantity: sending,
+          unitPrice: amountFor(variant),
+        });
+
+        /* InitiateCheckout fires just before the navigation. The pixel issues
+           its request synchronously inside the fbq call, so it has already
+           gone out by the time the page starts to leave. */
         const tier = breakFor(sending);
         if (tier) {
           /* Volume discount rides along, but a rejected code must not block
@@ -433,12 +460,14 @@ export function ProductProvider({
           const discounted = await setDiscountCodesAction([tier.code]);
           if (discounted.cart) setSummary(discounted.cart);
           if (discounted.cart?.checkoutUrl) {
+            trackInitiateCheckout(discounted.cart.lines, discounted.cart.subtotal);
             window.location.assign(discounted.cart.checkoutUrl);
             return;
           }
         }
 
         setSummary(result.cart);
+        trackInitiateCheckout(result.cart.lines, result.cart.subtotal);
         window.location.assign(result.cart.checkoutUrl);
       } catch {
         setError("Could not reach the store. Please try again.");
@@ -446,7 +475,7 @@ export function ProductProvider({
         inFlight.current = false;
       }
     });
-  }, [variant, quantity]);
+  }, [variant, quantity, amountFor, merchandiseIdFor]);
 
   /**
    * Keeps the cart's volume discount in step with what is actually in it.
@@ -508,6 +537,7 @@ export function ProductProvider({
       amountFor,
       discountPercentFor,
       stockFor,
+      merchandiseIdFor,
       availableFor,
       selectVariant,
       selectImage,
@@ -519,7 +549,7 @@ export function ProductProvider({
       cartCount, summary, added, pending, error,
       cartOpen, openCart, closeCart, lineBusy, lineError, setLineQuantity, removeCartLine,
       priceFor, compareAtFor, availableFor, amountFor, discountPercentFor, stockFor,
-      selectVariant, selectImage, addToCart, buyNow,
+      merchandiseIdFor, selectVariant, selectImage, addToCart, buyNow,
     ],
   );
 

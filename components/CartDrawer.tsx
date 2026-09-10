@@ -5,6 +5,7 @@ import { useEffect, useRef } from "react";
 
 import { CartUpsell, ShippingProgress } from "@/components/CartBoosters";
 import { useProduct } from "@/components/ProductProvider";
+import { trackInitiateCheckout } from "@/lib/meta-pixel";
 import { formatMoney } from "@/lib/money";
 import { MAX_QUANTITY } from "@/lib/product";
 
@@ -202,6 +203,10 @@ export function CartDrawer() {
 
             <a
               href={checkoutUrl ?? "#top"}
+              onClick={() => {
+                // Only a real checkout counts — "#top" is the no-cart fallback.
+                if (checkoutUrl && subtotal) trackInitiateCheckout(lines, subtotal);
+              }}
               className="btn btn-primary tap-lg mt-4 w-full px-6 py-4 text-base"
             >
               CHECKOUT{subtotal ? ` — ${formatMoney(subtotal)}` : ""}

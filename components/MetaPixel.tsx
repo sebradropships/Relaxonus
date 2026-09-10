@@ -1,12 +1,16 @@
 import Script from "next/script";
 
+import { PIXEL_READY_EVENT } from "@/lib/meta-pixel";
+
 const META_PIXEL_ID = "1082533454743448";
 
-/* Meta's standard base code, unchanged apart from the id. afterInteractive
-   injects it client-side once hydration is underway, so it is never part of
-   the server HTML and cannot cause a hydration mismatch. The `id` lets
-   next/script run it exactly once, even when Strict Mode mounts the layout
-   twice in development — otherwise PageView would be counted twice. */
+/* Meta's standard base code, unchanged apart from the id and a last line
+   announcing that fbq now exists, which releases any commerce event raised
+   before it (lib/meta-pixel.ts). afterInteractive injects it client-side once
+   hydration is underway, so it is never part of the server HTML and cannot
+   cause a hydration mismatch. The `id` lets next/script run it exactly once,
+   even when Strict Mode mounts the layout twice in development — otherwise
+   PageView would be counted twice. */
 export function MetaPixel() {
   return (
     <>
@@ -20,7 +24,8 @@ t.src=v;s=b.getElementsByTagName(e)[0];
 s.parentNode.insertBefore(t,s)}(window, document,'script',
 'https://connect.facebook.net/en_US/fbevents.js');
 fbq('init', '${META_PIXEL_ID}');
-fbq('track', 'PageView');`}
+fbq('track', 'PageView');
+window.dispatchEvent(new Event('${PIXEL_READY_EVENT}'));`}
       </Script>
       <noscript>
         <img

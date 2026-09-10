@@ -30,6 +30,7 @@ export interface MetaPixelEventParams {
   currency?: string;
   content_ids?: string[];
   content_name?: string;
+  content_category?: string;
   content_type?: "product" | "product_group";
   contents?: { id: string; quantity: number; item_price?: number }[];
   num_items?: number;

@@ -7,6 +7,7 @@ import { Reviews } from "@/components/Reviews";
 import { SaleBanner } from "@/components/SaleBanner";
 import { SiteHeader } from "@/components/SiteHeader";
 import { StickyBar } from "@/components/StickyBar";
+import { TrackViewContent } from "@/components/TrackViewContent";
 import { Value } from "@/components/Value";
 import { getInventory, getProductCommerce } from "@/lib/shopify/product";
 
@@ -31,6 +32,8 @@ export default async function Page() {
 
   return (
     <ProductProvider commerce={{ ...commerce, inventory }}>
+      <TrackViewContent />
+
       <a
         href="#buy"
         className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[80] focus:rounded-lg focus:bg-accent focus:px-4 focus:py-2 focus:text-white"
