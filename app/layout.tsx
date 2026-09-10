@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Manrope } from "next/font/google";
 
+import { MetaPixel } from "@/components/MetaPixel";
 import { SEO } from "@/lib/product";
 import { STOREFRONT_URL } from "@/lib/site";
 
@@ -48,7 +49,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${manrope.variable} ${inter.variable}`}>
       {/* Bottom padding clears the sticky mobile purchase bar. */}
-      <body className="max-[899px]:pb-24">{children}</body>
+      <body className="max-[899px]:pb-24">
+        {children}
+        <MetaPixel />
+      </body>
     </html>
   );
 }
