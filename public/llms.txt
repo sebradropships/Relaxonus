@@ -1,0 +1,28 @@
+# Relaxonus
+
+> Relaxonus sells one product: a manual six-roller neck and shoulder massager.
+> It has no motor and no battery — the user controls the pressure by how hard they
+> squeeze the two handles.
+
+## Product
+
+- **Name:** Relaxonus Neck & Shoulder Massager
+- **Type:** Manual massage roller (not a powered or medical device)
+- **Mechanism:** Two columns of three grooved rollers, each rotating 360°, reaching
+  both sides of the neck at once. Pressure is applied by hand via two long handles.
+- **Power:** None. No motor, battery, cable or app.
+- **Dimensions:** 35 × 18 cm
+- **Cleaning:** All six rollers detach, rinse under a tap, and click back on.
+- **Options:** Blue ($34.99), Pink ($34.99), Blue + Pink Duo ($47.99)
+- **Currency:** USD. Shipping is calculated at checkout.
+- **Payment:** Apple Pay and Google Pay.
+
+## What it is not
+
+Relaxonus is a manual massage roller and a comfort accessory. It is not a medical
+device and is not intended to diagnose, treat, cure or prevent any condition. No
+claims are made about medical outcomes.
+
+## Links
+
+- Storefront: https://www.relaxonus.com
