@@ -2,7 +2,7 @@
 
 import { useProduct } from "@/components/ProductProvider";
 import { BestValueSticker } from "@/components/SaleSticker";
-import { BUY_NOW } from "@/lib/campaign";
+import { BUY_NOW, SHIPPING } from "@/lib/campaign";
 import {
   MAX_QUANTITY,
   STRIKE_SR_PREFIX,
@@ -68,7 +68,9 @@ export function PriceBlock({ compact = false }: { compact?: boolean }) {
           {option.units === 2
             ? `Two massagers — ${money(unit)} each. Bought separately they are ` +
               `${money(twoSingles)}, so the pair saves a further ${money(bundleSaving)}.`
-            : "One massager. Shipping calculated at checkout."}
+            : SHIPPING.free
+              ? "One massager, shipped free."
+              : `One massager. ${SHIPPING.labels.calculated}.`}
         </p>
       )}
     </div>

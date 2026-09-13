@@ -3,8 +3,9 @@
 import Image from "next/image";
 import { useEffect, useRef } from "react";
 
-import { CartUpsell, ShippingProgress } from "@/components/CartBoosters";
+import { CartUpsell, ShippingNotice } from "@/components/CartBoosters";
 import { useProduct } from "@/components/ProductProvider";
+import { SHIPPING } from "@/lib/campaign";
 import { trackInitiateCheckout } from "@/lib/meta-pixel";
 import { formatMoney } from "@/lib/money";
 import { MAX_QUANTITY } from "@/lib/product";
@@ -95,7 +96,7 @@ export function CartDrawer() {
           </p>
         )}
 
-        {!empty && <ShippingProgress />}
+        {!empty && <ShippingNotice />}
         {!empty && <CartUpsell />}
 
         <div className="flex-1 overflow-y-auto px-5 py-5">
@@ -199,7 +200,14 @@ export function CartDrawer() {
                 {subtotal ? formatMoney(subtotal) : ""}
               </span>
             </div>
-            <p className="disclosure mt-1">Shipping calculated at checkout.</p>
+            {SHIPPING.free ? (
+              <div className="mt-1.5 flex items-baseline justify-between text-[15px]">
+                <span className="text-muted">Shipping</span>
+                <span className="font-semibold text-accent">Free</span>
+              </div>
+            ) : (
+              <p className="disclosure mt-1">{SHIPPING.labels.calculated}.</p>
+            )}
 
             <a
               href={checkoutUrl ?? "#top"}

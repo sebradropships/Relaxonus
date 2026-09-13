@@ -27,8 +27,14 @@
  *     relief", or relief of any named condition: that is where copy becomes a
  *     device claim. The not-a-medical-device disclaimer stays on the page
  *     either way.
- *   - Free shipping and BNPL. Only Apple Pay and Google Pay are live.
+ *   - BNPL. Only Apple Pay and Google Pay are live.
+ *
+ * Free shipping IS claimed: checkout charges $0.00 for it on every order.
+ * Each mention is gated on SHIPPING.free in lib/campaign.ts, which records how
+ * that was verified.
  */
+
+import { SHIPPING } from "@/lib/campaign";
 
 export type VariantKey = "blue" | "pink" | "set";
 
@@ -160,7 +166,7 @@ export const HERO = {
    * urgency — the one kind that reliably draws enforcement. Real urgency comes
    * from the sale deadline instead, which is a genuine one.
    */
-  eyebrow: "IN STOCK · SHIPS NOW",
+  eyebrow: SHIPPING.free ? "IN STOCK · SHIPS FREE" : "IN STOCK · SHIPS NOW",
   headline: "The Neck & Shoulder Massager",
   sub: "Hook. Squeeze. Relax.",
   bullets: [
@@ -170,8 +176,10 @@ export const HERO = {
     "Rollers pop out and rinse clean under the tap",
     "35 × 18 cm — fits a desk drawer, gym bag or suitcase",
   ],
-  /** No deadline exists, so no deadline is claimed. */
-  reassurance: "Secure checkout · Apple Pay & Google Pay · Shipping calculated at checkout",
+  /** No deadline exists, so no deadline is claimed. Free shipping gets its own line above this. */
+  reassurance: SHIPPING.free
+    ? "Secure checkout · Apple Pay & Google Pay"
+    : `Secure checkout · Apple Pay & Google Pay · ${SHIPPING.labels.calculated}`,
   shipNote: "In stock — no waitlist, no pre-order.",
 };
 
@@ -203,11 +211,14 @@ export const VALUE = {
       body: "All six rollers pop off, rinse under a tap, dry, and click back on. The frame wipes down.",
     },
   ],
-  /** The 3 biggest purchase hesitations, answered in one line each. */
+  /** The biggest purchase hesitations, answered in one line each. */
   objections: [
     { q: "Does it need charging?", a: "No. There is no motor and no battery — it is powered entirely by you squeezing the handles." },
     { q: "How hard does it press?", a: "Exactly as hard as you squeeze. Firm, gentle, or anywhere between, decided by your hands." },
     { q: "Can I clean it?", a: "Yes. All six rollers pop off, rinse under a tap, and click back on." },
+    ...(SHIPPING.free
+      ? [{ q: "What does shipping cost?", a: "Nothing. Standard shipping is free on every order, to any US address, with no minimum spend." }]
+      : []),
   ],
   /**
    * The demo, built from real photography of this exact product rather than
@@ -311,12 +322,15 @@ export const LEGAL = {
    * A disclosure that contradicts the prices it discloses is worse than none,
    * so it is derived now and cannot drift again.
    */
-  shipping: "Shipping is calculated at checkout. Prices in USD.",
+  shipping: SHIPPING.free
+    ? "Standard shipping is free on every order. Prices in USD."
+    : "Shipping is calculated at checkout. Prices in USD.",
   copyright: "© 2026 Relaxonus.",
 };
 
 export const SEO = {
   title: "Relaxonus — Manual 6-Roller Neck & Shoulder Massager",
   description:
-    "Six grooved rollers, two handles, zero batteries. You set the pressure. $34.99 each, or $47.99 for the Blue + Pink Duo.",
+    "Six grooved rollers, two handles, zero batteries. You set the pressure. $34.99 each, or $47.99 for the Blue + Pink Duo." +
+    (SHIPPING.free ? " Free shipping on every order." : ""),
 };

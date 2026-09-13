@@ -1,6 +1,7 @@
 "use client";
 
 import { AddToCart, BuyNow, CartError, PriceBlock, QtyStepper, VariantPicker } from "@/components/Buy";
+import { FreeShipping } from "@/components/FreeShipping";
 import { Gallery } from "@/components/Gallery";
 import { OfferCountdown } from "@/components/OfferCountdown";
 import { useBuyZone } from "@/components/ProductProvider";
@@ -76,7 +77,12 @@ export function Hero() {
             <CartError />
           </div>
 
-          <p className="disclosure mt-3 text-center">{HERO.reassurance}</p>
+          {/* Directly under the buttons: the last thing read before deciding
+              is what the order will really cost. */}
+          <div className="mt-3 flex flex-col items-center gap-1 text-center">
+            <FreeShipping className="text-[15px]" />
+            <p className="disclosure">{HERO.reassurance}</p>
+          </div>
 
           <ul className="mt-8 flex flex-col gap-2.5 border-t border-line pt-7">
             {HERO.bullets.map((bullet) => (

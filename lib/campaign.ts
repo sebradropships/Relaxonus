@@ -65,14 +65,34 @@ export function countdownRemaining(now: number): number | null {
 
 /* ------------------------------- Free shipping ---------------------------- */
 
+/**
+ * Standard shipping is free on every order, with no minimum spend.
+ *
+ * Checked against the store's own delivery options: a Storefront API cart
+ * holding one $34.99 massager, on 2026-09-11 and again on 2026-09-13. The
+ * only rate offered is Standard, at $0.00, to New York, California, Alaska
+ * and Hawaii alike, and the store sells to the US only, so "every order" is
+ * literal.
+ *
+ * Every free-shipping line on the site is gated on `free`, including the
+ * Product JSON-LD. If Shopify ever starts charging, set it false: they all
+ * come down together and the copy falls back to "calculated at checkout". A
+ * claim the checkout contradicts is worse than no claim at all.
+ *
+ * The one exception is public/llms.txt, which is static text and states it
+ * too. Change that by hand along with this flag.
+ */
 export const SHIPPING = {
-  /** Cart subtotal, in store currency, that unlocks free shipping. */
-  freeThreshold: 60,
-  /** Set false if you are not actually offering it. */
-  enabled: true,
+  free: true,
   labels: {
-    progress: (remaining: string) => `You're ${remaining} away from free shipping`,
-    unlocked: "Free shipping unlocked",
+    /** Banner strip and sticky bar, where space is tight. */
+    short: "Free shipping",
+    /** Everywhere with room for the whole promise. */
+    full: "Free shipping on every order",
+    /** Top of the cart. */
+    cart: "This order ships free",
+    /** Shipping wording while `free` is false. */
+    calculated: "Shipping calculated at checkout",
   },
 } as const;
 

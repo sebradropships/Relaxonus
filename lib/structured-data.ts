@@ -1,3 +1,4 @@
+import { SHIPPING } from "@/lib/campaign";
 import {
   PRODUCT_NAME,
   SEO,
@@ -18,9 +19,16 @@ import type { ProductCommerce } from "@/lib/shopify/types";
  * Deliberately omits `aggregateRating` and `review`: there are no genuine reviews yet
  * (see REVIEWS_EMPTY), and invented ones are a manual-action risk, not a style choice.
  *
- * Deliberately omits `shippingDetails`: shipping is calculated at checkout, so any rate
- * stated here would be a number nobody can honour.
+ * `shippingDetails` states the $0.00 US rate only while SHIPPING.free holds — see
+ * lib/campaign.ts for how it was verified. It carries no `deliveryTime`: there are no
+ * verified handling or transit times to give it, and a guessed one is a claim.
  */
+
+const FREE_SHIPPING = {
+  "@type": "OfferShippingDetails",
+  shippingRate: { "@type": "MonetaryAmount", value: "0", currency: "USD" },
+  shippingDestination: { "@type": "DefinedRegion", addressCountry: "US" },
+};
 
 /** "$34.99" -> "34.99". The committed prices carry a symbol; Shopify's do not. */
 function bare(price: string): string {
@@ -54,6 +62,7 @@ export function productJsonLd(commerce: ProductCommerce) {
       itemCondition: "https://schema.org/NewCondition",
       url: STOREFRONT_URL,
       seller: { "@type": "Organization", name: "Relaxonus" },
+      ...(SHIPPING.free ? { shippingDetails: FREE_SHIPPING } : {}),
     };
   });
 

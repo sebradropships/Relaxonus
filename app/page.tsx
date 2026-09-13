@@ -49,8 +49,8 @@ export default async function Page() {
         Skip to buy
       </a>
 
-      {/* Renders only while a genuine discount is live in Shopify AND the
-          deadline is still ahead. */}
+      {/* The sale strip renders only while a genuine discount is live in
+          Shopify; the free-shipping promise shows either way. */}
       <SaleBanner />
       <SiteHeader />
 

@@ -2,8 +2,9 @@
 
 import { useCallback, useEffect, useState } from "react";
 
+import { FreeShipping } from "@/components/FreeShipping";
 import { useProduct } from "@/components/ProductProvider";
-import { POPUP } from "@/lib/campaign";
+import { POPUP, SHIPPING } from "@/lib/campaign";
 
 function seenRecently(): boolean {
   try {
@@ -138,6 +139,11 @@ export function Popup() {
           {POPUP.heading}
         </h2>
         <p className="mt-3 text-[15px] leading-relaxed text-muted">{POPUP.body}</p>
+        {SHIPPING.free && (
+          <p className="mt-3">
+            <FreeShipping className="text-[14px]" />
+          </p>
+        )}
 
         <button
           type="button"

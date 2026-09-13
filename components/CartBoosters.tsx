@@ -1,52 +1,25 @@
 "use client";
 
+import { FreeShipping } from "@/components/FreeShipping";
 import { useProduct } from "@/components/ProductProvider";
 import { SHIPPING, UPSELL } from "@/lib/campaign";
 import { formatMoney } from "@/lib/money";
 import { VARIANTS } from "@/lib/product";
 
 /**
- * Free-shipping progress.
+ * Free-shipping confirmation at the top of the cart.
  *
- * Reads the live cart subtotal, so the bar and the remaining figure can never
- * disagree with the total printed beneath them. Renders nothing when the offer
- * is switched off in config.
+ * This used to be a progress bar toward a $60 threshold. Shopify charges
+ * nothing for shipping at any order size, so "you're $25.01 away from free
+ * shipping" was telling a shopper with one massager that they would pay for it.
  */
-export function ShippingProgress() {
-  const { subtotal } = useProduct();
-  if (!SHIPPING.enabled || !subtotal) return null;
-
-  const amount = Number.parseFloat(subtotal.amount);
-  if (!Number.isFinite(amount)) return null;
-
-  const target = SHIPPING.freeThreshold;
-  const remaining = Math.max(0, target - amount);
-  const pct = Math.min(100, (amount / target) * 100);
-  const unlocked = remaining <= 0;
-  const currency = subtotal.currencyCode;
+export function ShippingNotice() {
+  if (!SHIPPING.free) return null;
 
   return (
-    <div className="border-b border-line px-5 py-3">
-      <p className="flex items-center gap-2 text-[13px] font-medium text-ink">
-        {unlocked ? (
-          <>
-            <svg width="14" height="14" viewBox="0 0 20 20" fill="none" aria-hidden="true" className="shrink-0 text-accent">
-              <path d="M4.5 10.5l3.5 3.5 7.5-8" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-            {SHIPPING.labels.unlocked}
-          </>
-        ) : (
-          SHIPPING.labels.progress(formatMoney({ amount: remaining.toFixed(2), currencyCode: currency }))
-        )}
-      </p>
-
-      <span className="mt-2 block h-1.5 overflow-hidden rounded-full bg-line">
-        <span
-          className="block h-full rounded-full bg-accent transition-[width] duration-500"
-          style={{ width: `${pct}%` }}
-        />
-      </span>
-    </div>
+    <p className="border-b border-line bg-accent-soft px-5 py-3">
+      <FreeShipping label={SHIPPING.labels.cart} iconSize={16} className="text-[13px]" />
+    </p>
   );
 }
 

@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from "react";
 
+import { TruckIcon } from "@/components/FreeShipping";
 import { useProduct } from "@/components/ProductProvider";
-import { COUNTDOWN, countdownRemaining } from "@/lib/campaign";
+import { COUNTDOWN, SHIPPING, countdownRemaining } from "@/lib/campaign";
 import { TIER_ORDER } from "@/lib/product";
 
 function pad(value: number) {
@@ -11,31 +12,59 @@ function pad(value: number) {
 }
 
 /**
- * Sliding SALE strip beneath the banner.
+ * Sliding SALE strip beneath the banner, alternating with the free-shipping
+ * promise while it holds.
  *
  * The track is rendered twice and the animation shifts it by exactly half, so
  * it loops without a seam. Both copies are aria-hidden and a single sr-only
- * word carries the meaning — a screen reader should hear "sale" once, not
- * twenty times.
+ * line carries the meaning — a screen reader should hear it once, not twenty
+ * times.
  */
 function SaleStrip() {
   const track = (
     <div aria-hidden="true" className="flex shrink-0 items-center gap-7 pr-7">
-      {Array.from({ length: 14 }, (_, i) => (
-        <span key={i} className="eyebrow whitespace-nowrap text-white/95">
-          SALE
-        </span>
-      ))}
+      {Array.from({ length: 14 }, (_, i) =>
+        SHIPPING.free && i % 2 === 0 ? (
+          <span key={i} className="eyebrow inline-flex items-center gap-1.5 whitespace-nowrap text-white/95">
+            <TruckIcon size={14} />
+            {SHIPPING.labels.short}
+          </span>
+        ) : (
+          <span key={i} className="eyebrow whitespace-nowrap text-white/95">
+            SALE
+          </span>
+        ),
+      )}
     </div>
   );
 
   return (
     <div className="relative overflow-hidden bg-[#c8322a] py-1.5 [contain:paint]">
-      <div className="marquee flex min-w-max">
+      {/* The longer track gets a proportionally longer cycle, so the words
+          travel at the same speed as the SALE-only strip did: 1571px against
+          913px, measured, so 20s becomes 34s. */}
+      <div
+        className="marquee flex min-w-max"
+        style={SHIPPING.free ? { animationDuration: "34s" } : undefined}
+      >
         {track}
         {track}
       </div>
-      <span className="sr-only">Sale</span>
+      <span className="sr-only">{SHIPPING.free ? `Sale. ${SHIPPING.labels.full}.` : "Sale"}</span>
+    </div>
+  );
+}
+
+/** With no sale on, the bar still carries the free-shipping promise, alone. */
+function ShippingBar() {
+  return (
+    <div className="bg-accent text-white">
+      <div className="shell flex min-h-11 items-center justify-center py-2 text-center">
+        <p className="eyebrow inline-flex items-center gap-2">
+          <TruckIcon size={16} />
+          {SHIPPING.labels.full}
+        </p>
+      </div>
     </div>
   );
 }
@@ -84,10 +113,11 @@ export function SaleBanner() {
     return percent && percent > deepest ? percent : deepest;
   }, 0);
 
-  /* The only gate on the banner itself: a real reduction is live in Shopify.
-     The percentage is derived from it, so this cannot advertise a discount the
-     store is not running. */
-  if (best <= 0) return null;
+  /* The only gate on the sale banner itself: a real reduction is live in
+     Shopify. The percentage is derived from it, so this cannot advertise a
+     discount the store is not running. Without one, only the free-shipping
+     bar remains. */
+  if (best <= 0) return SHIPPING.free ? <ShippingBar /> : null;
 
   /* The clock is a separate question from the discount: a recurring window
      keeps running, a fixed one expires, and either way the banner still shows
