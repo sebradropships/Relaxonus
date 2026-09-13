@@ -10,6 +10,7 @@ import { StickyBar } from "@/components/StickyBar";
 import { TrackViewContent } from "@/components/TrackViewContent";
 import { Value } from "@/components/Value";
 import { getInventory, getProductCommerce } from "@/lib/shopify/product";
+import { productJsonLd } from "@/lib/structured-data";
 
 /**
  * Two sections, in the order the decision is actually made:
@@ -33,6 +34,13 @@ export default async function Page() {
   return (
     <ProductProvider commerce={{ ...commerce, inventory }}>
       <TrackViewContent />
+
+      {/* Built from the same live Shopify money the hero renders, so the structured
+          data cannot drift from the prices beside it. */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd(commerce)) }}
+      />
 
       <a
         href="#buy"

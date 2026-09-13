@@ -318,5 +318,5 @@ export const LEGAL = {
 export const SEO = {
   title: "Relaxonus — Manual 6-Roller Neck & Shoulder Massager",
   description:
-    "Six grooved rollers, two handles, zero batteries. You set the pressure. $29.99 each, or $47.99 for the Blue + Pink Duo.",
+    "Six grooved rollers, two handles, zero batteries. You set the pressure. $34.99 each, or $47.99 for the Blue + Pink Duo.",
 };
