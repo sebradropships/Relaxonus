@@ -50,8 +50,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className={`${manrope.variable} ${inter.variable}`}>
       {/* Bottom padding clears the sticky mobile purchase bar. */}
       <body className="max-[899px]:pb-24">
-        {children}
+        {/* First child on purpose. The pixel is inline in the server HTML, so
+            the browser runs it while parsing — PageView fires before hydration
+            and before anything below it renders. Moving it back below {children}
+            would delay the one event Meta optimises on. */}
         <MetaPixel />
+        {children}
       </body>
     </html>
   );
