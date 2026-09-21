@@ -232,8 +232,13 @@ export const VALUE = {
     eyebrow: "HOW TO USE IT",
     heading: "Hook it on. Squeeze. Roll.",
     deck: "Three moves, no setup, nothing to pair. The clip is silent — there is no motor in it to make a noise.",
-    /** Supplier product footage, used unmodified. */
+    /** Supplier product footage, content unmodified. Re-encoded from a 10 Mbps
+     *  1080p master to 720p H.264 with the index up front (+faststart):
+     *  14.3 MB → 1.9 MB, visually identical at the size it is shown. */
     src: "/video/how-to-use.mp4",
+    /** The clip's first frame, so a phone that blocks autoplay (iOS Low Power
+     *  Mode) shows the product rather than an empty box. */
+    poster: "/video/how-to-use-poster.webp",
     label: "Demonstration of the Relaxonus massager being used on the neck and shoulders",
     steps: [
       {

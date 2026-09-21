@@ -28,9 +28,25 @@ export function Demo() {
     const video = videoRef.current;
     if (!video) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    // Rejects when the browser blocks autoplay; the first frame and the
-    // controls are then the whole interface, which is a fine outcome.
-    video.play().catch(() => {});
+
+    /* Started the first time it nears the viewport, never on mount. play()
+       overrides the preload hint, so calling it on mount had every visitor
+       downloading the clip the moment the page hydrated — two screens below
+       the fold, on mobile data, competing with the gallery for the same
+       connection. Once started it is left alone: pausing is the visitor's call. */
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (!entries.some((entry) => entry.isIntersecting)) return;
+        observer.disconnect();
+        // Rejects when the browser blocks autoplay; the poster and the
+        // controls are then the whole interface, which is a fine outcome.
+        video.play().catch(() => {});
+      },
+      /* Slightly ahead of the fold, so it is already moving when it arrives. */
+      { rootMargin: "200px 0px" },
+    );
+    observer.observe(video);
+    return () => observer.disconnect();
   }, []);
 
   return (
@@ -46,10 +62,13 @@ export function Demo() {
           horizontal slice of the middle. Width-capped because a full-width
           portrait video would be taller than most screens. */}
       <div className="mx-auto mt-10 w-full max-w-[340px] overflow-hidden rounded-2xl border border-line bg-surface sm:max-w-[380px]">
+        {/* preload="none": nothing is fetched until the observer above calls
+            play(), and the poster holds the first frame until then. */}
         <video
           ref={videoRef}
           src={DEMO.src}
-          preload="metadata"
+          poster={DEMO.poster}
+          preload="none"
           muted
           loop
           playsInline
