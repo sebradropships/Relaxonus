@@ -11,6 +11,13 @@ function pad(value: number) {
   return String(value).padStart(2, "0");
 }
 
+/* Whether a clock can run at all. Read from config alone, so the server and the
+   first client render agree. A fixed deadline that has already passed still
+   reads true — that one case can shift, once per visit, until the config is
+   brought up to date. */
+const CLOCK_CONFIGURED =
+  COUNTDOWN.mode === "recurring" || (COUNTDOWN.mode === "fixed" && COUNTDOWN.endsAt !== null);
+
 /**
  * Sliding SALE strip beneath the banner, alternating with the free-shipping
  * promise while it holds.
@@ -97,9 +104,10 @@ function Unit({ value, label }: { value: string; label: string }) {
 export function SaleBanner() {
   const { discountPercentFor } = useProduct();
 
-  /* null until the client has read the clock: the server cannot know the
-     remaining time, and rendering a guess would be a hydration mismatch. */
-  const [remaining, setRemaining] = useState<number | null>(null);
+  /* undefined until the client has read the clock: the server cannot know the
+     remaining time, and rendering a guess would be a hydration mismatch. null
+     once read means no clock is running. */
+  const [remaining, setRemaining] = useState<number | null | undefined>(undefined);
 
   useEffect(() => {
     const tick = () => setRemaining(countdownRemaining(Date.now()));
@@ -121,8 +129,15 @@ export function SaleBanner() {
 
   /* The clock is a separate question from the discount: a recurring window
      keeps running, a fixed one expires, and either way the banner still shows
-     a live reduction on its own. */
-  const showCountdown = remaining !== null && remaining > 0;
+     a live reduction on its own.
+
+     Until the clock is read, its row is held open but invisible. Mounting it
+     after first paint wrapped it onto a second line on a phone and pushed the
+     whole page down 14px — the page's only layout shift. Revealing it later is
+     free: visibility does not move layout. */
+  const clockPending = remaining === undefined && CLOCK_CONFIGURED;
+  const showCountdown = clockPending || (remaining != null && remaining > 0);
+  const pendingClass = clockPending ? " invisible" : "";
 
   const spoken =
     COUNTDOWN.mode === "recurring"
@@ -131,7 +146,7 @@ export function SaleBanner() {
         ? `Sale ends ${COUNTDOWN.endsAtSpoken}.`
         : "";
 
-  const totalSeconds = remaining === null ? 0 : Math.floor(remaining / 1000);
+  const totalSeconds = remaining == null ? 0 : Math.floor(remaining / 1000);
   const days = Math.floor(totalSeconds / 86400);
   const hours = Math.floor((totalSeconds % 86400) / 3600);
   const minutes = Math.floor((totalSeconds % 3600) / 60);
@@ -150,11 +165,11 @@ export function SaleBanner() {
 
           {showCountdown && (
             <>
-              <span aria-hidden="true" className="hidden opacity-40 sm:inline">
+              <span aria-hidden="true" className={`hidden opacity-40 sm:inline${pendingClass}`}>
                 |
               </span>
 
-              <p className="flex items-baseline gap-1.5 text-[13px]">
+              <p className={`flex items-baseline gap-1.5 text-[13px]${pendingClass}`}>
                 <span className="opacity-70">{COUNTDOWN.countdownLabel}</span>
                 <span aria-hidden="true" className="flex items-baseline gap-1.5">
                   {days > 0 && <Unit value={String(days)} label="d" />}
