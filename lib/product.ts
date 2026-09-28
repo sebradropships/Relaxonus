@@ -93,7 +93,7 @@ export const VARIANTS: Record<VariantKey, Variant> = {
     optionValue: "Blue",
     variantId: "gid://shopify/ProductVariant/53761385136491",
     swatch: "#A9D8E8",
-    price: "$34.99",
+    price: "$16.99",
     compareAt: "$40.99",
     units: 1,
     frames: [
@@ -111,7 +111,7 @@ export const VARIANTS: Record<VariantKey, Variant> = {
     optionValue: "Pink",
     variantId: "gid://shopify/ProductVariant/53761385169259",
     swatch: "#F4BCD2",
-    price: "$34.99",
+    price: "$16.99",
     compareAt: "$40.99",
     units: 1,
     frames: [
@@ -129,7 +129,7 @@ export const VARIANTS: Record<VariantKey, Variant> = {
     optionValue: "A set",
     variantId: "gid://shopify/ProductVariant/53761385103723",
     swatch: "linear-gradient(105deg, #A9D8E8 0 50%, #F4BCD2 50% 100%)",
-    price: "$47.99",
+    price: "$22.99",
     compareAt: "$69.98",
     units: 2,
     frames: [
@@ -336,6 +336,6 @@ export const LEGAL = {
 export const SEO = {
   title: "Relaxonus — Manual 6-Roller Neck & Shoulder Massager",
   description:
-    "Six grooved rollers, two handles, zero batteries. You set the pressure. $34.99 each, or $47.99 for the Blue + Pink Duo." +
+    "Six grooved rollers, two handles, zero batteries. You set the pressure. $16.99 each, or $22.99 for the Blue + Pink Duo." +
     (SHIPPING.free ? " Free shipping on every order." : ""),
 };

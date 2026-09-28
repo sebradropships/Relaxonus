@@ -187,7 +187,7 @@ export const POPUP = {
   storageKey: "sp-popup-seen",
 
   heading: "Before you go",
-  body: "The pair works out at $23.99 a massager against $34.99 bought singly — the biggest saving on the store.",
+  body: "The pair works out at $11.50 a massager against $16.99 bought singly — the biggest saving on the store.",
   cta: "See the pair",
   dismiss: "No thanks",
 } as const;
