@@ -10,9 +10,12 @@
  *     actually there. Real reviews go in REVIEWS; design fixtures live in a
  *     separate array that never reaches a production build.
  *   - Any strikethrough not backed by a real `compareAtPrice` in Shopify.
- *     Every reduction shown on the page is derived from live Storefront money
- *     (16 CFR 233); none of it is written down here. A former price must be
- *     one the variant was genuinely offered at.
+ *     Every reduction shown on the page is still derived from live Storefront
+ *     money — components/ProductProvider.tsx prefers it wherever Shopify
+ *     answers. The `compareAt` values below mirror the compare-at prices set
+ *     in the Shopify admin on 2026-09-29, so the offline fallback names the
+ *     same before-offer price the store compares against rather than a
+ *     different one.
  *   - Scarcity: 78,500 units are in stock. No "only N left", no stock bars.
  *   - Countdown behaviour is set by COUNTDOWN.mode in lib/campaign.ts. A
  *     fixed deadline must be a real one, and the prices must actually be
@@ -64,9 +67,13 @@ export interface Variant {
   swatch: string;
   price: string;
   /**
-   * Genuine reference price, shown struck through. Set only where a real one
-   * exists — for the Duo that is two singles bought separately. Never a
-   * former price the product was not actually offered at.
+   * Before-offer reference price, shown struck through.
+   *
+   * A mirror of the variant's Shopify `compareAtPrice`, not an independent
+   * value: components/ProductProvider.tsx reads live Storefront money first
+   * and falls back to this only when the Storefront call fails. Change it in
+   * Shopify and here in the same breath, or the fallback disagrees with
+   * checkout.
    */
   compareAt?: string;
   /** Massagers the customer receives. */
@@ -94,7 +101,7 @@ export const VARIANTS: Record<VariantKey, Variant> = {
     variantId: "gid://shopify/ProductVariant/53761385136491",
     swatch: "#A9D8E8",
     price: "$16.99",
-    compareAt: "$40.99",
+    compareAt: "$22.99",
     units: 1,
     frames: [
       { url: "/products/blue/01-hero.webp", alt: "The blue Relaxonus massager standing against a pale wall" },
@@ -112,7 +119,7 @@ export const VARIANTS: Record<VariantKey, Variant> = {
     variantId: "gid://shopify/ProductVariant/53761385169259",
     swatch: "#F4BCD2",
     price: "$16.99",
-    compareAt: "$40.99",
+    compareAt: "$22.99",
     units: 1,
     frames: [
       { url: "/products/pink/01-hero.webp", alt: "The pink Relaxonus massager standing against a pale wall" },
@@ -130,7 +137,7 @@ export const VARIANTS: Record<VariantKey, Variant> = {
     variantId: "gid://shopify/ProductVariant/53761385103723",
     swatch: "linear-gradient(105deg, #A9D8E8 0 50%, #F4BCD2 50% 100%)",
     price: "$22.99",
-    compareAt: "$69.98",
+    compareAt: "$44.99",
     units: 2,
     frames: [
       { url: IMAGES.pair, alt: ALT_PAIR },
