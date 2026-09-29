@@ -12,12 +12,22 @@ import type { MetaPixelEventParams, MetaPixelStandardEvent } from "@/types/meta-
  * identical across all three events so Meta can tie a view to the add and the
  * checkout that followed it.
  *
- * Browser only, and never throws: on the server, or wherever fbq is missing,
- * these do nothing. Tracking must not be able to break the purchase path.
+ * Each event goes out twice under one event id: through fbq from the browser,
+ * and through the same-origin Conversions API relay, which reaches Meta even
+ * when a blocker stops the pixel. Meta counts the pair once.
+ *
+ * Browser only, and never throws: on the server these do nothing. Tracking
+ * must not be able to break the purchase path.
  */
+
+/** Relaxonus 1 Pixel — also the dataset app/api/capi/route.ts posts to. */
+export const META_PIXEL_ID = "1082533454743448";
 
 /** Dispatched by the base code once `fbq` exists; releases anything queued before it. */
 export const PIXEL_READY_EVENT = "relaxonus:pixel-ready";
+
+/** Same-origin relay to the Conversions API (app/api/capi/route.ts). */
+export const CAPI_PATH = "/api/capi";
 
 const CURRENCY = "USD";
 const CONTENT_CATEGORY = "Manual neck & shoulder massager";
@@ -39,19 +49,49 @@ const contentId = (gid: string) => gid.slice(gid.lastIndexOf("/") + 1);
 
 let queued: (() => void)[] = [];
 
+/** One id per event, shared by the browser pixel and its server copy so Meta
+    counts the pair once. */
+function newEventId(): string {
+  return typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
+    ? crypto.randomUUID()
+    : `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
+}
+
+/* The server copy. First-party, so a blocker that stops facebook.com leaves it
+   alone, and a beacon, so it survives the page unloading — InitiateCheckout
+   fires on the way out to Shopify. The relay decides what reaches Meta. */
+function relay(event: MetaPixelStandardEvent, eventId: string, params: MetaPixelEventParams) {
+  try {
+    const body = JSON.stringify({
+      event_name: event,
+      event_id: eventId,
+      event_source_url: window.location.href,
+      custom_data: params,
+    });
+    if (navigator.sendBeacon?.(CAPI_PATH, body)) return;
+    void fetch(CAPI_PATH, { method: "POST", body, keepalive: true }).catch(() => {});
+  } catch {
+    /* Tracking must not be able to break the purchase path. */
+  }
+}
+
 function send(event: MetaPixelStandardEvent, params: MetaPixelEventParams) {
   if (typeof window === "undefined") return;
 
-  const fire = () => window.fbq("track", event, params);
+  const eventID = newEventId();
+  relay(event, eventID, params);
+
+  const fire = () => window.fbq("track", event, params, { eventID });
   if (typeof window.fbq === "function") {
     fire();
     return;
   }
 
-  /* The base code is injected after hydration, so an event raised during
-     hydration — ViewContent, on mount — can arrive before fbq exists. Hold it
-     until the base code announces itself. If that never happens the pixel was
-     blocked outright, and the queue simply never drains. */
+  /* The base code is inline in the server HTML, so fbq normally exists before
+     any of this runs. It is missing only if that script never ran — inline
+     scripts blocked outright. Hold the event until the base code announces
+     itself; if it never does, the queue never drains and the server copy
+     above is the only record. */
   queued.push(fire);
   if (queued.length > 1) return;
   window.addEventListener(
