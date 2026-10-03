@@ -174,7 +174,12 @@ export const HERO = {
    * from the sale deadline instead, which is a genuine one.
    */
   eyebrow: SHIPPING.free ? "IN STOCK · SHIPS FREE" : "IN STOCK · SHIPS NOW",
-  headline: "The Neck & Shoulder Massager",
+  /* Carries the ad hook into the page instead of restating the product name.
+     The ads open on "Most neck massagers need charging. This one needs you."
+     and the old H1 — "The Neck & Shoulder Massager" — dropped that thought at
+     the door, which is the gap a message-match audit flagged after 62 landing
+     page views produced 2 adds to cart and no sales. */
+  headline: "The Neck Massager With Nothing To Charge",
   sub: "Hook. Squeeze. Relax.",
   bullets: [
     "Ready the second you pick it up — nothing to charge, ever",
